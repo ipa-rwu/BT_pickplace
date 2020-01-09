@@ -1,0 +1,20 @@
+ <root main_tree_to_execute = "MainTree" >
+    <BehaviorTree ID="MainTree">
+        <Sequence name="root_sequence">
+            <OpenGripper    name="open_gripper"/>
+            <SetBlackboard   output_key="goal" value="0.1;0.2;0.3" />
+            <ApproachObject goal="{goal}"/>
+            <CloseGripper    name="close_gripper"/>
+
+        </Sequence>
+    </BehaviorTree>
+         <TreeNodesModel>
+
+        <Action ID="OpenGripper"/>
+
+        <Action ID="CloseGripper"/>
+        <Action ID="ApproachObject"/>
+
+
+    </TreeNodesModel>
+ </root>

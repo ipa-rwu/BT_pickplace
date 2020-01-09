@@ -6,36 +6,65 @@
 #include "behaviortree_cpp_v3/bt_factory.h"
 
 
-class TestNode
-{
-    public:
-    TestNode(const std::string& name);
-};
 
-class BTPathPlanning : public BT::SyncActionNode, public TestNode
+namespace RobotControl
+{
+
+//   class BTPathPlanning : public BT::SyncActionNode
+// {
+//   public:
+//     BTPathPlanning(const std::string& name, const BT::NodeConfiguration& config)
+//     : 
+//     BT::SyncActionNode(name, config)
+//     {}
+
+//     BT::NodeStatus tick() override;
+
+//     static BT::PortsList providedPorts() { return {}; }
+
+//     private:
+//     bool _success;
+// };
+
+class BTPathPlanning : public BT::SyncActionNode
 {
   public:
-    BTPathPlanning(const std::string& name)
-    : BT::SyncActionNode(name, {}), TestNode(name)
+    BTPathPlanning(const std::string& name, const BT::NodeConfiguration& config, bool success)
+    : 
+    BT::SyncActionNode(name, config), _success(success)
     {}
 
     BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts() { return {}; }
+
+    private:
+    bool _success;
 };
 
 
-class BTFollowPath : public BT::CoroActionNode, public TestNode
+// class BTFollowPath : public BT::CoroActionNode, public TestNode
+// {
+//   public:
+//     BTFollowPath(const std::string& name)
+//     : BT::CoroActionNode(name, {}), TestNode(name), _halted(false)
+//     {}
+
+//     void halt() override;
+
+//   private:
+//      bool _halted;
+
+// };
+
+inline void RegisterNodes(BT::BehaviorTreeFactory& factory)
 {
-  public:
-    BTFollowPath(const std::string& name)
-    : BT::CoroActionNode(name, {}), TestNode(name), _halted(false)
-    {}
 
-    void halt() override;
+    // factory.registerNodeType<BTPathPlanning>("BTPathPlanning");
 
-  private:
-     bool _halted;
+}
 
-};
+}
 
 // class BTPlanningInterface
 // {

@@ -4,16 +4,44 @@ project(robot_function)
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
 
+find_package(Eigen3 REQUIRED)
+
+# Eigen 3.2 (Wily) only provides EIGEN3_INCLUDE_DIR, not EIGEN3_INCLUDE_DIRS
+if(NOT EIGEN3_INCLUDE_DIRS)
+  set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
+endif()
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  std_msgs
+find_package(catkin REQUIRED
+  COMPONENTS
+    interactive_markers
+    moveit_core
+    moveit_visual_tools
+    moveit_ros_planning
+    moveit_ros_planning_interface
+    pluginlib
+    geometric_shapes
+    pcl_ros
+    pcl_conversions
+    rosbag
+    tf2_ros
+    tf2_eigen
+    tf2_geometry_msgs
+    geometry_msgs
+    tf
+    tf_conversions
+    ur_msgs
+    std_msgs
+    roscpp
+    behaviortree_cpp_v3
+    bt_nodes
 )
 
+
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system filesystem date_time thread)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -101,11 +129,20 @@ find_package(catkin REQUIRED COMPONENTS
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
+
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES robot_function
-#  CATKIN_DEPENDS roscpp std_msgs
-#  DEPENDS system_lib
+    INCLUDE_DIRS include
+    LIBRARIES robot_function bt_nodes
+    CATKIN_DEPENDS
+    roscpp std_msgs
+    moveit_core
+    moveit_visual_tools
+    moveit_ros_planning_interface
+    behaviortree_cpp_v3
+    
+    DEPENDS
+    #system_lib
+    EIGEN3
 )
 
 ###########
@@ -115,14 +152,13 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
-)
+  ${Boost_INCLUDE_DIRS}
+  ${GSTREAMER_INCLUDE_DIRS}
+  ${bt_nodes_INCLUDE_DIRS}
+  )
 
-## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/robot_function.cpp
-# )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -132,7 +168,30 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/robot_function_node.cpp)
+
+add_executable(main src/main.cpp)
+## Declare a C++ library
+add_library(robot_function
+   src/robot_function.cpp
+ )
+
+
+target_link_libraries(
+  ${PROJECT_NAME}
+   ${catkin_LIBRARIES}
+   ${Boost_LIBRARIES}
+   ${GSTREAMER_LIBRARIES}
+ )
+target_link_libraries(main robot_function)
+
+## error can't find behaviortree_cpp_v3
+target_link_libraries(main
+   ${BEHAVIOR_TREE_LIBRARY}   bt_sample_nodes 
+ )
+
+target_link_libraries(main
+   ${bt_nodes_LIBRARIES} bt_nodes
+ )
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -178,11 +237,11 @@ include_directories(
 # )
 
 ## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
+install(DIRECTORY include/${PROJECT_NAME}/
+   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+   FILES_MATCHING PATTERN "*.h"
+   PATTERN ".svn" EXCLUDE
+ )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
@@ -190,6 +249,8 @@ include_directories(
 #   # myfile2
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
+
+
 
 #############
 ## Testing ##

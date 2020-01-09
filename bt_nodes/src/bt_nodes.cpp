@@ -1,4 +1,28 @@
-#include "bt_nodes/bt_nodes.h"
+#include "bt_nodes.h"
 
 
-BT::NodeStatus RobotControl::Approach(bool robotfunction)
+BT_REGISTER_NODES(factory)
+{
+    RobotControl::RegisterNodes(factory);
+}
+
+namespace RobotControl
+{
+
+BT::NodeStatus BTPathPlanning::tick()
+{
+    if(_success)
+    {
+      std::cout << "PathPlanning: " << _success << std::endl;
+      return BT::NodeStatus::SUCCESS;  
+    }
+    else
+    {
+      return BT::NodeStatus::FAILURE;  
+    }
+    
+}
+
+
+
+}

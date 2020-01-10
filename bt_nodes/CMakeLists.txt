@@ -20,6 +20,9 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   behaviortree_cpp_v3
+  moveit_core
+  moveit_ros_planning
+  moveit_ros_planning_interface
 )
 
 ## System dependencies are found with CMake's conventions
@@ -115,7 +118,7 @@ catkin_package(
    INCLUDE_DIRS include
    LIBRARIES                
    ${PROJECT_NAME}
-   CATKIN_DEPENDS roscpp  std_msgs 
+   CATKIN_DEPENDS roscpp  std_msgs moveit_core moveit_ros_planning_interface
    DEPENDS #system_lib 
    EIGEN3
 )

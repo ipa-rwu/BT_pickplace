@@ -7,11 +7,9 @@ void RobotFunction::GetBasicInfo()
   // ^^^^^^^^^^^^^^^^^^^^^^^^^
   //
   // We can print the name of the reference frame for this robot.
-  _GROUP_MANIP = move_group->getPlanningFrame().c_str();
   ROS_INFO_NAMED("tutorial", "Planning frame: %s", move_group->getPlanningFrame().c_str());
 
   // We can also print the name of the end-effector link for this group.
-  _GROUP_GRIPP = move_group->getEndEffectorLink().c_str();
   ROS_INFO_NAMED("tutorial", "End effector link: %s", move_group->getEndEffectorLink().c_str());
 
   // We can get a list of all the groups in the robot:
@@ -25,8 +23,8 @@ void RobotFunction::GetBasicInfo()
 void RobotFunction::InitialiseMoveit(ros::NodeHandle nh)
 {
   namespace rvt = rviz_visual_tools;
-  move_group = new moveit::planning_interface::MoveGroupInterface(_GROUP_MANIP);
-  joint_model_group = move_group->getCurrentState()->getJointModelGroup(_GROUP_MANIP);
+  move_group = new moveit::planning_interface::MoveGroupInterface(GROUP_MANIP);
+  joint_model_group = move_group->getCurrentState()->getJointModelGroup(GROUP_MANIP);
 
   visual_tools = new moveit_visual_tools::MoveItVisualTools("base_link");
   visual_tools->deleteAllMarkers();
@@ -55,4 +53,10 @@ pathplan RobotFunction::PathPlanning(geometry_msgs::Pose target_pose)
     std::cout<<"here2"<<std::endl;
     ROS_INFO_NAMED("Demo", "Visualizing plan (pose goal) %s", result.success ? "" : "FAILED");
     return result;
+}
+
+bool RobotFunction::MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface::Plan plan)
+{
+  move_group->setStartStateToCurrentState();
+  return move_group->execute(plan)==moveit::planning_interface::MoveItErrorCode::SUCCESS;
 }

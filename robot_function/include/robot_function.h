@@ -37,13 +37,11 @@ class RobotFunction
 {
 private:
     /* data */
-    std::string _GROUP_MANIP;
-    std::string _GROUP_GRIPP;
+
 
     const robot_state::JointModelGroup* joint_model_group ;
     ros::Publisher planning_scene_diff_publisher;
-      moveit_visual_tools::MoveItVisualTools *visual_tools;
-
+    moveit_visual_tools::MoveItVisualTools *visual_tools;
     Eigen::Isometry3d text_pose = Eigen::Isometry3d::Identity();
 
 public:
@@ -51,24 +49,18 @@ public:
     // ~RobotFunction();
 
     moveit::planning_interface::MoveGroupInterface *move_group;
-
+    const std::string GROUP_MANIP = "manipulator";
+    const std::string GROUP_GRIPP = "endeffector";
 
 
     void GetBasicInfo();
     void InitialiseMoveit(ros::NodeHandle nh);
     // void MoveToNamedTarget(std::string target);
     pathplan PathPlanning(geometry_msgs::Pose target_pose);
-    bool MoveToCartesianTrajtoPose(geometry_msgs::Pose target);
+    bool MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface::Plan plan);
     // bool MoveToPose(); 
 };
 
-// RobotFunction::RobotFunction(/* args */)
-// {
-// }
-
-// RobotFunction::~RobotFunction()
-// {
-// }
 
 
 #endif /* ROBOT_FUNCTION_H_ */

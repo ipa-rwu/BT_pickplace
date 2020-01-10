@@ -1,4 +1,5 @@
-#include "robot_function.h"
+#include "robot_function/robot_function.h"
+#include "robot_function/robot_control.h"
 
 
 void RobotFunction::GetBasicInfo()
@@ -60,3 +61,23 @@ bool RobotFunction::MoveGroupExecutePlan(moveit::planning_interface::MoveGroupIn
   move_group->setStartStateToCurrentState();
   return move_group->execute(plan)==moveit::planning_interface::MoveItErrorCode::SUCCESS;
 }
+
+// bool PlanExecute(geometry_msgs::Pose target_pose)
+// {
+//       namespace rvt = rviz_visual_tools;
+//     pathplan result;
+//     std::cout<<target_pose<<std::endl;
+//     move_group->setPoseTarget(target_pose);
+
+//     // show 
+//     visual_tools->publishAxisLabeled(target_pose, "pose");
+//     visual_tools->publishText(text_pose, "Pose Goal", rvt::WHITE, rvt::XLARGE);
+//     visual_tools->publishTrajectoryLine(result.plan.trajectory_, joint_model_group);
+//     visual_tools->trigger();
+//     std::cout<<"here1"<<std::endl;
+//     result.success = (move_group->plan(result.plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+//     std::cout<<"here2"<<std::endl;
+//     ROS_INFO_NAMED("Demo", "Visualizing plan (pose goal) %s", result.success ? "" : "FAILED");
+//     move_group->setStartStateToCurrentState();
+//     return move_group->execute(plan)==moveit::planning_interface::MoveItErrorCode::SUCCESS;
+// }

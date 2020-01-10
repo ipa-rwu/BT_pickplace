@@ -27,7 +27,7 @@ BT::NodeStatus BTPathPlanning::tick()
 
 BT::NodeStatus BTFollowPath::tick()
 {
-     auto res = getInput<moveit::planning_interface::MoveGroupInterface::Plan>("planedpath");
+    //  auto res = getInput<moveit::planning_interface::MoveGroupInterface::Plan>("planedpath");
     // if( !res )
     // {
     //     throw RuntimeError("error reading port [planedpath]:", res.error() );
@@ -35,16 +35,24 @@ BT::NodeStatus BTFollowPath::tick()
     // else
     // {
     //   _plan = res.value;
-    // }   
-    if(_success)
+    // } 
+    _halted = false;  
+    while (!_success)
     {
-      std::cout << "ExecutePlan: " << _success << std::endl;
-      return BT::NodeStatus::SUCCESS;  
+      setStatusRunningAndYield();
+
     }
-    else
-    {
-      return BT::NodeStatus::FAILURE;  
-    }
+    std::cout << "ExecutePlan: " << _success << std::endl;
+    return BT::NodeStatus::SUCCESS;
+    // if(_success)
+    // {
+    //   std::cout << "ExecutePlan: " << _success << std::endl;
+    //   return BT::NodeStatus::SUCCESS;  
+    // }
+    // else
+    // {
+    //   return BT::NodeStatus::FAILURE;  
+    // }
 
 }
 

@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include "ros/ros.h"
-#include "robot_function.h"
+#include "robot_function/robot_function.h"
 #include "bt_nodes.h"
 
 using namespace BT;
@@ -18,6 +18,14 @@ static const char* xml_text = R"(
         </Sequence>
  </root>
  )";
+
+
+class BTExecuteGroup : public RobotControl::BTFollowPath
+{
+    public:
+
+    private:
+};
 
  int main(int argc, char **argv)
 {
@@ -66,7 +74,9 @@ static const char* xml_text = R"(
     factory.registerSimpleAction("CloseGripper", 
                                  std::bind(&GripperInterface::close, &gripper));
 
-    NodeBuilder builder_A = [&robot_obj](const std::string& name, const NodeConfiguration& config)
+    pathplan global_plan;
+
+    NodeBuilder builder_A = [&robot_obj, &global_plan](const std::string& name, const NodeConfiguration& config)
     {
 
         geometry_msgs::Pose target_pose;
@@ -74,27 +84,23 @@ static const char* xml_text = R"(
         target_pose.position.y = 0.4;
         target_pose.position.z = 0.012;
         target_pose.orientation.w=1.0;
-        pathplan rob_pathplan = robot_obj.PathPlanning(target_pose);
-        bool success = rob_pathplan.success;
-        moveit::planning_interface::MoveGroupInterface::Plan plan=rob_pathplan.plan;
+        global_plan = robot_obj.PathPlanning(target_pose);
+        // pathplan rob_pathplan = robot_obj.PathPlanning(target_pose);
+        bool success = global_plan.success;
+        moveit::planning_interface::MoveGroupInterface::Plan plan=global_plan.plan;
+        // bool success = rob_pathplan.success;
+        // moveit::planning_interface::MoveGroupInterface::Plan plan=rob_pathplan.plan;
         return std::make_unique<BTPathPlanning>( name, config, success, plan);
     };
 
     // BehaviorTreeFactory::registerBuilder is the more general way to register a custom node.
     // Not the most user friendly, but definitely the most flexible one.
     factory.registerBuilder<BTPathPlanning>( "BTPathPlanning", builder_A);
+    PortsList planedpath = { InputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan")};
 
-
-    NodeBuilder builder_B = [&robot_obj](const std::string& name, const NodeConfiguration& config)
+    NodeBuilder builder_B = [&robot_obj, &global_plan](const std::string& name, const NodeConfiguration& config)
     {
-        BTFollowPath::tick bt;
-        moveit::planning_interface::MoveGroupInterface::Plan plan;
-        //PortsList planedpath = { InputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan")};
-        auto res = bt.getInput("pathplan", plan);
-        if( !res )
-        {
-        throw RuntimeError("error reading port [planedpath]:", res.error() );
-        }
+        moveit::planning_interface::MoveGroupInterface::Plan plan = global_plan.plan;
         bool success = robot_obj.MoveGroupExecutePlan(plan);
         return std::make_unique<BTFollowPath>( name, config, success);
     };

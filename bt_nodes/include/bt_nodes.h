@@ -48,7 +48,7 @@ class GripperInterface
 class BTFollowPath : public BT::CoroActionNode
 {
   public:
-    BTFollowPath(const std::string& name, const BT::NodeConfiguration& config, bool success)
+    BTFollowPath(const std::string& name, const BT::NodeConfiguration& config, bool& success)
     : BT::CoroActionNode(name, config), _success(success), _halted(false)
     {}
     
@@ -61,7 +61,6 @@ class BTFollowPath : public BT::CoroActionNode
   private:
     bool _halted;
     bool _success;
-
 };
 
 inline void RegisterNodes(BT::BehaviorTreeFactory& factory)

@@ -175,6 +175,10 @@ add_library(robot_function
    src/robot_function.cpp
  )
 
+ add_library(robot_control
+   src/robot_control.cpp
+ )
+
 
 target_link_libraries(
   ${PROJECT_NAME}
@@ -182,7 +186,7 @@ target_link_libraries(
    ${Boost_LIBRARIES}
    ${GSTREAMER_LIBRARIES}
  )
-target_link_libraries(main robot_function)
+target_link_libraries(main robot_function robot_control)
 
 ## error can't find behaviortree_cpp_v3
 target_link_libraries(main

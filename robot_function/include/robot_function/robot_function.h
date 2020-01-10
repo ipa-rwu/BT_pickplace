@@ -58,6 +58,8 @@ public:
     // void MoveToNamedTarget(std::string target);
     pathplan PathPlanning(geometry_msgs::Pose target_pose);
     bool MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface::Plan plan);
+    bool PlanExecute(geometry_msgs::Pose target_pose);
+
     // bool MoveToPose(); 
 };
 

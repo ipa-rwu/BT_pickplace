@@ -4,7 +4,7 @@
             <OpenGripper    name="open_gripper"/>
             <CloseGripper    name="close_gripper"/>
             <BTPathPlanning    name="BTPathPlanning"/>
-
+            <BTFollowPath    name="BTFollowPath"/>
         </Sequence>
      </BehaviorTree>
 

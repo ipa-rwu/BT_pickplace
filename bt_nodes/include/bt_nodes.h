@@ -26,6 +26,8 @@ class BTPathPlanning : public BT::SyncActionNode
     private:
     bool _success;
     moveit::planning_interface::MoveGroupInterface::Plan _plan;
+        int counter = 0;
+
 };
 
 class GripperInterface
@@ -42,15 +44,17 @@ class GripperInterface
 
   private:
     bool _opened;
+    
 };
 
 
 class BTFollowPath : public BT::CoroActionNode
 {
   public:
-    BTFollowPath(const std::string& name, const BT::NodeConfiguration& config, bool success)
+    BTFollowPath(const std::string& name, const BT::NodeConfiguration& config, bool& success)
     : BT::CoroActionNode(name, config), _success(success), _halted(false)
-    {}
+    {
+    }
     
     BT::NodeStatus tick() override;
 
@@ -61,7 +65,23 @@ class BTFollowPath : public BT::CoroActionNode
   private:
     bool _halted;
     bool _success;
+};
 
+class BTWaitForTarget : public BT::SyncActionNode
+{
+  public:
+    BTWaitForTarget(const std::string& name, const BT::NodeConfiguration& config, bool& success)
+    : BT::SyncActionNode(name, config), _success(success)
+    {}
+    
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts() { return {}; }
+
+
+  private:
+    bool _success;
+    int counter = 0;
 };
 
 inline void RegisterNodes(BT::BehaviorTreeFactory& factory)

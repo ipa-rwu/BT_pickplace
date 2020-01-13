@@ -1,10 +1,11 @@
  <root main_tree_to_execute = "MainTree" >
      <BehaviorTree ID="MainTree">
         <Sequence name="root_sequence">
-            <OpenGripper    name="open_gripper"/>
-            <CloseGripper    name="close_gripper"/>
-            <BTPathPlanning    name="BTPathPlanning"/>
-
+            <!-- <OpenGripper    name="open_gripper"/>
+            <CloseGripper    name="close_gripper"/>  -->
+            <BTWaitForTarget name="BTWaitForTarget"/>
+            <!-- <BTPathPlanning    name="BTPathPlanning"/> -->
+            <!-- <BTFollowPath    name="BTFollowPath"/> -->
         </Sequence>
      </BehaviorTree>
 

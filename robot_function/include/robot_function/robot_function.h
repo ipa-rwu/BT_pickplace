@@ -33,6 +33,13 @@ struct pathplan
     /* data */
 };
 
+struct  gettarget
+{
+    geometry_msgs::Pose target_pose;
+    bool success;
+};
+
+
 class RobotFunction
 {
 private:
@@ -43,21 +50,29 @@ private:
     ros::Publisher planning_scene_diff_publisher;
     moveit_visual_tools::MoveItVisualTools *visual_tools;
     Eigen::Isometry3d text_pose = Eigen::Isometry3d::Identity();
+    const std::string _CameraTopicSub = "/camera/target/pose";
 
 public:
-    // RobotFunction(/* args */);
+    
+    RobotFunction(ros::NodeHandle nh);
     // ~RobotFunction();
 
     moveit::planning_interface::MoveGroupInterface *move_group;
     const std::string GROUP_MANIP = "manipulator";
     const std::string GROUP_GRIPP = "endeffector";
+    ros::Subscriber camera_subscriber;
+    bool TagGetTargetPose = false;
+    geometry_msgs::Pose newTarget;
 
 
     void GetBasicInfo();
     void InitialiseMoveit(ros::NodeHandle nh);
+    void CameraCallback(const geometry_msgs::Pose::ConstPtr& camera_msg);
     // void MoveToNamedTarget(std::string target);
     pathplan PathPlanning(geometry_msgs::Pose target_pose);
     bool MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface::Plan plan);
+    gettarget CameraFindTarget();
+    // bool CameraFindTarget();
     // bool MoveToPose(); 
 };
 

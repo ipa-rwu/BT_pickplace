@@ -1,5 +1,12 @@
-#include "robot_function.h"
+#include "robot_function/robot_function.h"
+#include "robot_function/robot_control.h"
 
+RobotFunction::RobotFunction(ros::NodeHandle nh)
+{
+    camera_subscriber = nh.subscribe<geometry_msgs::Pose>("/camera/target/pose", 1000, &RobotFunction::CameraCallback, this);
+}
+// RobotFunction::~RobotFunction()
+// {}
 
 void RobotFunction::GetBasicInfo()
 {
@@ -36,8 +43,19 @@ void RobotFunction::InitialiseMoveit(ros::NodeHandle nh)
 
 }
 
+void RobotFunction::CameraCallback(const geometry_msgs::Pose::ConstPtr& camera_msg)
+{
+  // msg: {"data": "start"}
+  newTarget.position = camera_msg->position;
+  ROS_INFO_STREAM("Camera callback heard position:" << newTarget.position.x);
+  TagGetTargetPose = true;
+}
+
+
 pathplan RobotFunction::PathPlanning(geometry_msgs::Pose target_pose)
 {
+    std::cout<<"pathpanning"<<std::endl;
+
     namespace rvt = rviz_visual_tools;
     pathplan result;
     std::cout<<target_pose<<std::endl;
@@ -48,9 +66,7 @@ pathplan RobotFunction::PathPlanning(geometry_msgs::Pose target_pose)
     visual_tools->publishText(text_pose, "Pose Goal", rvt::WHITE, rvt::XLARGE);
     visual_tools->publishTrajectoryLine(result.plan.trajectory_, joint_model_group);
     visual_tools->trigger();
-    std::cout<<"here1"<<std::endl;
     result.success = (move_group->plan(result.plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-    std::cout<<"here2"<<std::endl;
     ROS_INFO_NAMED("Demo", "Visualizing plan (pose goal) %s", result.success ? "" : "FAILED");
     return result;
 }
@@ -58,5 +74,26 @@ pathplan RobotFunction::PathPlanning(geometry_msgs::Pose target_pose)
 bool RobotFunction::MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface::Plan plan)
 {
   move_group->setStartStateToCurrentState();
+  TagGetTargetPose = false;
   return move_group->execute(plan)==moveit::planning_interface::MoveItErrorCode::SUCCESS;
 }
+
+gettarget RobotFunction::CameraFindTarget()
+{
+  gettarget newtarget;
+  newtarget.success = TagGetTargetPose;
+  //  std::cout << "TagGetTargetPose: "<< TagGetTargetPose << std::endl;
+
+  if (newtarget.success)
+  {
+    newtarget.target_pose = newTarget;
+  //  std::cout << "CameraFindTarget: "<< newtarget.success << std::endl;
+    return newtarget;
+  }
+}
+
+// bool RobotFunction::CameraFindTarget()
+// {
+//   // std::cout << "TagGetTargetPose: "<< TagGetTargetPose << std::endl;
+//   return TagGetTargetPose;
+// }

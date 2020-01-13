@@ -4,8 +4,10 @@
 #include <stdio.h>
 
 #include "ros/ros.h"
-#include "robot_function.h"
-#include "bt_nodes.h"
+#include "robot_function/robot_function.h"
+// #include "bt_nodes.h"
+#include "robot_function/bt.h"
+
 
 using namespace BT;
 
@@ -19,6 +21,7 @@ static const char* xml_text = R"(
  </root>
  )";
 
+
  int main(int argc, char **argv)
 {
     // boost::shared_ptr<Robot_Function> robot_obj;
@@ -26,7 +29,7 @@ static const char* xml_text = R"(
     ros::NodeHandle nh;
 
     // robot function
-    RobotFunction robot_obj;
+    RobotFunction robot_obj(nh);
 
     ros::AsyncSpinner spinner(1);
     spinner.start();
@@ -45,7 +48,7 @@ static const char* xml_text = R"(
     robot_obj.InitialiseMoveit(nh);
     robot_obj.GetBasicInfo();
 
-    using namespace RobotControl;
+    // using namespace RobotControl;
 
     // We use the BehaviorTreeFactory to register our custom nodes
     BehaviorTreeFactory factory;
@@ -60,45 +63,53 @@ static const char* xml_text = R"(
     printf("Current working dir: %s\n", cwd);
 
    
-    GripperInterface gripper;
-    factory.registerSimpleAction("OpenGripper", 
-                                 std::bind(&GripperInterface::open, &gripper));
-    factory.registerSimpleAction("CloseGripper", 
-                                 std::bind(&GripperInterface::close, &gripper));
+    // GripperInterface gripper;
+    // factory.registerSimpleAction("OpenGripper", 
+    //                              std::bind(&GripperInterface::open, &gripper));
+    // factory.registerSimpleAction("CloseGripper", 
+    //                              std::bind(&GripperInterface::close, &gripper));
 
-    NodeBuilder builder_A = [&robot_obj](const std::string& name, const NodeConfiguration& config)
-    {
-
-        geometry_msgs::Pose target_pose;
-        target_pose.position.x = 0.4;
+    pathplan global_plan;
+    geometry_msgs::Pose target_pose;
+            target_pose.position.x = 0.4;
         target_pose.position.y = 0.4;
         target_pose.position.z = 0.012;
         target_pose.orientation.w=1.0;
-        pathplan rob_pathplan = robot_obj.PathPlanning(target_pose);
-        bool success = rob_pathplan.success;
-        moveit::planning_interface::MoveGroupInterface::Plan plan=rob_pathplan.plan;
-        return std::make_unique<BTPathPlanning>( name, config, success, plan);
-    };
-
-    // BehaviorTreeFactory::registerBuilder is the more general way to register a custom node.
-    // Not the most user friendly, but definitely the most flexible one.
-    factory.registerBuilder<BTPathPlanning>( "BTPathPlanning", builder_A);
 
 
-    NodeBuilder builder_B = [&robot_obj](const std::string& name, const NodeConfiguration& config)
-    {
-        BTFollowPath::tick bt;
-        moveit::planning_interface::MoveGroupInterface::Plan plan;
-        //PortsList planedpath = { InputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan")};
-        auto res = bt.getInput("pathplan", plan);
-        if( !res )
-        {
-        throw RuntimeError("error reading port [planedpath]:", res.error() );
-        }
-        bool success = robot_obj.MoveGroupExecutePlan(plan);
-        return std::make_unique<BTFollowPath>( name, config, success);
-    };
-    factory.registerBuilder<BTFollowPath>( "BTFollowPath", builder_B);
+    // NodeBuilder builder_pathplanning = [&robot_obj, &global_plan, &target_pose](const std::string& name, const NodeConfiguration& config)
+    // {
+    //       std::cout<<"target_pose.position.x: "<< target_pose.position.x << std::endl;
+
+    //     global_plan = robot_obj.PathPlanning(target_pose);
+    //     // pathplan rob_pathplan = robot_obj.PathPlanning(target_pose);
+    //     bool success = global_plan.success;
+    //     moveit::planning_interface::MoveGroupInterface::Plan plan=global_plan.plan;
+    //     // bool success = rob_pathplan.success;
+    //     // moveit::planning_interface::MoveGroupInterface::Plan plan=rob_pathplan.plan;
+    //     return std::make_unique<BTPathPlanning>( name, config, success, plan);
+    // };
+    // factory.registerBuilder<BTPathPlanning>( "BTPathPlanning", builder_pathplanning);
+    // PortsList planedpath = { InputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan")};
+
+    // NodeBuilder builder_move = [&robot_obj, &global_plan](const std::string& name, const NodeConfiguration& config)
+    // {
+    //     moveit::planning_interface::MoveGroupInterface::Plan plan = global_plan.plan;
+    //     bool success = robot_obj.MoveGroupExecutePlan(plan);
+    //     return std::make_unique<BTFollowPath>( name, config, success);
+    // };
+    // factory.registerBuilder<BTFollowPath>( "BTFollowPath", builder_move);
+
+    // NodeBuilder builder_waitfortarget = [&robot_obj, &target_pose](const std::string& name, const NodeConfiguration& config)
+    // {
+    //     bool success = robot_obj.CameraFindTarget();
+    //     std::cout<<"waitfortarget: "<< success << std::endl;
+    //     // bool success = robot_obj.TagGetTargetPose;
+    //     std::cout<<"robot_function_tag: "<< success << std::endl;
+
+    //     return std::make_unique<BTWaitForTarget>( name, config, success);
+    // };
+    factory.registerNodeType<BTWaitForTarget>( "BTWaitForTarget");
 
     //PortsList robot_object_ports = { InputPort<boost::shared_ptr<Robot_Function>>(robot_obj) };
     //factory.registerSimpleAction("ApproachObject", ApproachObject, robot_object_ports );
@@ -129,17 +140,11 @@ static const char* xml_text = R"(
 //    MinitraceLogger logger_minitrace(tree, "bt_trace.json");
     NodeStatus status = NodeStatus::RUNNING;
 
-    while (ros::ok() && status == NodeStatus::RUNNING) {
+    while (ros::ok()) {
      status = tree.root_node->executeTick();
         // Sleep 100 milliseconds
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
-
-    // To "execute" a Tree you need to "tick" it.
-    // The tick is propagated to the children based on the logic of the tree.
-    // In this case, the entire sequence is executed, because all the children
-    // of the Sequence return SUCCESS.
-    // tree.root_node->executeTick();
 
     return 0;
 }

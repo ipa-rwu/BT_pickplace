@@ -11,9 +11,11 @@ namespace RobotControl
 
 BT::NodeStatus BTPathPlanning::tick()
 {
+    counter++;
+    std::cout<<"BTPathPlanning: "<< counter <<std::endl;
     if(_success)
     {
-      std::cout << "PathPlanning: " << _success << std::endl;
+      std::cout << "PathPlanning: SUCCESS" << std::endl;
       setOutput("pathplan", _plan);
       return BT::NodeStatus::SUCCESS;  
     }
@@ -24,10 +26,10 @@ BT::NodeStatus BTPathPlanning::tick()
     
 }
 
-
+//execute
 BT::NodeStatus BTFollowPath::tick()
 {
-     auto res = getInput<moveit::planning_interface::MoveGroupInterface::Plan>("planedpath");
+    //  auto res = getInput<moveit::planning_interface::MoveGroupInterface::Plan>("planedpath");
     // if( !res )
     // {
     //     throw RuntimeError("error reading port [planedpath]:", res.error() );
@@ -35,16 +37,24 @@ BT::NodeStatus BTFollowPath::tick()
     // else
     // {
     //   _plan = res.value;
-    // }   
-    if(_success)
+    // } 
+    _halted = false;  
+    while (!_success)
     {
-      std::cout << "ExecutePlan: " << _success << std::endl;
-      return BT::NodeStatus::SUCCESS;  
+      setStatusRunningAndYield();
+
     }
-    else
-    {
-      return BT::NodeStatus::FAILURE;  
-    }
+    std::cout << "ExecutePlan: SUCCESS"<< std::endl;
+    return BT::NodeStatus::SUCCESS;
+    // if(_success)
+    // {
+    //   std::cout << "ExecutePlan: " << _success << std::endl;
+    //   return BT::NodeStatus::SUCCESS;  
+    // }
+    // else
+    // {
+    //   return BT::NodeStatus::FAILURE;  
+    // }
 
 }
 
@@ -55,6 +65,27 @@ void BTFollowPath::halt()
     CoroActionNode::halt();
 }
 
+//camera
+BT::NodeStatus BTWaitForTarget::tick()
+{
+    counter++;
+    std::cout<<"print "<< counter <<std::endl;
+    std::cout<<"print "<< _success <<std::endl;
+
+    if(_success)
+    {
+    std::cout << "BTWaitForTarget: SUCCESS"<< std::endl;
+    return BT::NodeStatus::SUCCESS;
+    }
+    else
+    {
+      return BT::NodeStatus::FAILURE;  
+    }
+}
+
+
+
+//Griiper
 BT::NodeStatus GripperInterface::open()
 {
     _opened = true;

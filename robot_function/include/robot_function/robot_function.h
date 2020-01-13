@@ -53,11 +53,12 @@ private:
     const std::string _CameraTopicSub = "/camera/target/pose";
 
 public:
-    
+    RobotFunction(){};
     RobotFunction(ros::NodeHandle nh);
-    // ~RobotFunction();
+    ~RobotFunction(){};
 
-    moveit::planning_interface::MoveGroupInterface *move_group;
+
+    // moveit::planning_interface::MoveGroupInterface *move_group;
     const std::string GROUP_MANIP = "manipulator";
     const std::string GROUP_GRIPP = "endeffector";
     ros::Subscriber camera_subscriber;
@@ -65,12 +66,13 @@ public:
     geometry_msgs::Pose newTarget;
 
 
-    void GetBasicInfo();
-    void InitialiseMoveit(ros::NodeHandle nh);
+    void GetBasicInfo(moveit::planning_interface::MoveGroupInterface *move_group);
+    // void InitialiseMoveit(ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface move_group);
     void CameraCallback(const geometry_msgs::Pose::ConstPtr& camera_msg);
+    bool comparePoses(geometry_msgs::Pose pose1, geometry_msgs::Pose pose2, double delta_posistion=0.05, double delta_orientation=0.01);
     // void MoveToNamedTarget(std::string target);
-    pathplan PathPlanning(geometry_msgs::Pose target_pose);
-    bool MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface::Plan plan);
+    pathplan PathPlanning(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group);
+    bool MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface *move_group, moveit::planning_interface::MoveGroupInterface::Plan my_plan);
     gettarget CameraFindTarget();
     // bool CameraFindTarget();
     // bool MoveToPose(); 

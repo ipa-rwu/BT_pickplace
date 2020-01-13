@@ -1,14 +1,15 @@
 #include "robot_function/robot_function.h"
 #include "robot_function/robot_control.h"
 
+
 RobotFunction::RobotFunction(ros::NodeHandle nh)
 {
     camera_subscriber = nh.subscribe<geometry_msgs::Pose>("/camera/target/pose", 1000, &RobotFunction::CameraCallback, this);
 }
-// RobotFunction::~RobotFunction()
-// {}
 
-void RobotFunction::GetBasicInfo()
+
+
+void RobotFunction::GetBasicInfo(moveit::planning_interface::MoveGroupInterface *move_group)
 {
   // Getting Basic Information
   // ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -27,56 +28,106 @@ void RobotFunction::GetBasicInfo()
 
 }
 
-void RobotFunction::InitialiseMoveit(ros::NodeHandle nh)
+// void RobotFunction::InitialiseMoveit(ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface *move_group)
+// {
+//   namespace rvt = rviz_visual_tools;
+//   move_group = new moveit::planning_interface::MoveGroupInterface(GROUP_MANIP);
+//   joint_model_group = move_group.getCurrentState()->getJointModelGroup(GROUP_MANIP);
+
+//   visual_tools = new moveit_visual_tools::MoveItVisualTools("base_link");
+//   visual_tools->deleteAllMarkers();
+//   visual_tools->loadRemoteControl();
+//   text_pose.translation().z() = 1.75;
+//   visual_tools->publishText(text_pose, "Kogrob Demo", rvt::WHITE, rvt::XLARGE);
+//   visual_tools->trigger();
+//   planning_scene_diff_publisher = nh.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
+
+// }
+
+bool RobotFunction::comparePoses(geometry_msgs::Pose pose1, geometry_msgs::Pose pose2, double delta_posistion, double delta_orientation)
 {
-  namespace rvt = rviz_visual_tools;
-  move_group = new moveit::planning_interface::MoveGroupInterface(GROUP_MANIP);
-  joint_model_group = move_group->getCurrentState()->getJointModelGroup(GROUP_MANIP);
 
-  visual_tools = new moveit_visual_tools::MoveItVisualTools("base_link");
-  visual_tools->deleteAllMarkers();
-  visual_tools->loadRemoteControl();
-  text_pose.translation().z() = 1.75;
-  visual_tools->publishText(text_pose, "Kogrob Demo", rvt::WHITE, rvt::XLARGE);
-  visual_tools->trigger();
-  planning_scene_diff_publisher = nh.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
-
+  if (  abs(pose1.position.x-pose2.position.x ) <= delta_posistion
+        && abs(pose1.position.y-pose2.position.y ) <= delta_posistion
+        && abs(pose1.position.z-pose2.position.z ) <= delta_posistion
+        && abs(pose1.orientation.x - pose2.orientation.x) <= delta_orientation
+        && abs(pose1.orientation.y - pose2.orientation.y) <= delta_orientation
+        && abs(pose1.orientation.z - pose2.orientation.z) <= delta_orientation
+        && abs(pose1.orientation.w - pose2.orientation.w) <= delta_orientation
+     )
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 void RobotFunction::CameraCallback(const geometry_msgs::Pose::ConstPtr& camera_msg)
 {
   // msg: {"data": "start"}
   newTarget.position = camera_msg->position;
+  newTarget.orientation = camera_msg->orientation;
   ROS_INFO_STREAM("Camera callback heard position:" << newTarget.position.x);
   TagGetTargetPose = true;
 }
 
 
-pathplan RobotFunction::PathPlanning(geometry_msgs::Pose target_pose)
+pathplan RobotFunction::PathPlanning(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group)
 {
+    TagGetTargetPose = false;
     std::cout<<"pathpanning"<<std::endl;
 
     namespace rvt = rviz_visual_tools;
     pathplan result;
-    std::cout<<target_pose<<std::endl;
-    move_group->setPoseTarget(target_pose);
+    std::cout<<"target:" << target_pose << std::endl;
 
-    // show 
-    visual_tools->publishAxisLabeled(target_pose, "pose");
-    visual_tools->publishText(text_pose, "Pose Goal", rvt::WHITE, rvt::XLARGE);
-    visual_tools->publishTrajectoryLine(result.plan.trajectory_, joint_model_group);
-    visual_tools->trigger();
+    move_group->setPoseTarget(target_pose);
+    std::cout<<"set target" <<  std::endl;
+    // // show 
+    // visual_tools->publishAxisLabeled(target_pose, "pose");
+    // visual_tools->publishText(text_pose, "Pose Goal", rvt::WHITE, rvt::XLARGE);
+    // visual_tools->publishTrajectoryLine(result.plan.trajectory_, joint_model_group);
+    // visual_tools->trigger();
+    std::cout<<"move" <<  std::endl;
     result.success = (move_group->plan(result.plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
     ROS_INFO_NAMED("Demo", "Visualizing plan (pose goal) %s", result.success ? "" : "FAILED");
     return result;
 }
 
-bool RobotFunction::MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface::Plan plan)
+/*
+bool RobotFunction::PathPlanning(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group)
 {
-  move_group->setStartStateToCurrentState();
-  TagGetTargetPose = false;
-  return move_group->execute(plan)==moveit::planning_interface::MoveItErrorCode::SUCCESS;
+    std::cout<<"pathpanning"<<std::endl;
+    namespace rvt = rviz_visual_tools;
+    bool success;
+    moveit::planning_interface::MoveGroupInterface::Plan plan;
+    target_pose.position.x = 0.4;
+    target_pose.position.y = 0.2;
+    target_pose.position.z = 0.15;
+    target_pose.orientation.w = 1.0;
+    std::cout<<"target:" << target_pose << std::endl;
+    move_group->setPoseTarget(target_pose);
+    std::cout<<"set target" <<  std::endl;
+    // show 
+    // visual_tools->publishAxisLabeled(target_pose, "pose");
+    // visual_tools->publishText(text_pose, "Pose Goal", rvt::WHITE, rvt::XLARGE);
+    // visual_tools->publishTrajectoryLine(plan.trajectory_, joint_model_group);
+    // visual_tools->trigger();
+    std::cout<<"move" <<  std::endl;
+    success = (move_group->plan(plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+    ROS_INFO_NAMED("Demo", "Visualizing plan (pose goal) %s", success ? "" : "FAILED");
+    return success;
 }
+*/
+
+// bool RobotFunction::MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface::Plan plan)
+// {
+//   move_group->setStartStateToCurrentState();
+//   TagGetTargetPose = false;
+//   return move_group->execute(plan)==moveit::planning_interface::MoveItErrorCode::SUCCESS;
+// }
 
 gettarget RobotFunction::CameraFindTarget()
 {
@@ -92,8 +143,11 @@ gettarget RobotFunction::CameraFindTarget()
   }
 }
 
-// bool RobotFunction::CameraFindTarget()
-// {
-//   // std::cout << "TagGetTargetPose: "<< TagGetTargetPose << std::endl;
-//   return TagGetTargetPose;
-// }
+
+bool RobotFunction::MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface *move_group, moveit::planning_interface::MoveGroupInterface::Plan my_plan)
+{
+  move_group->setStartStateToCurrentState();
+  return move_group->execute(my_plan)==moveit::planning_interface::MoveItErrorCode::SUCCESS;;
+    // bool success = (move_group->move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+    // move_group->move();
+}

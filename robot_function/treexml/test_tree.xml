@@ -3,9 +3,9 @@
         <Sequence name="root_sequence">
             <!-- <OpenGripper    name="open_gripper"/>
             <CloseGripper    name="close_gripper"/>  -->
-            <BTWaitForTarget name="BTWaitForTarget"/>
-            <!-- <BTPathPlanning    name="BTPathPlanning"/> -->
-            <!-- <BTFollowPath    name="BTFollowPath"/> -->
+            <BTWaitForTarget   target="{TargetPose}" />
+            <BTPathPlanning   goal="{TargetPose}" makeplan="{Plan}"/>
+            <BTFollowPath     planedplan="{Plan}"/> 
         </Sequence>
      </BehaviorTree>
 

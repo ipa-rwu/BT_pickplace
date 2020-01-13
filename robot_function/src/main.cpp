@@ -38,15 +38,20 @@ static const char* xml_text = R"(
     nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/kogrob_ws/src/robot_function/treexml/test_tree.xml");
     ROS_INFO("Loading XML : %s", xml_filename.c_str());
     
-    // Robot_Function robot_obj;
+
+    moveit::planning_interface::MoveGroupInterface *move_group;
+    const std::string GROUP_MANIP = "manipulator";
+    move_group = new moveit::planning_interface::MoveGroupInterface(GROUP_MANIP);
+    
+    const std::string GROUP_GRIPP = "endeffector";
     //robot_obj.reset(new Robot_Function);
-    //robot_obj->initialiseMoveit(nh);
-    //robot_obj->printBasicInfo();
+    // robot_obj.InitialiseMoveit(nh, *move_group);
+    robot_obj.GetBasicInfo(move_group);
     ROS_INFO("---------------------------");
 
-        //Get moveit group name
-    robot_obj.InitialiseMoveit(nh);
-    robot_obj.GetBasicInfo();
+    //Get moveit group name
+    // robot_obj.InitialiseMoveit(nh);
+    // robot_obj.GetBasicInfo();
 
     // using namespace RobotControl;
 
@@ -69,12 +74,8 @@ static const char* xml_text = R"(
     // factory.registerSimpleAction("CloseGripper", 
     //                              std::bind(&GripperInterface::close, &gripper));
 
-    pathplan global_plan;
-    geometry_msgs::Pose target_pose;
-            target_pose.position.x = 0.4;
-        target_pose.position.y = 0.4;
-        target_pose.position.z = 0.012;
-        target_pose.orientation.w=1.0;
+    // pathplan global_plan;
+    // geometry_msgs::Pose target_pose;
 
 
     // NodeBuilder builder_pathplanning = [&robot_obj, &global_plan, &target_pose](const std::string& name, const NodeConfiguration& config)
@@ -100,16 +101,29 @@ static const char* xml_text = R"(
     // };
     // factory.registerBuilder<BTFollowPath>( "BTFollowPath", builder_move);
 
-    // NodeBuilder builder_waitfortarget = [&robot_obj, &target_pose](const std::string& name, const NodeConfiguration& config)
+    // NodeBuilder builder_waitfortarget = [](const std::string& name, const NodeConfiguration& config)
     // {
-    //     bool success = robot_obj.CameraFindTarget();
-    //     std::cout<<"waitfortarget: "<< success << std::endl;
-    //     // bool success = robot_obj.TagGetTargetPose;
-    //     std::cout<<"robot_function_tag: "<< success << std::endl;
-
-    //     return std::make_unique<BTWaitForTarget>( name, config, success);
+    //     PortsList waitfortarget = { OutputPort<geometry_msgs::Pose>("target") };
+    //     return std::make_unique<BTWaitForTarget>( name, config);
     // };
-    factory.registerNodeType<BTWaitForTarget>( "BTWaitForTarget");
+    NodeBuilder builder_gettarget = [&nh](const std::string& name, const NodeConfiguration& config)
+    {
+        
+        return std::make_unique<BTWaitForTarget>( name, config, nh);
+    };
+    factory.registerBuilder<BTWaitForTarget>( "BTWaitForTarget", builder_gettarget);
+
+    NodeBuilder builder_pathplan = [&nh, &move_group](const std::string& name, const NodeConfiguration& config)
+    {
+        return std::make_unique<BTPathPlanning>( name, config, nh, move_group);
+    };
+    factory.registerBuilder<BTPathPlanning>( "BTPathPlanning",builder_pathplan);
+
+    NodeBuilder builder_executeplan = [&nh, &move_group](const std::string& name, const NodeConfiguration& config)
+    {
+        return std::make_unique<BTFollowPath>( name, config, nh, move_group);
+    };
+    factory.registerBuilder<BTFollowPath>( "BTFollowPath",builder_executeplan);
 
     //PortsList robot_object_ports = { InputPort<boost::shared_ptr<Robot_Function>>(robot_obj) };
     //factory.registerSimpleAction("ApproachObject", ApproachObject, robot_object_ports );

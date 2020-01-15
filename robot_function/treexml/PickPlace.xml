@@ -3,26 +3,24 @@
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
         <Parallel threshold="2">
-            <Sequence>
-                
-                    <Action ID="BTWaitForTarget" targetout="{TargetPose}" targetin="{TargetPose}" state="{executestate}"/>
-                
-                
+            <Fallback>
+                <Inverter>
+                    <Action ID="BTWaitForTarget" targetout="{TargetPose}"/>
+                </Inverter>
+                <Inverter>
                     <Action ID="BTPathPlanning" goal="{TargetPose}" makeplan="{Plan}"/>
-                
-                <Action ID="BTFollowPath" planedplan="{Plan}" state="{executestate}"/>
-            </Sequence>
+                </Inverter>
+                <Action ID="BTFollowPath" planedpaln="{Plan}"/>
+            </Fallback>
             <Fallback>
                 <Inverter>
                     <Action ID="BTCameraFindTarget" targetout="{observedpose}"/>
                 </Inverter>
                 <Sequence name="Pick">
                     <SetBlackboard output_key="height" value="0.20"/>
-                    <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}" state="{executestate}"/>
-                    <SetBlackboard output_key="height" value="-0.15"/>
-                    <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}" state="{executestate}"/>
-                    <SetBlackboard output_key="height" value="0.10"/>
-                    <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}" state="{executestate}"/>
+                    <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}"/>
+                    <SetBlackboard output_key="height" value="-0.05"/>
+                    <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}"/>
                 </Sequence>
             </Fallback>
         </Parallel>

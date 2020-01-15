@@ -44,9 +44,10 @@ void RobotFunction::GetBasicInfo(moveit::planning_interface::MoveGroupInterface 
 
 // }
 
-bool RobotFunction::comparePoses(geometry_msgs::Pose pose1, geometry_msgs::Pose pose2, double delta_posistion, double delta_orientation)
+// true same pose
+bool RobotFunction::comparePoses(moveit::planning_interface::MoveGroupInterface *move_group, geometry_msgs::Pose pose2, double delta_posistion, double delta_orientation)
 {
-
+  geometry_msgs::Pose pose1 = move_group->getCurrentPose().pose;
   if (  abs(pose1.position.x-pose2.position.x ) <= delta_posistion
         && abs(pose1.position.y-pose2.position.y ) <= delta_posistion
         && abs(pose1.position.z-pose2.position.z ) <= delta_posistion
@@ -142,6 +143,18 @@ gettarget RobotFunction::CameraFindTarget()
     return newtarget;
   }
 }
+
+gettarget RobotFunction::KeepDistanceToTarget(geometry_msgs::Pose target_pose, double height)
+{
+  gettarget newtarget;
+  newtarget.target_pose.position.x = target_pose.position.x;
+  newtarget.target_pose.position.y = target_pose.position.y;
+  newtarget.target_pose.position.z = target_pose.position.z + height;
+  newtarget.target_pose.orientation.w = 1.0;
+  newtarget.success = true;
+  return newtarget;
+}
+
 
 
 bool RobotFunction::MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface *move_group, moveit::planning_interface::MoveGroupInterface::Plan my_plan)

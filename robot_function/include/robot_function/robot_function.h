@@ -69,11 +69,12 @@ public:
     void GetBasicInfo(moveit::planning_interface::MoveGroupInterface *move_group);
     // void InitialiseMoveit(ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface move_group);
     void CameraCallback(const geometry_msgs::Pose::ConstPtr& camera_msg);
-    bool comparePoses(geometry_msgs::Pose pose1, geometry_msgs::Pose pose2, double delta_posistion=0.05, double delta_orientation=0.01);
+    bool comparePoses(moveit::planning_interface::MoveGroupInterface *move_group, geometry_msgs::Pose pose2, double delta_posistion=0.05, double delta_orientation=0.01);
     // void MoveToNamedTarget(std::string target);
     pathplan PathPlanning(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group);
     bool MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface *move_group, moveit::planning_interface::MoveGroupInterface::Plan my_plan);
     gettarget CameraFindTarget();
+    gettarget KeepDistanceToTarget(geometry_msgs::Pose target_pose, double height);
     // bool CameraFindTarget();
     // bool MoveToPose(); 
 };

@@ -106,12 +106,9 @@ static const char* xml_text = R"(
     //     PortsList waitfortarget = { OutputPort<geometry_msgs::Pose>("target") };
     //     return std::make_unique<BTWaitForTarget>( name, config);
     // };
-    NodeBuilder builder_gettarget = [&nh](const std::string& name, const NodeConfiguration& config)
-    {
-        
-        return std::make_unique<BTWaitForTarget>( name, config, nh);
-    };
-    factory.registerBuilder<BTWaitForTarget>( "BTWaitForTarget", builder_gettarget);
+
+    // wait for target
+    factory.registerNodeType<BTWaitForTarget>( "BTWaitForTarget");
 
     NodeBuilder builder_pathplan = [&nh, &move_group](const std::string& name, const NodeConfiguration& config)
     {
@@ -124,6 +121,22 @@ static const char* xml_text = R"(
         return std::make_unique<BTFollowPath>( name, config, nh, move_group);
     };
     factory.registerBuilder<BTFollowPath>( "BTFollowPath",builder_executeplan);
+
+    // Camera find target
+    NodeBuilder builder_camerafindtarget = [&nh](const std::string& name, const NodeConfiguration& config)
+    {
+        
+        return std::make_unique<BTCameraFindTarget>( name, config, nh);
+    };
+    factory.registerBuilder<BTCameraFindTarget>( "BTCameraFindTarget", builder_camerafindtarget);
+
+    NodeBuilder builder_closetotarget = [&nh, &move_group](const std::string& name, const NodeConfiguration& config)
+    {
+        
+        return std::make_unique<BTCloseToTarget>( name, config, nh, move_group);
+    };
+    factory.registerBuilder<BTCloseToTarget>( "BTCloseToTarget", builder_closetotarget);
+    
 
     //PortsList robot_object_ports = { InputPort<boost::shared_ptr<Robot_Function>>(robot_obj) };
     //factory.registerSimpleAction("ApproachObject", ApproachObject, robot_object_ports );

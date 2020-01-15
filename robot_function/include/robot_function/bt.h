@@ -65,31 +65,43 @@ class BTWaitForTarget : public BT::CoroActionNode
 class BTWaitForTarget : public BT::AsyncActionNode
 {
   public:
-    BTWaitForTarget(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh)
-    : BT::AsyncActionNode(name, config), _nh(nh)
+    BTWaitForTarget(const std::string& name, const BT::NodeConfiguration& config)
+    : BT::AsyncActionNode(name, config)
     {
       _aborted = false;
       _gettarget = false;
+      _target.position.x = 0.0;
+      _target.position.y = 0.0;
+      _target.position.z = 0.0;
+      _target.orientation.x = 0.0;
+      _target.orientation.y = 0.0;
+      _target.orientation.z = 0.0;
+      _target.orientation.w = 0.0;
+      _pretarget = _target;
+
     }
     
     BT::NodeStatus tick() override;
 
     static BT::PortsList providedPorts()
     {
-      return { BT::OutputPort<geometry_msgs::Pose>("target")};
+      return { BT::InputPort<geometry_msgs::Pose>("targetin"), BT::OutputPort<geometry_msgs::Pose>("targetout"),
+      BT::OutputPort<bool>("state")};
     };
-
+    
     virtual void halt() override
     {
       _aborted = true;
     }
 
+
   private:
     bool _aborted;
     bool _gettarget;
     int _counter;
-    RobotFunction robot_obj();
-    ros::NodeHandle _nh;
+    geometry_msgs::Pose _target;
+    geometry_msgs::Pose _pretarget;
+    bool _success;
 };
 
 /*
@@ -172,7 +184,8 @@ class BTFollowPath : public BT::AsyncActionNode
     : BT::AsyncActionNode(name, config), _nh(nh), _move_group(move_group)
     {
       _aborted = false;
-      _success = false;      
+      _success = false; 
+      _counter = 0;     
     }
     
     BT::NodeStatus tick() override;
@@ -181,7 +194,7 @@ class BTFollowPath : public BT::AsyncActionNode
 
     static BT::PortsList providedPorts() 
     { 
-      return{  BT::InputPort<moveit::planning_interface::MoveGroupInterface::Plan>("planedplan") };
+      return{  BT::InputPort<moveit::planning_interface::MoveGroupInterface::Plan>("planedplan"), BT::OutputPort<bool>("state")};
       // BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan"),
     } 
 
@@ -189,8 +202,77 @@ class BTFollowPath : public BT::AsyncActionNode
     bool _success;
     bool _aborted; 
     ros::NodeHandle _nh;
+    int _counter;
     moveit::planning_interface::MoveGroupInterface *_move_group;
     moveit::planning_interface::MoveGroupInterface::Plan _myplan;
+};
+
+
+class BTCameraFindTarget : public BT::AsyncActionNode
+{
+  public:
+    BTCameraFindTarget(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh)
+    : BT::AsyncActionNode(name, config), _nh(nh)
+    {
+      _aborted = false;
+      _gettarget = false;
+    }
+    
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts()
+    {
+      return { BT::OutputPort<geometry_msgs::Pose>("targetout")};
+    };
+
+    virtual void halt() override
+    {
+      _aborted = true;
+    }
+
+  private:
+    bool _aborted;
+    bool _gettarget;
+    int _counter;
+    RobotFunction robot_obj();
+    ros::NodeHandle _nh;
+};
+
+class BTCloseToTarget : public BT::AsyncActionNode
+{
+  public:
+    BTCloseToTarget(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface *move_group)
+    : BT::AsyncActionNode(name, config), _nh(nh), _move_group(move_group)
+    {
+      _aborted = false;
+      _gettarget = false;
+      _counter = 0;
+      _execute_state = false;
+    }
+    
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts()
+    {
+      return { BT::InputPort<geometry_msgs::Pose>("targetin"), BT::InputPort<double>("height"), 
+      BT::OutputPort<geometry_msgs::Pose>("targetout"), BT::InputPort<bool>("state"), BT::OutputPort<bool>("state")};
+    };
+
+    virtual void halt() override
+    {
+      _aborted = true;
+    }
+
+  private:
+    bool _aborted;
+    bool _gettarget;
+    int _counter;
+    RobotFunction robot_obj();
+    geometry_msgs::Pose _target;
+    double _height;
+    ros::NodeHandle _nh;
+    moveit::planning_interface::MoveGroupInterface *_move_group;
+    bool _execute_state;
 };
 
 

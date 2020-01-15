@@ -1,0 +1,153 @@
+Current working dir: /home/rachel/kogrob/pick_ws
+[1579130643.198]: Fallback                  IDLE -> RUNNING
+[1579130643.198]: Inverter                  IDLE -> RUNNING
+[1579130643.199]: BTWaitForTarget           IDLE -> RUNNING
+[1579130643.199]: Fallback                  IDLE -> RUNNING
+[1579130643.199]: Inverter                  IDLE -> RUNNING
+[1579130643.199]: BTCameraFindTarget        IDLE -> RUNNING
+[1579130643.199]: Parallel                  IDLE -> RUNNING
+[ INFO] [1579130654.848790427, 175.338000000]: Camera callback heard position:0.4
+[ INFO] [1579130654.849245496, 175.338000000]: Camera callback heard position:0.4
+BTCameraFindTarget: SUCCESS
+[1579130654.850]: BTCameraFindTarget        RUNNING -> SUCCESS
+[1579130654.850]: Inverter                  RUNNING -> FAILURE
+[1579130654.850]: BTCameraFindTarget        SUCCESS -> IDLE
+[1579130654.850]: Pick                      IDLE -> RUNNING
+[1579130654.850]: SetBlackboard             IDLE -> SUCCESS
+[1579130654.851]: BTCloseToTarget           IDLE -> RUNNING
+[ BT target z      : ]0.4
+[ BT target height : ]0.2
+[ BTCloseToTarget: waiting for execute :]0
+[ BT target : ]0.4
+[ BT target : send
+[1579130654.866]: BTCloseToTarget           RUNNING -> SUCCESS
+[1579130654.866]: SetBlackboard             IDLE -> SUCCESS
+[1579130654.866]: BTCloseToTarget           IDLE -> RUNNING
+BTWaitForTarget: SUCCESS
+[1579130654.867]: BTWaitForTarget           RUNNING -> SUCCESS
+[1579130654.867]: Inverter                  RUNNING -> FAILURE
+[1579130654.867]: BTWaitForTarget           SUCCESS -> IDLE
+[1579130654.867]: Inverter                  IDLE -> RUNNING
+[1579130654.867]: BTPathPlanning            IDLE -> RUNNING
+[ BT target z      : ]0.4
+[ BT target height : ]-0.15
+[ BTCloseToTarget: waiting for execute :]0
+[ BT target : ]0.4
+[ BT target : send
+[1579130654.870]: BTCloseToTarget           RUNNING -> SUCCESS
+[1579130654.870]: SetBlackboard             IDLE -> SUCCESS
+[1579130654.870]: BTCloseToTarget           IDLE -> RUNNING
+[ BT target z      : ]0.4
+[ BT target height : ]0.1
+[ BTCloseToTarget: waiting for execute :]0
+[ BT target : ]0.4
+[ BT target z      : ]0.4
+[ BT target height : ]0.1
+[ BTCloseToTarget: waiting for execute :]0
+[ BT target : ]0.4
+[ BT target : send
+[1579130654.881]: BTCloseToTarget           RUNNING -> SUCCESS
+[1579130654.882]: SetBlackboard             SUCCESS -> IDLE
+[1579130654.882]: BTCloseToTarget           SUCCESS -> IDLE
+[1579130654.882]: SetBlackboard             SUCCESS -> IDLE
+[1579130654.882]: BTCloseToTarget           SUCCESS -> IDLE
+[1579130654.882]: SetBlackboard             SUCCESS -> IDLE
+[1579130654.882]: BTCloseToTarget           SUCCESS -> IDLE
+[1579130654.882]: Pick                      RUNNING -> SUCCESS
+[1579130654.882]: Inverter                  FAILURE -> IDLE
+[1579130654.882]: Pick                      SUCCESS -> IDLE
+[1579130654.882]: Fallback                  RUNNING -> SUCCESS
+[ BTPathPlanning: STARTED ]. Target: x=0.40 y=0.40 z=0.50 w=1.00
+pathpanning
+target:position: 
+  x: 0.4
+  y: 0.4
+  z: 0.5
+orientation: 
+  x: 0
+  y: 0
+  z: 0
+  w: 1
+
+set target
+move
+[ INFO] [1579130654.921208372, 175.387000000]: Visualizing plan (pose goal) 
+[1579130654.921]: Inverter                  RUNNING -> FAILURE[1579130654.921]: BTPathPlanning            RUNNING -> SUCCESS
+
+[1579130654.921]: BTPathPlanning            SUCCESS -> IDLE
+[1579130654.921]: BTFollowPath              IDLE -> RUNNING
+[ BTCloseToTarget: waiting for execute :]0
+[ BTCloseToTarget: waiting for execute :]0
+[BTFollowPath: %b]1
+[1579130655.085]: Inverter                  FAILURE -> IDLE
+[1579130655.085]: Inverter                  FAILURE -> IDLE
+[1579130655.085]: BTFollowPath              SUCCESS -> IDLE
+[1579130655.085]: Fallback                  RUNNING -> SUCCESS
+[1579130655.085]: Fallback                  SUCCESS -> IDLE
+[1579130655.085]: Fallback                  SUCCESS -> IDLE
+[1579130655.085]: Parallel                  RUNNING -> SUCCESS
+[1579130655.085]: Fallback                  IDLE -> RUNNING
+[1579130655.085]: Inverter                  IDLE -> RUNNING
+[1579130655.085]: BTWaitForTarget           IDLE -> RUNNING
+[1579130655.085]: Fallback                  IDLE -> RUNNING
+[1579130655.085]: Inverter                  IDLE -> RUNNING
+[1579130655.085]: BTCameraFindTarget        IDLE -> RUNNING
+[1579130655.085]: BTFollowPath              RUNNING -> SUCCESS
+BTWaitForTarget: SUCCESS
+[1579130655.085]: BTWaitForTarget           RUNNING -> SUCCESS
+[1579130655.085]: Parallel                  SUCCESS -> RUNNING
+[1579130655.085]: Inverter                  RUNNING -> FAILURE
+[1579130655.085]: BTWaitForTarget           SUCCESS -> IDLE
+[1579130655.085]: Inverter                  IDLE -> RUNNING
+[1579130655.085]: BTPathPlanning            IDLE -> RUNNING
+[ BTPathPlanning: STARTED ]. Target: x=0.40 y=0.40 z=0.50 w=1.00
+pathpanning
+target:position: 
+  x: 0.4
+  y: 0.4
+  z: 0.5
+orientation: 
+  x: 0
+  y: 0
+  z: 0
+  w: 1
+
+set target
+move
+[ INFO] [1579130655.140833140, 175.544000000]: Visualizing plan (pose goal) 
+[1579130655.141]: BTPathPlanning            RUNNING -> SUCCESS
+[1579130655.141]: BTPathPlanning            SUCCESS -> IDLE
+[1579130655.141]: BTPathPlanning            IDLE -> RUNNING
+[ BTPathPlanning: STARTED ]. Target: x=0.40 y=0.40 z=0.50 w=1.00
+pathpanning
+target:position: 
+  x: 0.4
+  y: 0.4
+  z: 0.5
+orientation: 
+  x: 0
+  y: 0
+  z: 0
+  w: 1
+
+set target
+move
+[ BTCloseToTarget: waiting for execute :]0
+[ INFO] [1579130655.194732073, 175.576000000]: Visualizing plan (pose goal) 
+[1579130655.195]: BTPathPlanning            RUNNING -> SUCCESS
+[1579130655.196]: Inverter                  RUNNING -> FAILURE
+[1579130655.196]: BTPathPlanning            SUCCESS -> IDLE
+[1579130655.196]: BTFollowPath              IDLE -> RUNNING
+[ BTCloseToTarget: waiting for execute :]0
+[BTFollowPath: %b]1
+[1579130655.341]: BTFollowPath              RUNNING -> SUCCESS
+[1579130655.341]: Inverter                  FAILURE -> IDLE
+[1579130655.341]: Inverter                  FAILURE -> IDLE
+[1579130655.341]: BTFollowPath              SUCCESS -> IDLE
+[1579130655.341]: Fallback                  RUNNING -> SUCCESS
+[ BTCloseToTarget: waiting for execute :]0
+[ BTCloseToTarget: Finish execute:]1
+BTCloseToTarget: SUCCESS
+[1579130655.381]: BTCloseToTarget           IDLE -> SUCCESS
+
+

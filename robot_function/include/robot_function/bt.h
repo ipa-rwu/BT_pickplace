@@ -245,14 +245,15 @@ class BTCameraFindTarget : public BT::AsyncActionNode
 class BTCloseToTarget : public BT::AsyncActionNode
 {
   public:
-    BTCloseToTarget(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface *move_group)
+    BTCloseToTarget(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh, 
+    moveit::planning_interface::MoveGroupInterface *move_group)
     : BT::AsyncActionNode(name, config), _nh(nh), _move_group(move_group)
     {
       _aborted = false;
       _gettarget = false;
       _counter = 0;
       _execute_state = false;
-      _firsttime = false;
+      
     }
     
     BT::NodeStatus tick() override;
@@ -278,7 +279,8 @@ class BTCloseToTarget : public BT::AsyncActionNode
     ros::NodeHandle _nh;
     moveit::planning_interface::MoveGroupInterface *_move_group;
     bool _execute_state;
-    bool _firsttime;
+    bool _firsttime = true;
+    int _counttime=0;
 };
 
 

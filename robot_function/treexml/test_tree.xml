@@ -3,15 +3,15 @@
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
         <Parallel threshold="2">
-            <Sequence>
-                
+            <Fallback>
+                <Inverter>
                     <Action ID="BTWaitForTarget" targetout="{TargetPose}" targetin="{TargetPose}" state="{executestate}"/>
-                
-                
+                </Inverter>
+                <Inverter>
                     <Action ID="BTPathPlanning" goal="{TargetPose}" makeplan="{Plan}"/>
-                
+                </Inverter>
                 <Action ID="BTFollowPath" planedplan="{Plan}" state="{executestate}"/>
-            </Sequence>
+            </Fallback>
             <Fallback>
                 <Inverter>
                     <Action ID="BTCameraFindTarget" targetout="{observedpose}"/>

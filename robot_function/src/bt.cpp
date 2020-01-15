@@ -187,7 +187,7 @@ BT::NodeStatus BTFollowPath::tick()
   _aborted = false;
   _success = false;
   _counter = 0;
-  setOutput<bool>("state", _success);
+   setOutput<bool>("state", _success);
   
   _success = robot_obj.MoveGroupExecutePlan(_move_group, _myplan);
   
@@ -195,16 +195,19 @@ BT::NodeStatus BTFollowPath::tick()
   {
     // this happens only if method halt() was invoked
     //_client.cancelAllGoals();
+    _success = false;
+    setOutput<bool>("state", _success);
     return BT::NodeStatus::FAILURE;
   }
 
   if (!_success)
   {
     std::cout << "[BTFollowPath: %b]" << _success << std::endl;
+    setOutput<bool>("state", _success);
     return BT::NodeStatus::FAILURE;
   }
   std::cout << "[BTFollowPath: %b]" << _success << std::endl;
-    setOutput<bool>("state", _success);
+  setOutput<bool>("state", _success);
 
   return BT::NodeStatus::SUCCESS; 
 }
@@ -250,6 +253,8 @@ BT::NodeStatus BTCloseToTarget::tick()
     // return BT::NodeStatus::FAILURE;  
     throw BT::RuntimeError("missing required input [targetin]");
   }
+  std::cout << "[ BT target z      : ]" << _target.position.z << std::endl;
+  std::cout << "[ BT target height : ]" << _height << std::endl;
 
    if (!getInput<bool>("state", _execute_state) )
    {
@@ -260,6 +265,7 @@ BT::NodeStatus BTCloseToTarget::tick()
   subtarget = robot_obj.KeepDistanceToTarget(_target, _height);
   // setOutput<geometry_msgs::Pose>("targetout", subtarget.target_pose);
   std::cout << "[ BTCloseToTarget: waiting for execute :]" << _execute_state << std::endl;
+  std::cout << "[ BT target : ]" << _target.position.z << std::endl;
   while (!_aborted &&  _counter++ < 50)
   {
     /*
@@ -272,30 +278,30 @@ BT::NodeStatus BTCloseToTarget::tick()
       SleepMS(100);
     }
     */
-   if ( getInput<bool>("state", _execute_state) )
-   {
+    if(_firsttime == true)
+    {
+      setOutput<geometry_msgs::Pose>("targetout", subtarget.target_pose);
+      std::cout << "[ BT target : send"<< std::endl;
+      _firsttime = false;
+      return BT::NodeStatus::SUCCESS;
+      break;
+    }
+
+    if ( getInput<bool>("state", _execute_state) )
+    {
      if (_execute_state == true)
      {
        std::cout << "[ BTCloseToTarget: Finish execute:]" << _execute_state << std::endl;
       //  setOutput<bool>("state", _execute_state);
       std::cout << "BTCloseToTarget: SUCCESS"<< std::endl;
       setOutput<geometry_msgs::Pose>("targetout", subtarget.target_pose);
-        return BT::NodeStatus::SUCCESS;
+      return BT::NodeStatus::SUCCESS;
       break;
      }
      else
      {
-       if(_firsttime == true)
-       {
-         setOutput<geometry_msgs::Pose>("targetout", subtarget.target_pose);
-         _firsttime = false;
-       }
-       else
-       {
-          SleepMS(100);
-       }
-       
-      
+        SleepMS(100);     
+        std::cout << "[ BTCloseToTarget: waiting for execute :]" << _execute_state << std::endl;
      }
      
    }
@@ -306,6 +312,6 @@ BT::NodeStatus BTCloseToTarget::tick()
 
   }
 
-        return BT::NodeStatus::FAILURE;
+  return BT::NodeStatus::FAILURE;
 
 }

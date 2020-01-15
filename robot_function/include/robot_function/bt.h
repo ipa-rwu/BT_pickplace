@@ -185,7 +185,9 @@ class BTFollowPath : public BT::AsyncActionNode
     {
       _aborted = false;
       _success = false; 
-      _counter = 0;     
+      _counter = 0;   
+      
+  
     }
     
     BT::NodeStatus tick() override;
@@ -236,6 +238,8 @@ class BTCameraFindTarget : public BT::AsyncActionNode
     int _counter;
     RobotFunction robot_obj();
     ros::NodeHandle _nh;
+        bool _firsttime;
+
 };
 
 class BTCloseToTarget : public BT::AsyncActionNode
@@ -248,6 +252,7 @@ class BTCloseToTarget : public BT::AsyncActionNode
       _gettarget = false;
       _counter = 0;
       _execute_state = false;
+      _firsttime = false;
     }
     
     BT::NodeStatus tick() override;
@@ -273,6 +278,7 @@ class BTCloseToTarget : public BT::AsyncActionNode
     ros::NodeHandle _nh;
     moveit::planning_interface::MoveGroupInterface *_move_group;
     bool _execute_state;
+    bool _firsttime;
 };
 
 

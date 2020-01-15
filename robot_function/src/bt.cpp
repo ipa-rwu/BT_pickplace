@@ -253,6 +253,7 @@ BT::NodeStatus BTCloseToTarget::tick()
 
    if (!getInput<bool>("state", _execute_state) )
    {
+     std::cout << "[ BTCloseToTarget: No state]" << std::endl;
      _execute_state = false;
    }
 
@@ -284,7 +285,17 @@ BT::NodeStatus BTCloseToTarget::tick()
      }
      else
      {
-       SleepMS(100);
+       if(_firsttime == true)
+       {
+         setOutput<geometry_msgs::Pose>("targetout", subtarget.target_pose);
+         _firsttime = false;
+       }
+       else
+       {
+          SleepMS(100);
+       }
+       
+      
      }
      
    }

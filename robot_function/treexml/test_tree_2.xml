@@ -2,11 +2,34 @@
 <root main_tree_to_execute="BehaviorTree">
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
-        <Parallel threshold="3">
+                <Parallel threshold="2">
+            <Fallback>
+                <Inverter>
             <Action ID="BTWaitForTarget" stateexecutefree="{executefree}" statewaittarget="{waittarget}" targetout="{TargetPose}"/>
+                            </Inverter>
+                <Inverter>
             <Action ID="BTPathPlanning" goal="{TargetPose}" makeplan="{Plan}"/>
+                            </Inverter>
+                <Inverter>
             <Action ID="BTFollowPath" planedplan="{Plan}" stateexecutefree="{executefree}" statewaittarget="{waittarget}"/>
-        </Parallel>
+                            </Inverter>
+        </Fallback>
+                    <Fallback>
+                <Inverter>
+                    <Action ID="BTCameraFindTarget" targetout="{observedpose}"/>
+                </Inverter>
+                <Inverter>
+                <SequenceStar name="Pick">
+                    <SetBlackboard output_key="height" value="0.20"/>
+                    <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}" statewaittarget="{waittarget}" stateexecutefree="{executefree}"/>
+                    <SetBlackboard output_key="height" value="-0.15"/>
+                    <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}" statewaittarget="{waittarget}" stateexecutefree="{executefree}"/>
+                    <SetBlackboard output_key="height" value="0.10"/>
+                    <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}" statewaittarget="{waittarget}" stateexecutefree="{executefree}"/>
+                </SequenceStar>
+                </Inverter>
+            </Fallback>
+            </Parallel>
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>

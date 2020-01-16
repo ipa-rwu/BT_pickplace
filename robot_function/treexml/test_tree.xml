@@ -2,29 +2,43 @@
 <root main_tree_to_execute="BehaviorTree">
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
-        <Parallel threshold="2">
-            <Fallback>
-                <Inverter>
-                    <Action ID="BTWaitForTarget" targetout="{TargetPose}" targetin="{TargetPose}" state="{executestate}"/>
-                </Inverter>
-                <Inverter>
+        <Parallel threshold="2" name="mather">
+            <Sequence name="control">
+                <!-- <Inverter> -->
+                    <Action ID="BTWaitForTarget" targetout="{TargetPose}" targetin="{TargetPose}" statewaittarget="{waittarget}" stateexecutefree="{executefree}"/>
+                <!-- </Inverter>
+                <Inverter> -->
                     <Action ID="BTPathPlanning" goal="{TargetPose}" makeplan="{Plan}"/>
-                </Inverter>
-                <Action ID="BTFollowPath" planedplan="{Plan}" state="{executestate}"/>
-            </Fallback>
-            <Fallback>
+                <!-- </Inverter> -->
+                <!-- <Inverter> -->
+                <Action ID="BTFollowPath" planedplan="{Plan}" statewaittarget="{waittarget}" stateexecutefree="{executefree}"/>
+                <!-- </Inverter> -->
+            </Sequence>
+            
+            <Fallback name="pick">
                 <Inverter>
                     <Action ID="BTCameraFindTarget" targetout="{observedpose}"/>
                 </Inverter>
-                <Sequence name="Pick">
+                <!-- <Inverter> -->
+                <Sequence name="Pick1">
                     <SetBlackboard output_key="height" value="0.20"/>
-                    <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}" state="{executestate}"/>
+                    <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}" statewaittarget="{waittarget}" stateexecutefree="{executefree}"/>
+                <!-- </Sequence>
+                </Inverter>    
+                <Inverter>
+                <Sequence name="Pick2"> -->
                     <SetBlackboard output_key="height" value="-0.15"/>
-                    <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}" state="{executestate}"/>
+                    <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}" statewaittarget="{waittarget}" stateexecutefree="{executefree}"/>
+                <!-- </Sequence>
+                </Inverter>    
+                <Inverter>
+                <Sequence name="Pick3">                     -->
                     <SetBlackboard output_key="height" value="0.10"/>
-                    <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}" state="{executestate}"/>
+                    <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}" statewaittarget="{waittarget}" stateexecutefree="{executefree}"/>
                 </Sequence>
+                <!-- </Inverter>     -->
             </Fallback>
+            
         </Parallel>
     </BehaviorTree>
     <!-- ////////// -->

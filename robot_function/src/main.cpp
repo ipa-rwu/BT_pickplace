@@ -35,7 +35,7 @@ static const char* xml_text = R"(
     spinner.start();
     
     std::string xml_filename;
-    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/pick_ws/src/robot_function/treexml/test_tree.xml");
+    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/pick_ws/src/robot_function/treexml/tree2.xml");
     ROS_INFO("Loading XML : %s", xml_filename.c_str());
     
 
@@ -136,6 +136,13 @@ static const char* xml_text = R"(
         return std::make_unique<BTCloseToTarget>( name, config, nh, move_group);
     };
     factory.registerBuilder<BTCloseToTarget>( "BTCloseToTarget", builder_closetotarget);
+
+    NodeBuilder builder_checkconfition = [&nh, &move_group](const std::string& name, const NodeConfiguration& config)
+    {
+        
+        return std::make_unique<BTCheckCondition>( name, config, nh, move_group);
+    };
+    factory.registerBuilder<BTCheckCondition>( "BTCheckCondition", builder_checkconfition);
     
 
     //PortsList robot_object_ports = { InputPort<boost::shared_ptr<Robot_Function>>(robot_obj) };

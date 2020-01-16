@@ -48,13 +48,13 @@ void RobotFunction::GetBasicInfo(moveit::planning_interface::MoveGroupInterface 
 bool RobotFunction::comparePoses(moveit::planning_interface::MoveGroupInterface *move_group, geometry_msgs::Pose pose2, double delta_posistion, double delta_orientation)
 {
   geometry_msgs::Pose pose1 = move_group->getCurrentPose().pose;
-  if (  abs(pose1.position.x-pose2.position.x ) <= delta_posistion
-        && abs(pose1.position.y-pose2.position.y ) <= delta_posistion
-        && abs(pose1.position.z-pose2.position.z ) <= delta_posistion
-        && abs(pose1.orientation.x - pose2.orientation.x) <= delta_orientation
-        && abs(pose1.orientation.y - pose2.orientation.y) <= delta_orientation
-        && abs(pose1.orientation.z - pose2.orientation.z) <= delta_orientation
-        && abs(pose1.orientation.w - pose2.orientation.w) <= delta_orientation
+  if (  abs(pose1.position.z-pose2.position.z ) <= delta_posistion
+        // && abs(pose1.position.y-pose2.position.y ) <= delta_posistion
+        // && abs(pose1.position.z-pose2.position.z ) <= delta_posistion
+        // && abs(pose1.orientation.x - pose2.orientation.x) <= delta_orientation
+        // && abs(pose1.orientation.y - pose2.orientation.y) <= delta_orientation
+        // && abs(pose1.orientation.z - pose2.orientation.z) <= delta_orientation
+        // && abs(pose1.orientation.w - pose2.orientation.w) <= delta_orientation
      )
   {
     return true;

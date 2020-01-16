@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Parallel threshold="3">
+            <Action ID="BTWaitForTarget" stateexecutefree="{executefree}" statewaittarget="{waittarget}" targetout="{TargetPose}"/>
+            <Action ID="BTPathPlanning" goal="{TargetPose}" makeplan="{Plan}"/>
+            <Action ID="BTFollowPath" planedplan="{Plan}" stateexecutefree="{executefree}" statewaittarget="{waittarget}"/>
+        </Parallel>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="BTCameraFindTarget">
+            <output_port default="{observedpose}" name="targetout"/>
+        </Action>
+        <Action ID="BTCloseToTarget">
+            <input_port default="{height}" name="height"/>
+            <input_port default="{executefree}" name="stateexecutefree"/>
+            <input_port default="{waittarget}" name="statewaittarget"/>
+            <input_port default="{observedpose}" name="targetin"/>
+            <output_port default="{TargetPose}" name="targetout"/>
+        </Action>
+        <Action ID="BTFollowPath">
+            <input_port default="{Plan}" name="planedplan"/>
+            <output_port default="{executefree}" name="stateexecutefree"/>
+            <output_port default="{waittarget}" name="statewaittarget"/>
+        </Action>
+        <Action ID="BTPathPlanning">
+            <input_port default="{TargetPose}" name="goal"/>
+            <output_port default="{Plan}" name="makeplan"/>
+        </Action>
+        <Action ID="BTWaitForTarget">
+            <output_port default="{executefree}" name="stateexecutefree"/>
+            <output_port default="{waittarget}" name="statewaittarget"/>
+            <output_port default="{TargetPose}" name="targetout"/>
+        </Action>
+        <Condition ID="NewGoal">
+            <input_port name="globalgoal"/>
+        </Condition>
+        <Action ID="OpenGripper"/>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+

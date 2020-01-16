@@ -35,7 +35,7 @@ static const char* xml_text = R"(
     spinner.start();
     
     std::string xml_filename;
-    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/pick_ws/src/robot_function/treexml/test_tree.xml");
+    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/kogrob_ws/src/robot_function/treexml/test_tree_2.xml");
     ROS_INFO("Loading XML : %s", xml_filename.c_str());
     
 

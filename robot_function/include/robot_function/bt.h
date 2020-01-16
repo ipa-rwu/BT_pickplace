@@ -62,11 +62,69 @@ class BTWaitForTarget : public BT::CoroActionNode
 };
 */
 
-class BTWaitForTarget : public BT::AsyncActionNode
+
+
+class BTMoveConditionCheck : public BT::SyncActionNode
+{
+  public:
+    BTMoveConditionCheck(const std::string& name, const BT::NodeConfiguration& config, 
+    moveit::planning_interface::MoveGroupInterface *move_group, ros::NodeHandle nh)
+    : BT::SyncActionNode(name, config), _nh(nh), _move_group(move_group)
+    {}    
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts()
+    { 
+      return { BT::OutputPort<geometry_msgs::Pose>("targetout"),
+      BT::InputPort<geometry_msgs::Pose>("targetin")};
+    }
+
+
+  private:
+    ros::NodeHandle _nh;
+    geometry_msgs::Pose _goalwillgo;
+    moveit::planning_interface::MoveGroupInterface *_move_group;
+};
+
+
+class BTPlanGo : public BT::AsyncActionNode
+{
+  public:
+    BTPlanGo(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh,
+     moveit::planning_interface::MoveGroupInterface *move_group)
+    : BT::AsyncActionNode(name, config), _nh(nh), _move_group(move_group)
+    {
+      _aborted = false;
+      _success = false;
+    }
+
+    BT::NodeStatus tick() override;
+
+    virtual void halt() override
+    {
+      _aborted = true;
+    }
+
+    static BT::PortsList providedPorts() 
+    { 
+      return{  BT::InputPort<geometry_msgs::Pose>("targetin")};
+    } 
+
+    private:
+    bool _success;
+    bool _aborted; 
+    geometry_msgs::Pose _goalwillgo;
+    pathplan _planpath;
+    ros::NodeHandle _nh;
+    moveit::planning_interface::MoveGroupInterface *_move_group;
+};
+
+
+class BTWaitForTarget : public BT::SyncActionNode
 {
   public:
     BTWaitForTarget(const std::string& name, const BT::NodeConfiguration& config)
-    : BT::AsyncActionNode(name, config)
+    : BT::SyncActionNode(name, config)
     {
       _aborted = false;
       _gettarget = false;
@@ -78,6 +136,8 @@ class BTWaitForTarget : public BT::AsyncActionNode
       _target.orientation.z = 0.0;
       _target.orientation.w = 0.0;
       _pretarget = _target;
+      _statewaitfortarget = true;
+      _stateexecutefree = true;
 
     }
     
@@ -86,13 +146,11 @@ class BTWaitForTarget : public BT::AsyncActionNode
     static BT::PortsList providedPorts()
     {
       return { BT::InputPort<geometry_msgs::Pose>("targetin"), BT::OutputPort<geometry_msgs::Pose>("targetout"),
-      BT::OutputPort<bool>("state")};
+      BT::OutputPort<bool>("statewaittarget"),
+      BT::OutputPort<bool>("stateexecutefree")};
     };
     
-    virtual void halt() override
-    {
-      _aborted = true;
-    }
+
 
 
   private:
@@ -102,6 +160,8 @@ class BTWaitForTarget : public BT::AsyncActionNode
     geometry_msgs::Pose _target;
     geometry_msgs::Pose _pretarget;
     bool _success;
+    bool _statewaitfortarget;
+    bool _stateexecutefree;
 };
 
 /*
@@ -186,7 +246,8 @@ class BTFollowPath : public BT::AsyncActionNode
       _aborted = false;
       _success = false; 
       _counter = 0;   
-      
+      _statewaitfortarget = false;
+      _stateexecutefree = false;
   
     }
     
@@ -196,7 +257,9 @@ class BTFollowPath : public BT::AsyncActionNode
 
     static BT::PortsList providedPorts() 
     { 
-      return{  BT::InputPort<moveit::planning_interface::MoveGroupInterface::Plan>("planedplan"), BT::OutputPort<bool>("state")};
+      return{  BT::InputPort<moveit::planning_interface::MoveGroupInterface::Plan>("planedplan"), 
+      BT::OutputPort<bool>("statewaittarget"),
+      BT::OutputPort<bool>("stateexecutefree")};
       // BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan"),
     } 
 
@@ -207,6 +270,8 @@ class BTFollowPath : public BT::AsyncActionNode
     int _counter;
     moveit::planning_interface::MoveGroupInterface *_move_group;
     moveit::planning_interface::MoveGroupInterface::Plan _myplan;
+    bool  _statewaitfortarget;
+    bool _stateexecutefree;
 };
 
 
@@ -251,9 +316,7 @@ class BTCloseToTarget : public BT::AsyncActionNode
     {
       _aborted = false;
       _gettarget = false;
-      _counter = 0;
-      _execute_state = false;
-      
+      _counter = 0;      
     }
     
     BT::NodeStatus tick() override;
@@ -261,7 +324,9 @@ class BTCloseToTarget : public BT::AsyncActionNode
     static BT::PortsList providedPorts()
     {
       return { BT::InputPort<geometry_msgs::Pose>("targetin"), BT::InputPort<double>("height"), 
-      BT::OutputPort<geometry_msgs::Pose>("targetout"), BT::InputPort<bool>("state"), BT::OutputPort<bool>("state")};
+      BT::OutputPort<geometry_msgs::Pose>("targetout"), 
+      BT::InputPort<bool>("statewaittarget"),
+      BT::InputPort<bool>("stateexecutefree")};
     };
 
     virtual void halt() override
@@ -274,15 +339,37 @@ class BTCloseToTarget : public BT::AsyncActionNode
     bool _gettarget;
     int _counter;
     RobotFunction robot_obj();
-    geometry_msgs::Pose _target;
+    geometry_msgs::Pose _obstarget;
+    geometry_msgs::Pose _pretarget;
     double _height;
+    double _preheight;
     ros::NodeHandle _nh;
     moveit::planning_interface::MoveGroupInterface *_move_group;
-    bool _execute_state;
-    bool _firsttime = true;
-    int _counttime=0;
+    bool _statewaitfortarget;
+    bool _stateexecutefree;
 };
 
+class BTCoroActionNode : public BT::CoroActionNode
+{
+  public:
+    BTCoroActionNode(const std::string& name, const BT::NodeConfiguration& config, 
+    moveit::planning_interface::MoveGroupInterface *move_group, ros::NodeHandle nh)
+    : BT::CoroActionNode(name, config), _nh(nh), _move_group(move_group)
+    {}    
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts()
+    { 
+      return { BT::OutputPort<geometry_msgs::Pose>("targetout"),
+      BT::InputPort<geometry_msgs::Pose>("targetin")};
+    }
+
+
+  private:
+    ros::NodeHandle _nh;
+    geometry_msgs::Pose _goalwillgo;
+    moveit::planning_interface::MoveGroupInterface *_move_group;
+};
 
 inline void RegisterNodes(BT::BehaviorTreeFactory& factory)
 {

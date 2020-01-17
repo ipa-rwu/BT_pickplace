@@ -276,18 +276,31 @@ BT::NodeStatus BTCameraFindTarget::tick()
 {
   RobotFunction robot_obj(_nh);
   gettarget subtarget;
-  subtarget.success = false;
-  subtarget = robot_obj.CameraFindTarget();
+  // subtarget.success = false;
+  subtarget.success = true;
+	PositionGo goal;
+    if ( !getInput<PositionGo>("targetin", goal))
+    {
+        throw BT::RuntimeError("missing required input [goal]");
+    }
+
+	geometry_msgs::Pose target_pose;
+	target_pose.position.x = goal.px;
+	target_pose.position.y = goal.py;
+	target_pose.position.z = goal.pz;
+  target_pose.orientation.w=1.0;
+  // subtarget = robot_obj.CameraFindTarget();
   while (!_aborted)
   {
-    subtarget = robot_obj.CameraFindTarget();
+    // subtarget = robot_obj.CameraFindTarget();
     if(subtarget.success)
     {
       break;
     }
   }
   std::cout << "BTCameraFindTarget: SUCCESS"<< std::endl;
-  setOutput<geometry_msgs::Pose>("targetout", subtarget.target_pose);
+  // setOutput<geometry_msgs::Pose>("targetout", subtarget.target_pose);
+  setOutput<geometry_msgs::Pose>("targetout", target_pose);
 
   return BT::NodeStatus::SUCCESS;
 }

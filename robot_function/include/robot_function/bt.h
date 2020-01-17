@@ -62,6 +62,39 @@ class BTWaitForTarget : public BT::CoroActionNode
 };
 */
 
+struct PositionGo
+{
+  double px,py,pz,ox,oy,oz,ow;
+};
+
+
+namespace BT
+{
+	template <> inline PositionGo convertFromString(StringView str)
+	{
+		// printf("Converting string: \"%s\"\n", str.data() );
+
+		// real numbers separated by semicolons
+		auto parts = splitString(str, ';');
+		if (parts.size() != 7)
+		{
+			throw RuntimeError("invalid input)");
+		}
+		else{
+			PositionGo output;
+			output.px     = convertFromString<double>(parts[0]);
+			output.py     = convertFromString<double>(parts[1]);
+      output.pz     = convertFromString<double>(parts[2]);
+      output.ox     = convertFromString<double>(parts[3]);
+      output.oy     = convertFromString<double>(parts[4]);
+      output.oz     = convertFromString<double>(parts[5]);
+      output.ow     = convertFromString<double>(parts[6]);
+
+			return output;
+		}
+	}
+}
+
 class BTCheckCondition : public BT::SyncActionNode
 {
   public:
@@ -253,7 +286,8 @@ class BTCameraFindTarget : public BT::AsyncActionNode
 
     static BT::PortsList providedPorts()
     {
-      return { BT::OutputPort<geometry_msgs::Pose>("targetout")};
+      // return { BT::OutputPort<geometry_msgs::Pose>("targetout")};
+      return { BT::OutputPort<geometry_msgs::Pose>("targetout"), BT::InputPort<PositionGo>("targetin")};
     };
 
     virtual void halt() override

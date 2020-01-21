@@ -305,7 +305,30 @@ class BTCameraFindTarget : public BT::AsyncActionNode
 
 };
 
-class BTCloseToTarget : public BT::AsyncActionNode
+class BTHoldObjTarget: public BT::CoroActionNode
+{
+  public:
+    BTHoldObjTarget(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh)
+    : BT::CoroActionNode(name,config), _nh(nh)
+    {
+    }
+    BT::NodeStatus tick() override;
+
+    void halt() override
+    {
+      _aborted = true;
+      BT::CoroActionNode::halt();
+    }
+
+    private:
+    bool _aborted;
+    RobotFunction robot_obj();
+    ros::NodeHandle _nh;
+
+};
+
+
+class BTCloseToTarget: public BT::AsyncActionNode
 {
   public:
     BTCloseToTarget(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh, 

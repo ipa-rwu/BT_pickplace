@@ -175,14 +175,13 @@ add_library(robot_function
    src/robot_function.cpp
  )
 
- add_library(robot_control
-   src/robot_control.cpp
- )
-
   add_library(bt
    src/bt.cpp
  )
 
+add_library(robot_gripper
+   src/robot_gripper.cpp
+ )
 
 target_link_libraries(
   ${PROJECT_NAME}
@@ -193,7 +192,7 @@ target_link_libraries(
 
 target_link_libraries(bt robot_function)
 
-target_link_libraries(main robot_function robot_control bt)
+target_link_libraries(main robot_function robot_gripper bt)
 
 
 ## error can't find behaviortree_cpp_v3

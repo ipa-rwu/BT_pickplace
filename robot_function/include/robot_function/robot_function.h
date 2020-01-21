@@ -19,6 +19,7 @@
 
 
 #include "std_msgs/String.h"
+#include "std_msgs/Bool.h"
 #include <iostream>
 #include <fstream>
 
@@ -45,12 +46,20 @@ class RobotFunction
 private:
     /* data */
 
+    const robot_state::JointModelGroup* gripper_model_group ;
 
     const robot_state::JointModelGroup* joint_model_group ;
     ros::Publisher planning_scene_diff_publisher;
     moveit_visual_tools::MoveItVisualTools *visual_tools;
     Eigen::Isometry3d text_pose = Eigen::Isometry3d::Identity();
     const std::string _CameraTopicSub = "/camera/target/pose";
+
+    const double BASE_OFFSET_FROM_BACK_WALL_ = 0.28;   //28cm
+    const double BASE_OFFSET_FROM_LEFT_WALL_ = 0.46;   //46cm
+    const double BASE_OFFSET_FROM_RIGHT_WALL_ = 0.5;   //50cm
+    const double TOTAL_INNER_CELL_Y_DIMENSION_ = 1.47; //1470cm
+    const double TOTAL_INNER_CELL_X_DIMENSION_ = 0.96; //960cm
+    const double TOTAL_INNER_CELL_Z_DIMENSION = 1.15;  //115cm
 
 public:
     RobotFunction(){};
@@ -60,15 +69,20 @@ public:
 
     // moveit::planning_interface::MoveGroupInterface *move_group;
     const std::string GROUP_MANIP = "manipulator";
-    const std::string GROUP_GRIPP = "endeffector";
+    const std::string GROUP_GRIPP = "gripper";
+    // const std::string GROUP_GRIPP = "endeffector";
     ros::Subscriber camera_subscriber;
+    ros::Subscriber holdobj_subscriber;
     bool TagGetTargetPose = false;
+    bool TagHoldObj = false;
     geometry_msgs::Pose newTarget;
 
 
     void GetBasicInfo(moveit::planning_interface::MoveGroupInterface *move_group);
-    // void InitialiseMoveit(ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface move_group);
+    void InitialiseMoveit(ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface *move_group);
+
     void CameraCallback(const geometry_msgs::Pose::ConstPtr& camera_msg);
+    void HoldObjCallback(const std_msgs::Bool::ConstPtr& holdobj_msg);
     bool comparePoses(moveit::planning_interface::MoveGroupInterface *move_group, geometry_msgs::Pose pose2, double delta_posistion=0.05, double delta_orientation=0.01);
     // void MoveToNamedTarget(std::string target);
     pathplan PathPlanning(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group);

@@ -270,15 +270,35 @@ void BTFollowPath::halt()
   _aborted = true;
 }
 
+BT::NodeStatus BTHoldObjTarget::tick()
+{
+  RobotFunction robot_obj(_nh);
+  bool isholdobj;
+  isholdobj = false;
+
+  isholdobj = robot_obj.TagHoldObj;
+  while (!_aborted)
+  {
+    isholdobj = robot_obj.TagHoldObj;
+    if(isholdobj)
+    {
+      break;
+    }
+  }
+  std::cout << "BTCameraFindTarget: SUCCESS"<< std::endl;
+
+  return BT::NodeStatus::SUCCESS;
+}
 
 
 BT::NodeStatus BTCameraFindTarget::tick()
 {
   RobotFunction robot_obj(_nh);
   gettarget subtarget;
-  // subtarget.success = false;
-  subtarget.success = true;
-	PositionGo goal;
+  subtarget.success = false;
+  // subtarget.success = true;
+	/*
+  PositionGo goal;
     if ( !getInput<PositionGo>("targetin", goal))
     {
         throw BT::RuntimeError("missing required input [goal]");
@@ -289,18 +309,20 @@ BT::NodeStatus BTCameraFindTarget::tick()
 	target_pose.position.y = goal.py;
 	target_pose.position.z = goal.pz;
   target_pose.orientation.w=1.0;
-  // subtarget = robot_obj.CameraFindTarget();
+  */
+
+  subtarget = robot_obj.CameraFindTarget();
   while (!_aborted)
   {
-    // subtarget = robot_obj.CameraFindTarget();
+    subtarget = robot_obj.CameraFindTarget();
     if(subtarget.success)
     {
       break;
     }
   }
   std::cout << "BTCameraFindTarget: SUCCESS"<< std::endl;
-  // setOutput<geometry_msgs::Pose>("targetout", subtarget.target_pose);
-  setOutput<geometry_msgs::Pose>("targetout", target_pose);
+  setOutput<geometry_msgs::Pose>("targetout", subtarget.target_pose);
+  // setOutput<geometry_msgs::Pose>("targetout", target_pose);
 
   return BT::NodeStatus::SUCCESS;
 }

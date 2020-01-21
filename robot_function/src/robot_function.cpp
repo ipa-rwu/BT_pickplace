@@ -1,10 +1,10 @@
 #include "robot_function/robot_function.h"
-#include "robot_function/robot_control.h"
 
 
 RobotFunction::RobotFunction(ros::NodeHandle nh)
 {
     camera_subscriber = nh.subscribe<geometry_msgs::Pose>("/camera/target/pose", 1000, &RobotFunction::CameraCallback, this);
+    holdobj_subscriber = nh.subscribe<std_msgs::Bool>("/camera/target/hold", 1000, &RobotFunction::HoldObjCallback, this);
 }
 
 
@@ -28,21 +28,26 @@ void RobotFunction::GetBasicInfo(moveit::planning_interface::MoveGroupInterface 
 
 }
 
-// void RobotFunction::InitialiseMoveit(ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface *move_group)
-// {
-//   namespace rvt = rviz_visual_tools;
-//   move_group = new moveit::planning_interface::MoveGroupInterface(GROUP_MANIP);
-//   joint_model_group = move_group.getCurrentState()->getJointModelGroup(GROUP_MANIP);
 
-//   visual_tools = new moveit_visual_tools::MoveItVisualTools("base_link");
-//   visual_tools->deleteAllMarkers();
-//   visual_tools->loadRemoteControl();
-//   text_pose.translation().z() = 1.75;
-//   visual_tools->publishText(text_pose, "Kogrob Demo", rvt::WHITE, rvt::XLARGE);
-//   visual_tools->trigger();
-//   planning_scene_diff_publisher = nh.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
+void RobotFunction::InitialiseMoveit(ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface *move_group)
+{
+  namespace rvt = rviz_visual_tools;
+  move_group = new moveit::planning_interface::MoveGroupInterface(GROUP_MANIP);
+  joint_model_group = move_group->getCurrentState()->getJointModelGroup(GROUP_MANIP);
 
-// }
+  // gripper
+  gripper_model_group = move_group->getCurrentState()->getJointModelGroup(GROUP_GRIPP);
+
+  visual_tools = new moveit_visual_tools::MoveItVisualTools("base_link");
+  visual_tools->deleteAllMarkers();
+  visual_tools->loadRemoteControl();
+  text_pose.translation().z() = 1.75;
+  visual_tools->publishText(text_pose, "Kogrob Demo", rvt::WHITE, rvt::XLARGE);
+  visual_tools->trigger();
+  planning_scene_diff_publisher = nh.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
+
+}
+
 
 // true same pose
 bool RobotFunction::comparePoses(moveit::planning_interface::MoveGroupInterface *move_group, geometry_msgs::Pose pose2, double delta_posistion, double delta_orientation)
@@ -74,6 +79,10 @@ void RobotFunction::CameraCallback(const geometry_msgs::Pose::ConstPtr& camera_m
   TagGetTargetPose = true;
 }
 
+void RobotFunction::HoldObjCallback(const std_msgs::Bool::ConstPtr& holdobj_msg)
+{
+  TagHoldObj = holdobj_msg->data;
+}
 
 pathplan RobotFunction::PathPlanning(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group)
 {
@@ -164,3 +173,9 @@ bool RobotFunction::MoveGroupExecutePlan(moveit::planning_interface::MoveGroupIn
     // bool success = (move_group->move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
     // move_group->move();
 }
+
+// // robotiq gripper
+// bool RobotFunction::OpenGripper()
+// {
+
+// }

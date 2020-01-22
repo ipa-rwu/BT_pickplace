@@ -3,16 +3,25 @@
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
         <Fallback name="PIck_hold_place">
-            <SequenceStar name="Pick">
+            <Action ID="BTIsObjContainer"/>
+            <Sequence>
                 <Action ID="BTIsHoldObj"/>
-                <Action ID="BTCameraFindTarget" targetout="{observedpose}"/>
-                <Inverter>
+                <Parallel threshold="2">
+                    <SubTree GripperOut="GripperOut" ID="Execution" TargetPose="TargetPose"/>
+                    <SubTree ID="Place"/>
+                </Parallel>
+            </Sequence>
+            <Sequence name="Pick">
+                <Action ID="BTIsObjPose"/>
+                <Fallback>
+                    <Action ID="BTIsHoldObj"/>
                     <Parallel threshold="2">
                         <SubTree GripperOut="gripperout" ID="Execution" TargetPose="targetpose"/>
                         <SubTree GripperOut="gripperout" ID="Pick" ObsObjPose="observedpose" TargetPose="targetpose"/>
                     </Parallel>
-                </Inverter>
-            </SequenceStar>
+                </Fallback>
+            </Sequence>
+            <Action ID="BTCameraFindTarget" targetout="{observedpose}"/>
         </Fallback>
     </BehaviorTree>
     <!-- ////////// -->
@@ -59,6 +68,14 @@
         </Fallback>
     </BehaviorTree>
     <!-- ////////// -->
+    <BehaviorTree ID="Place">
+        <Fallback>
+            <Sequence>
+                <Action ID="BTCheckCondition" heightin="{height}" targetin="{ObsObjPose}"/>
+            </Sequence>
+        </Fallback>
+    </BehaviorTree>
+    <!-- ////////// -->
     <TreeNodesModel>
         <Undefined ID=""/>
         <Action ID="BTAdvertiseGripperCommand">
@@ -88,6 +105,8 @@
             <input_port default="{grippercom}" name="commandin"/>
         </Action>
         <Action ID="BTIsHoldObj"/>
+        <Action ID="BTIsObjContainer"/>
+        <Action ID="BTIsObjPose"/>
         <Action ID="BTPathPlanning">
             <input_port default="{targetpose}" name="goal"/>
             <output_port default="{plan}" name="makeplan"/>
@@ -106,6 +125,7 @@
             <input_port default="observedpose" name="ObsObjPose"/>
             <output_port default="targetpose" name="TargetPose"/>
         </SubTree>
+        <SubTree ID="Place"/>
     </TreeNodesModel>
     <!-- ////////// -->
 </root>

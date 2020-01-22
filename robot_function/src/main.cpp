@@ -1,5 +1,9 @@
 #include "behaviortree_cpp_v3/bt_factory.h"
 #include "behaviortree_cpp_v3/loggers/bt_cout_logger.h"
+#include "behaviortree_cpp_v3/loggers/bt_file_logger.h"
+#include "behaviortree_cpp_v3/loggers/bt_minitrace_logger.h"
+
+
 #include <unistd.h>
 #include <stdio.h>
 
@@ -9,6 +13,10 @@
 #include "robot_function/bt.h"
 #include "robot_function/robot_gripper.h"
 #include "robot_function/environment.h"
+
+#ifdef ZMQ_FOUND
+#include "behaviortree_cpp_v3/loggers/bt_zmq_publisher.h"
+#endif
 
 
 using namespace BT;
@@ -175,6 +183,12 @@ static const char* xml_text = R"(
     factory.registerNodeType<BTCheckGripperCommand>("BTCheckGripperCommand");
     factory.registerNodeType<BTAdvertiseGripperCommand>("BTAdvertiseGripperCommand");
 
+    NodeBuilder builder_fakepublish = [&nh](const std::string& name, const NodeConfiguration& config)
+    {
+        
+        return std::make_unique<BTPubFakeHoldObj>( name, config, nh);
+    };
+    factory.registerBuilder<BTPubFakeHoldObj>( "BTPubFakeHoldObj", builder_fakepublish);
 
 
 
@@ -201,10 +215,13 @@ static const char* xml_text = R"(
     // Create a logger
     StdCoutLogger logger_cout(tree);
 
-    // Create some loggers.
-//    StdCoutLogger   logger_cout(tree);
-//    FileLogger      logger_file(tree, "bt_trace.fbl");
-//    MinitraceLogger logger_minitrace(tree, "bt_trace.json");
+    MinitraceLogger logger_minitrace(tree, "bt_trace.json");
+    FileLogger logger_file(tree, "bt_trace.fbl");
+#ifdef ZMQ_FOUND
+    PublisherZMQ publisher_zmq(tree);
+#endif
+
+    printTreeRecursively(tree.root_node);
     NodeStatus status = NodeStatus::RUNNING;
 
     while (ros::ok()) {

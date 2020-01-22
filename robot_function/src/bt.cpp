@@ -118,7 +118,7 @@ BT::NodeStatus BTCheckCondition::tick()
       throw BT::RuntimeError("missing required input [targetin]");
     }
     gettarget subtarget = robot_obj.KeepDistanceToTarget(_obstarget, _height);
-    if (robot_obj.comparePoses(_move_group, subtarget.target_pose, 0.05, 0.05))
+    if (robot_obj.comparePoses(_move_group, subtarget.target_pose, 0.01, 0.01))
     {
       return BT::NodeStatus::SUCCESS;
     }
@@ -263,7 +263,7 @@ BT::NodeStatus BTIsHoldObj::tick()
     isholdobj = robot_obj.IsHoldObj();
     // std::cout << "BTIsHoldObj: "<< isholdobj<<std::endl;
 
-    if(isholdobj)
+    if(!isholdobj)
     {
       break;
     }
@@ -409,4 +409,16 @@ BT::NodeStatus BTAdvertiseGripperCommand::tick()
   setOutput<std::string>("commandout", _command);
   return BT::NodeStatus::SUCCESS;
 
+}
+
+BT::NodeStatus BTPubFakeHoldObj::tick()
+{
+  while(!_aborted)
+  {
+    std_msgs::Bool msg;
+    msg.data = true;
+    RobotFunction robot_obj(_nh);
+    robot_obj.pub_fake_hold_obj.publish(msg);
+    return BT::NodeStatus::SUCCESS;
+  }
 }

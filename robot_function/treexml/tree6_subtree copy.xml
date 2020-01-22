@@ -4,7 +4,9 @@
     <BehaviorTree ID="BehaviorTree">
         <Fallback name="PIck_hold_place">
             <SequenceStar name="Pick">
-                <Action ID="BTIsHoldObj"/>
+                <Inverter>
+                    <Action ID="BTIsHoldObj"/>
+                </Inverter>
                 <Action ID="BTCameraFindTarget" targetout="{observedpose}"/>
                 <Inverter>
                     <Parallel threshold="2">
@@ -28,31 +30,34 @@
     <!-- ////////// -->
     <BehaviorTree ID="Pick">
         <Fallback>
-            <Sequence name="hold">
-                <Sequence>
-                    <SetBlackboard output_key="height" value="-0.08"/>
-                    <Action ID="BTCheckCondition" heightin="{height}" targetin="{ObsObjPose}"/>
-                </Sequence>
-                <SetBlackboard output_key="height" value="0.15"/>
+            <Sequence name="go_above_open">
+                <Inverter>
+                    <Sequence>
+                        <SetBlackboard output_key="height" value="0.1"/>
+                        <Action ID="BTCheckCondition" heightin="{height}" targetin="{ObsObjPose}"/>
+                    </Sequence>
+                </Inverter>
+                <SetBlackboard output_key="height" value="0.1"/>
                 <Action ID="BTCloseToTarget" height="{height}" targetin="{ObsObjPose}" targetout="{TargetPose}"/>
-                <SetBlackboard output_key="gripperin" value="close"/>
+                <SetBlackboard output_key="gripperin" value="open"/>
                 <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{GripperOut}"/>
-                <!-- <Action ID="BTPubFakeHoldObj"/> -->
             </Sequence>
             <Sequence name="go_down_close">
-                <Sequence>
-                    <SetBlackboard output_key="height" value="0.1"/>
-                    <Action ID="BTCheckCondition" heightin="{height}" targetin="{ObsObjPose}"/>
-                </Sequence>
+                <Inverter>
+                    <Sequence>
+                        <SetBlackboard output_key="height" value="-0.08"/>
+                        <Action ID="BTCheckCondition" heightin="{height}" targetin="{ObsObjPose}"/>
+                    </Sequence>
+                </Inverter>
                 <SetBlackboard output_key="height" value="-0.08"/>
                 <Action ID="BTCloseToTarget" height="{height}" targetin="{ObsObjPose}" targetout="{TargetPose}"/>
                 <SetBlackboard output_key="gripperin" value="close"/>
                 <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{GripperOut}"/>
             </Sequence>
-            <Sequence name="go_above">
+            <Sequence name="hold_up">
                 <SetBlackboard output_key="height" value="0.1"/>
                 <Action ID="BTCloseToTarget" height="{height}" targetin="{ObsObjPose}" targetout="{TargetPose}"/>
-                <SetBlackboard output_key="gripperin" value="open"/>
+                <SetBlackboard output_key="gripperin" value="no"/>
                 <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{GripperOut}"/>
             </Sequence>
         </Fallback>
@@ -91,7 +96,6 @@
             <input_port default="{targetpose}" name="goal"/>
             <output_port default="{plan}" name="makeplan"/>
         </Action>
-        <Action ID="BTPubFakeHoldObj"/>
         <Action ID="BTWaitForTarget">
             <input_port default="{TargetPose}" name="targetin"/>
             <output_port default="{targetpose}" name="targetout"/>

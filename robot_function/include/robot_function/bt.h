@@ -441,6 +441,27 @@ class BTAdvertiseGripperCommand: public BT::SyncActionNode
 
 }; 
 
+class BTPubFakeHoldObj: public BT::CoroActionNode
+{
+  public:
+    BTPubFakeHoldObj(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh)
+    : BT::CoroActionNode(name,config), _nh(nh)
+    {
+      _aborted = false;
+    }
+    BT::NodeStatus tick() override;
+
+    void halt() override
+    {
+      _aborted = true;
+      BT::CoroActionNode::halt();
+    }
+
+    private:
+    bool _aborted;
+    RobotFunction robot_obj();
+    ros::NodeHandle _nh;
+};
 
 inline void RegisterNodes(BT::BehaviorTreeFactory& factory)
 {

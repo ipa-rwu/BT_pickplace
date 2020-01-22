@@ -41,6 +41,7 @@ void RobotFunction::InitialiseMoveit(ros::NodeHandle nh, moveit::planning_interf
   text_pose.translation().z() = 1.75;
   visual_tools->publishText(text_pose, "Kogrob Demo", rvt::WHITE, rvt::XLARGE);
   visual_tools->trigger();
+  pub_fake_hold_obj = nh.advertise<std_msgs::Bool>("/camera/target/hold", 1);
   // planning_scene_diff_publisher = nh.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
 
 }
@@ -51,12 +52,12 @@ bool RobotFunction::comparePoses(moveit::planning_interface::MoveGroupInterface 
 {
   geometry_msgs::Pose pose1 = move_group->getCurrentPose().pose;
   if (  abs(pose1.position.z-pose2.position.z ) <= delta_posistion
-        && abs(pose1.position.y-pose2.position.y ) <= delta_posistion
-        && abs(pose1.position.z-pose2.position.z ) <= delta_posistion
-        && abs(pose1.orientation.x - pose2.orientation.x) <= delta_orientation
-        && abs(pose1.orientation.y - pose2.orientation.y) <= delta_orientation
-        && abs(pose1.orientation.z - pose2.orientation.z) <= delta_orientation
-        && abs(pose1.orientation.w - pose2.orientation.w) <= delta_orientation
+        // && abs(pose1.position.y-pose2.position.y ) <= delta_posistion
+        // && abs(pose1.position.z-pose2.position.z ) <= delta_posistion
+        // && abs(pose1.orientation.x - pose2.orientation.x) <= delta_orientation
+        // && abs(pose1.orientation.y - pose2.orientation.y) <= delta_orientation
+        // && abs(pose1.orientation.z - pose2.orientation.z) <= delta_orientation
+        // && abs(pose1.orientation.w - pose2.orientation.w) <= delta_orientation
      )
   {
     return true;

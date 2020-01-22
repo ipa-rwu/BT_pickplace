@@ -4,7 +4,7 @@
 RobotFunction::RobotFunction(ros::NodeHandle nh)
 {
     camera_subscriber = nh.subscribe<geometry_msgs::Pose>("/camera/target/pose", 1000, &RobotFunction::CameraCallback, this);
-    // holdobj_subscriber = nh.subscribe<std_msgs::Bool>("/camera/target/hold", 1000, &RobotFunction::HoldObjCallback, this);
+    holdobj_subscriber = nh.subscribe<std_msgs::Bool>("/camera/target/hold", 1000, &RobotFunction::HoldObjCallback, this);
 }
 
 
@@ -34,7 +34,7 @@ void RobotFunction::InitialiseMoveit(ros::NodeHandle nh, moveit::planning_interf
   namespace rvt = rviz_visual_tools;
   move_group = new moveit::planning_interface::MoveGroupInterface(GROUP_MANIP);
   joint_model_group = move_group->getCurrentState()->getJointModelGroup(GROUP_MANIP);
-  
+
   visual_tools = new moveit_visual_tools::MoveItVisualTools("base_link");
   visual_tools->deleteAllMarkers();
   visual_tools->loadRemoteControl();
@@ -86,8 +86,22 @@ void RobotFunction::HoldObjCallback(const std_msgs::Bool::ConstPtr& holdobj_msg)
   {
       TagHoldObj = false;
   }
-  TagHoldObj = false;
   ROS_INFO_STREAM("HoldObjCallback callback heard TagHoldObj: " << holdobj_msg->data);
+}
+
+bool RobotFunction::IsHoldObj()
+{
+  if(TagHoldObj == true)
+  {
+    std::cout << "IsHoldObj: yes" << std::endl;
+    return true;
+  }
+  else if(TagHoldObj == false)
+  {
+    // std::cout << "IsHoldObj: no" << std::endl;
+    return false;
+  }
+  
 }
 
 pathplan RobotFunction::PathPlanning(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group)

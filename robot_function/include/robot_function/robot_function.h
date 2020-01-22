@@ -67,6 +67,8 @@ public:
     // const std::string GROUP_GRIPP = "endeffector";
     ros::Subscriber camera_subscriber;
     ros::Subscriber holdobj_subscriber;
+
+    ros::Publisher pub_fake_hold_obj;
     bool TagGetTargetPose = false;
     bool TagHoldObj = false;
     geometry_msgs::Pose newTarget;
@@ -77,6 +79,7 @@ public:
 
     void CameraCallback(const geometry_msgs::Pose::ConstPtr& camera_msg);
     void HoldObjCallback(const std_msgs::Bool::ConstPtr& holdobj_msg);
+    bool IsHoldObj();
     bool comparePoses(moveit::planning_interface::MoveGroupInterface *move_group, geometry_msgs::Pose pose2, double delta_posistion=0.05, double delta_orientation=0.01);
     // void MoveToNamedTarget(std::string target);
     pathplan PathPlanning(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group);

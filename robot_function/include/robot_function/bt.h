@@ -356,6 +356,7 @@ class BTIsHoldObj: public BT::CoroActionNode
     BTIsHoldObj(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh)
     : BT::CoroActionNode(name,config), _nh(nh)
     {
+      _aborted = false;
     }
     BT::NodeStatus tick() override;
 

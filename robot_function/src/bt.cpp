@@ -257,25 +257,24 @@ BT::NodeStatus BTIsHoldObj::tick()
   RobotFunction robot_obj(_nh);
   bool isholdobj;
   isholdobj = false;
-
-  isholdobj = robot_obj.TagHoldObj;
+  isholdobj = robot_obj.IsHoldObj();
   while (!_aborted)
   {
-    isholdobj = false;
-    if(isholdobj == true)
+    isholdobj = robot_obj.IsHoldObj();
+    // std::cout << "BTIsHoldObj: "<< isholdobj<<std::endl;
+
+    if(isholdobj)
     {
       break;
     }
-    if (isholdobj == false)
-    {
-      return BT::NodeStatus::FAILURE;
-    }
-    
   }
   std::cout << "BTIsHoldObj: SUCCESS"<< std::endl;
-
   return BT::NodeStatus::SUCCESS;
+      
 }
+
+
+
 
 BT::NodeStatus BTCheckGripperCommand::tick()
 {

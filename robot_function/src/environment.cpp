@@ -1,7 +1,9 @@
-/*
-void RobotFunction::AddCollissionObjects(moveit::planning_interface::MoveGroupInterface *move_group)
+#include "robot_function/environment.h"
+
+
+void EnvironmentSet::AddCollissionObjects(ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface *move_group)
 {
-  namespace rvt = rviz_visual_tools;
+  planning_scene_diff_publisher = nh.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
   moveit_msgs::AttachedCollisionObject object;
   object.link_name = move_group->getPlanningFrame();
   object.object.header.frame_id = move_group->getPlanningFrame();
@@ -116,4 +118,3 @@ void RobotFunction::AddCollissionObjects(moveit::planning_interface::MoveGroupIn
 
 }
 
-*/

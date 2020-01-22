@@ -4,7 +4,7 @@
 RobotFunction::RobotFunction(ros::NodeHandle nh)
 {
     camera_subscriber = nh.subscribe<geometry_msgs::Pose>("/camera/target/pose", 1000, &RobotFunction::CameraCallback, this);
-    holdobj_subscriber = nh.subscribe<std_msgs::Bool>("/camera/target/hold", 1000, &RobotFunction::HoldObjCallback, this);
+    // holdobj_subscriber = nh.subscribe<std_msgs::Bool>("/camera/target/hold", 1000, &RobotFunction::HoldObjCallback, this);
 }
 
 
@@ -34,17 +34,14 @@ void RobotFunction::InitialiseMoveit(ros::NodeHandle nh, moveit::planning_interf
   namespace rvt = rviz_visual_tools;
   move_group = new moveit::planning_interface::MoveGroupInterface(GROUP_MANIP);
   joint_model_group = move_group->getCurrentState()->getJointModelGroup(GROUP_MANIP);
-
-  // gripper
-  gripper_model_group = move_group->getCurrentState()->getJointModelGroup(GROUP_GRIPP);
-
+  
   visual_tools = new moveit_visual_tools::MoveItVisualTools("base_link");
   visual_tools->deleteAllMarkers();
   visual_tools->loadRemoteControl();
   text_pose.translation().z() = 1.75;
   visual_tools->publishText(text_pose, "Kogrob Demo", rvt::WHITE, rvt::XLARGE);
   visual_tools->trigger();
-  planning_scene_diff_publisher = nh.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
+  // planning_scene_diff_publisher = nh.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
 
 }
 
@@ -54,12 +51,12 @@ bool RobotFunction::comparePoses(moveit::planning_interface::MoveGroupInterface 
 {
   geometry_msgs::Pose pose1 = move_group->getCurrentPose().pose;
   if (  abs(pose1.position.z-pose2.position.z ) <= delta_posistion
-        // && abs(pose1.position.y-pose2.position.y ) <= delta_posistion
-        // && abs(pose1.position.z-pose2.position.z ) <= delta_posistion
-        // && abs(pose1.orientation.x - pose2.orientation.x) <= delta_orientation
-        // && abs(pose1.orientation.y - pose2.orientation.y) <= delta_orientation
-        // && abs(pose1.orientation.z - pose2.orientation.z) <= delta_orientation
-        // && abs(pose1.orientation.w - pose2.orientation.w) <= delta_orientation
+        && abs(pose1.position.y-pose2.position.y ) <= delta_posistion
+        && abs(pose1.position.z-pose2.position.z ) <= delta_posistion
+        && abs(pose1.orientation.x - pose2.orientation.x) <= delta_orientation
+        && abs(pose1.orientation.y - pose2.orientation.y) <= delta_orientation
+        && abs(pose1.orientation.z - pose2.orientation.z) <= delta_orientation
+        && abs(pose1.orientation.w - pose2.orientation.w) <= delta_orientation
      )
   {
     return true;
@@ -148,6 +145,19 @@ bool RobotFunction::PathPlanning(geometry_msgs::Pose target_pose, moveit::planni
 //   return move_group->execute(plan)==moveit::planning_interface::MoveItErrorCode::SUCCESS;
 // }
 
+bool RobotFunction::MoveGripper(moveit::planning_interface::MoveGroupInterface *move_group, std::string target)
+{
+  std::cout << "gripper command: "<< target <<std::endl;
+  move_group->getCurrentState();
+  move_group->setNamedTarget("open");
+  std::cout << "setNamedTarget " <<std::endl;
+  // moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+  // return gripper_group->execute(my_plan)==moveit::planning_interface::MoveItErrorCode::SUCCESS;;
+  return (move_group->move()==moveit::planning_interface::MoveItErrorCode::SUCCESS);
+
+}
+
+
 gettarget RobotFunction::CameraFindTarget()
 {
   gettarget newtarget;
@@ -178,7 +188,7 @@ gettarget RobotFunction::KeepDistanceToTarget(geometry_msgs::Pose target_pose, d
 bool RobotFunction::MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface *move_group, moveit::planning_interface::MoveGroupInterface::Plan my_plan)
 {
   move_group->setStartStateToCurrentState();
-  return move_group->execute(my_plan)==moveit::planning_interface::MoveItErrorCode::SUCCESS;;
+  return move_group->execute(my_plan)==moveit::planning_interface::MoveItErrorCode::SUCCESS;
     // bool success = (move_group->move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
     // move_group->move();
 }

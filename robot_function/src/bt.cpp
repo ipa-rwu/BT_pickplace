@@ -176,7 +176,7 @@ BT::NodeStatus BTPathPlanning::tick()
 
     // Reset this flag
   _aborted = false;
-  printf("[ BTPathPlanning: STARTED ]. Target: x=%.2f y=%.2f z=%.2f w=%.2f\n", _target.position.x, _target.position.y, _target.position.z, _target.orientation.w);
+  printf("[ BTPathPlanning: STARTED ]. Target: x=%.2f y=%.2f z=%.2f w=%.2f\n", _target.position.x, _target.position.y, _target.position.z, _target.orientation.x);
   _counter = 0;
   pathplan planpath = robot_obj.PathPlanning(_target,  _move_group);
   _success = planpath.success;
@@ -279,40 +279,43 @@ BT::NodeStatus BTIsHoldObj::tick()
 
 BT::NodeStatus BTCheckGripperCommand::tick()
 {
-  if( !getInput<std::string>("commandin") )
+  if( !getInput<std::string>("commandin", _commandin) )
   {
-    throw BT::RuntimeError("missing required input [plan]");
+    throw BT::RuntimeError("missing required input [commandin]");
   }
-  while (!_aborted)
-  {
-    getInput<std::string>("commandin", _commandin);
+  std::cout << "[ BTCheckGripperCommand: ]" << _commandin << std::endl;  
     if( _commandin == "open" )
     {
       setOutput<std::string>("commandout", _commandin);
-      break;
+      std::cout << "[ BTCheckGripperCommand: open ]" << std::endl;
+        return BT::NodeStatus::SUCCESS;
+
     }
     if( _commandin == "close" )
     {
       setOutput<std::string>("commandout", _commandin);
-      break;
+      std::cout << "[ BTCheckGripperCommand: close ]" << std::endl;
+        return BT::NodeStatus::SUCCESS;
+
     }
     if( _commandin == "no" )
     {
-      std::cout << "[ BTCheckGripperCommand: No command for gripper ]" << std::endl;
-      break;    
+      std::cout << "[ BTCheckGripperCommand: No command for gripper ]" << std::endl;  
+      return BT::NodeStatus::SUCCESS;
     }        
-  }
-  return BT::NodeStatus::SUCCESS;
 }
+
 
 BT::NodeStatus BTGripperMove::tick()
 {
+   GripperFunction _gripper_obj;
   if( !getInput<std::string>("commandin", _commandin) )
   {
-    throw BT::RuntimeError("missing required input [plan]");
+    throw BT::RuntimeError("missing required input [gripper command]");
   }
-  while (!_aborted)
-  {
+
+  std::cout << "[ BTGripperMove: " << _commandin << std::endl;  
+
     if (_gripper_obj.MoveGripper(_gripper_group, _commandin))
     {
       return BT::NodeStatus::SUCCESS;
@@ -321,7 +324,7 @@ BT::NodeStatus BTGripperMove::tick()
     {
         return BT::NodeStatus::FAILURE;
     }
-  }
+  
 }
 
 
@@ -396,4 +399,15 @@ BT::NodeStatus BTCloseToTarget::tick()
   }
   
   return BT::NodeStatus::FAILURE;  
+}
+
+BT::NodeStatus BTAdvertiseGripperCommand::tick()
+{
+  if( !getInput<std::string>("commandin", _command) )
+  {
+    throw BT::RuntimeError("missing required input [plan]");
+  }
+  setOutput<std::string>("commandout", _command);
+  return BT::NodeStatus::SUCCESS;
+
 }

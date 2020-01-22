@@ -12,7 +12,7 @@
                             <Action ID="BTWaitForTarget" targetin="{TargetPose}" targetout="{TargetPose}"/>
                             <Action ID="BTPathPlanning" goal="{TargetPose}" makeplan="{Plan}"/>
                             <Action ID="BTFollowPath" planedplan="{Plan}"/>
-                            <Action ID="BTCheckGripperCommand" commandin="{gripperin}}" commandout="{grippercom}"/>
+                            <Action ID="BTCheckGripperCommand" commandin="{gripperout}" commandout="{grippercom}"/>
                             <Action ID="BTGripperMove" commandin="{grippercom}"/>
                         </Sequence>
                         <Fallback name="Fallback updown">
@@ -26,6 +26,7 @@
                                 <SetBlackboard output_key="height" value="0.1"/>
                                 <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}"/>
                                 <SetBlackboard name="OpenGripper" output_key="gripperin" value="open"/>
+                                <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{gripperout}"/>
                             </Sequence>
                             <Sequence name="Sequence second">
                                 <Inverter>
@@ -37,11 +38,13 @@
                                 <SetBlackboard output_key="height" value="-0.08"/>
                                 <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}"/>
                                 <SetBlackboard output_key="gripperin" value="close"/>
+                                <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{gripperout}"/>
                             </Sequence>
                             <Sequence name="Sequence first">
                                 <SetBlackboard output_key="height" value="0.1"/>
                                 <Action ID="BTCloseToTarget" height="{height}" targetin="{observedpose}" targetout="{TargetPose}"/>
                                 <SetBlackboard output_key="{gripperin}" value="no"/>
+                                <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{gripperout}"/>
                             </Sequence>
                         </Fallback>
                     </Parallel>
@@ -51,6 +54,10 @@
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>
+        <Action ID="BTAdvertiseGripperCommand">
+            <input_port default="{gripperin}" name="commandin"/>
+            <output_port default="{gripperout}" name="commandout"/>
+        </Action>
         <Action ID="BTCameraFindTarget">
             <output_port default="{observedpose}" name="targetout"/>
         </Action>

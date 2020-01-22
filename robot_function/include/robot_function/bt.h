@@ -314,7 +314,6 @@ class BTGripperMove: public BT::CoroActionNode
     std::string _commandin;
     bool _aborted; 
     ros::NodeHandle _nh;
-    GripperFunction _gripper_obj;
     moveit::planning_interface::MoveGroupInterface *_gripper_group;
 };
 
@@ -413,6 +412,33 @@ class BTCloseToTarget: public BT::AsyncActionNode
     moveit::planning_interface::MoveGroupInterface *_move_group;
 };
 
+class BTAdvertiseGripperCommand: public BT::SyncActionNode
+{
+  public:
+    BTAdvertiseGripperCommand(const std::string& name, const BT::NodeConfiguration& config)
+    : BT::SyncActionNode(name, config)
+    {
+    }
+
+    BT::NodeStatus tick() override;
+
+    // static BT::PortsList providedPorts() 
+    // { 
+    //   // printf("Target positions: [ %.1f, %.1f ]\n", _target.position.x, _target.position.y );
+    //   return{ BT::InputPort<geometry_msgs::Pose>("target") };
+    // }
+
+    static BT::PortsList providedPorts() 
+    { 
+      return{  BT::OutputPort<std::string>("commandout"),
+      BT::InputPort<std::string>("commandin") };
+      // BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan"),
+    } 
+
+    private:
+    std::string _command;
+
+}; 
 
 
 inline void RegisterNodes(BT::BehaviorTreeFactory& factory)

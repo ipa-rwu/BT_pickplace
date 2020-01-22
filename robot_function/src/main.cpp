@@ -8,6 +8,7 @@
 // #include "bt_nodes.h"
 #include "robot_function/bt.h"
 #include "robot_function/robot_gripper.h"
+#include "robot_function/environment.h"
 
 
 using namespace BT;
@@ -32,12 +33,13 @@ static const char* xml_text = R"(
     // robot function
     RobotFunction robot_obj(nh);
     GripperFunction gripper_obj;
+    EnvironmentSet envrionment_obj;
 
     ros::AsyncSpinner spinner(1);
     spinner.start();
     
     std::string xml_filename;
-    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/gripperpick_ws/src/robot_function/treexml/tree5.xml");
+    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/kogrob_ws/src/robot_function/treexml/tree6_subtree.xml");
     ROS_INFO("Loading XML : %s", xml_filename.c_str());
     
 
@@ -45,16 +47,20 @@ static const char* xml_text = R"(
     moveit::planning_interface::MoveGroupInterface *gripper_group;
 
     const std::string GROUP_MANIP = "manipulator";
+    const std::string GROUP_GRIPP = "gripper";
+
     move_group = new moveit::planning_interface::MoveGroupInterface(GROUP_MANIP);
-    
-    const std::string GROUP_GRIPP = "endeffector";
+    gripper_group = new moveit::planning_interface::MoveGroupInterface(GROUP_GRIPP);
+
     //robot_obj.reset(new Robot_Function);
     robot_obj.InitialiseMoveit(nh, move_group);
     robot_obj.GetBasicInfo(move_group);
 
     gripper_obj.InitialiseGripper(nh, gripper_group);
+
+    envrionment_obj.AddCollissionObjects(nh, move_group);
+
     ROS_INFO("---------------------------");
-    // robot_obj.AddCollissionObjects(move_group);
     //Get moveit group name
     // robot_obj.InitialiseMoveit(nh);
     // robot_obj.GetBasicInfo();
@@ -129,6 +135,14 @@ static const char* xml_text = R"(
     };
     factory.registerBuilder<BTFollowPath>( "BTFollowPath",builder_executeplan);
 
+    NodeBuilder builder_grippermove = [&nh, &gripper_group](const std::string& name, const NodeConfiguration& config)
+    {
+        
+        return std::make_unique<BTGripperMove>( name, config, nh, gripper_group);
+    };
+    factory.registerBuilder<BTGripperMove>( "BTGripperMove", builder_grippermove);
+
+
     // Camera find target
     NodeBuilder builder_camerafindtarget = [&nh](const std::string& name, const NodeConfiguration& config)
     {
@@ -159,13 +173,9 @@ static const char* xml_text = R"(
     factory.registerBuilder<BTIsHoldObj>( "BTIsHoldObj", builder_isholdobj);
 
     factory.registerNodeType<BTCheckGripperCommand>("BTCheckGripperCommand");
+    factory.registerNodeType<BTAdvertiseGripperCommand>("BTAdvertiseGripperCommand");
 
-    NodeBuilder builder_grippermove = [&nh, &gripper_group](const std::string& name, const NodeConfiguration& config)
-    {
-        
-        return std::make_unique<BTGripperMove>( name, config, nh, gripper_group);
-    };
-    factory.registerBuilder<BTGripperMove>( "BTGripperMove", builder_grippermove);
+
 
 
     //PortsList robot_object_ports = { InputPort<boost::shared_ptr<Robot_Function>>(robot_obj) };

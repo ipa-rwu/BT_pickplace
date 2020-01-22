@@ -183,6 +183,10 @@ add_library(robot_gripper
    src/robot_gripper.cpp
  )
 
+ add_library(environment
+   src/environment.cpp
+ )
+
 target_link_libraries(
   ${PROJECT_NAME}
    ${catkin_LIBRARIES}
@@ -192,8 +196,8 @@ target_link_libraries(
 
 target_link_libraries(bt robot_function robot_gripper)
 
-target_link_libraries(main robot_function robot_gripper bt)
-
+target_link_libraries(main robot_function robot_gripper bt environment)
+#
 
 ## error can't find behaviortree_cpp_v3
 target_link_libraries(main

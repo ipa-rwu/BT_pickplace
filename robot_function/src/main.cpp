@@ -37,7 +37,7 @@ static const char* xml_text = R"(
     spinner.start();
     
     std::string xml_filename;
-    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/kogrob_ws/src/robot_function/treexml/tree5.xml");
+    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/gripperpick_ws/src/robot_function/treexml/tree5.xml");
     ROS_INFO("Loading XML : %s", xml_filename.c_str());
     
 
@@ -144,13 +144,29 @@ static const char* xml_text = R"(
     };
     factory.registerBuilder<BTCloseToTarget>( "BTCloseToTarget", builder_closetotarget);
 
-    NodeBuilder builder_checkconfition = [&nh, &move_group](const std::string& name, const NodeConfiguration& config)
+    NodeBuilder builder_checkcondition = [&nh, &move_group](const std::string& name, const NodeConfiguration& config)
     {
         
         return std::make_unique<BTCheckCondition>( name, config, nh, move_group);
     };
-    factory.registerBuilder<BTCheckCondition>( "BTCheckCondition", builder_checkconfition);
+    factory.registerBuilder<BTCheckCondition>( "BTCheckCondition", builder_checkcondition);
     
+    NodeBuilder builder_isholdobj = [&nh](const std::string& name, const NodeConfiguration& config)
+    {
+        
+        return std::make_unique<BTIsHoldObj>( name, config, nh);
+    };
+    factory.registerBuilder<BTIsHoldObj>( "BTIsHoldObj", builder_isholdobj);
+
+    factory.registerNodeType<BTCheckGripperCommand>("BTCheckGripperCommand");
+
+    NodeBuilder builder_grippermove = [&nh, &gripper_group](const std::string& name, const NodeConfiguration& config)
+    {
+        
+        return std::make_unique<BTGripperMove>( name, config, nh, gripper_group);
+    };
+    factory.registerBuilder<BTGripperMove>( "BTGripperMove", builder_grippermove);
+
 
     //PortsList robot_object_ports = { InputPort<boost::shared_ptr<Robot_Function>>(robot_obj) };
     //factory.registerSimpleAction("ApproachObject", ApproachObject, robot_object_ports );

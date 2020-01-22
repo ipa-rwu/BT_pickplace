@@ -38,9 +38,9 @@ private:
     Eigen::Isometry3d text_pose = Eigen::Isometry3d::Identity();
 
 public:
-    GripperFunction(){};
-    GripperFunction(ros::NodeHandle nh);
-    ~GripperFunction(){};
+    // GripperFunction(){};
+    // GripperFunction(ros::NodeHandle nh);
+    // ~GripperFunction(){};
 
 
     // moveit::planning_interface::MoveGroupInterface *move_group;
@@ -50,7 +50,7 @@ public:
     void InitialiseGripper(ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface *gripper_group);
 
     // void CameraCallback(const geometry_msgs::Pose::ConstPtr& camera_msg);
-    bool OpenGripper(moveit::planning_interface::MoveGroupInterface *gripper_group, std::string target);
+    bool MoveGripper(moveit::planning_interface::MoveGroupInterface *gripper_group, std::string target);
 
 };
 

@@ -6,6 +6,7 @@
 
 #include <moveit/move_group_interface/move_group_interface.h>
 #include "robot_function/robot_function.h"
+#include "robot_function/robot_gripper.h"
 
 
 inline void SleepMS(int ms)
@@ -133,8 +134,6 @@ class BTWaitForTarget : public BT::AsyncActionNode
       _target.orientation.z = 0.0;
       _target.orientation.w = 0.0;
       _pretarget = _target;
-      _statewaitfortarget = true;
-      _stateexecutefree = true;
 
     }
     
@@ -157,8 +156,6 @@ class BTWaitForTarget : public BT::AsyncActionNode
     geometry_msgs::Pose _target;
     geometry_msgs::Pose _pretarget;
     bool _success;
-    bool _statewaitfortarget;
-    bool _stateexecutefree;
 };   
 
 /*
@@ -242,8 +239,6 @@ class BTFollowPath : public BT::AsyncActionNode
       _aborted = false;
       _success = false; 
       _counter = 0;   
-      _statewaitfortarget = false;
-      _stateexecutefree = false;
   
     }
     
@@ -266,8 +261,61 @@ class BTFollowPath : public BT::AsyncActionNode
     int _counter;
     moveit::planning_interface::MoveGroupInterface *_move_group;
     moveit::planning_interface::MoveGroupInterface::Plan _myplan;
-    bool  _statewaitfortarget;
-    bool _stateexecutefree;
+};
+
+class BTCheckGripperCommand: public BT::CoroActionNode
+{
+  public:
+    BTCheckGripperCommand(const std::string& name, const BT::NodeConfiguration& config)
+    : BT::CoroActionNode(name,config)
+    {
+    }
+    BT::NodeStatus tick() override;
+
+    void halt() override
+    {
+      _aborted = true;
+      BT::CoroActionNode::halt();
+    }
+
+    static BT::PortsList providedPorts() 
+    { 
+      return{  BT::InputPort<std::string>("commandin"), 
+      BT::OutputPort<std::string>("commandout")};
+    } 
+
+    private:
+    bool _aborted;
+    std::string _commandin;
+};
+
+
+class BTGripperMove: public BT::CoroActionNode
+{
+  public:
+    BTGripperMove(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface *gripper_group)
+    : BT::CoroActionNode(name,config),_nh(nh), _gripper_group(gripper_group)
+    {
+    }
+    BT::NodeStatus tick() override;
+
+    void halt() override
+    {
+      _aborted = true;
+      BT::CoroActionNode::halt();
+    }
+
+    static BT::PortsList providedPorts() 
+    { 
+      return{  BT::InputPort<std::string>("commandin")};
+    } 
+
+    private:
+    std::string _commandin;
+    bool _aborted; 
+    ros::NodeHandle _nh;
+    GripperFunction _gripper_obj;
+    moveit::planning_interface::MoveGroupInterface *_gripper_group;
 };
 
 
@@ -301,14 +349,12 @@ class BTCameraFindTarget : public BT::AsyncActionNode
     int _counter;
     RobotFunction robot_obj();
     ros::NodeHandle _nh;
-        bool _firsttime;
-
 };
 
-class BTHoldObjTarget: public BT::CoroActionNode
+class BTIsHoldObj: public BT::CoroActionNode
 {
   public:
-    BTHoldObjTarget(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh)
+    BTIsHoldObj(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh)
     : BT::CoroActionNode(name,config), _nh(nh)
     {
     }
@@ -345,9 +391,7 @@ class BTCloseToTarget: public BT::AsyncActionNode
     static BT::PortsList providedPorts()
     {
       return { BT::InputPort<geometry_msgs::Pose>("targetin"), BT::InputPort<double>("height"), 
-      BT::OutputPort<geometry_msgs::Pose>("targetout"), 
-      BT::InputPort<bool>("statewaittarget"),
-      BT::InputPort<bool>("stateexecutefree")};
+      BT::OutputPort<geometry_msgs::Pose>("targetout")};
     };
 
     virtual void halt() override
@@ -360,15 +404,13 @@ class BTCloseToTarget: public BT::AsyncActionNode
     bool _aborted;
     bool _gettarget;
     int _counter;
-    RobotFunction robot_obj();
+    RobotFunction _robot_obj();
     geometry_msgs::Pose _obstarget;
     geometry_msgs::Pose _pretarget;
     double _height;
     double _preheight;
     ros::NodeHandle _nh;
     moveit::planning_interface::MoveGroupInterface *_move_group;
-    bool _statewaitfortarget;
-    bool _stateexecutefree;
 };
 
 

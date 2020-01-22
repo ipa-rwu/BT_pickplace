@@ -10,7 +10,7 @@ void GripperFunction::InitialiseGripper(ros::NodeHandle nh, moveit::planning_int
 
 }
 
-bool GripperFunction::OpenGripper(moveit::planning_interface::MoveGroupInterface *gripper_group, std::string target)
+bool GripperFunction::MoveGripper(moveit::planning_interface::MoveGroupInterface *gripper_group, std::string target)
 {
   gripper_group->setNamedTarget(target);
   gripper_group->move();

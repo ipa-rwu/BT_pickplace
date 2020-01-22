@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS roslaunch)
 ## Declare a catkin package
 catkin_package()
 
-roslaunch_add_file_check(launch)
+#roslaunch_add_file_check(launch)
 
 ## Install ## 
 install(PROGRAMS scripts/timed_roslaunch 

@@ -190,7 +190,7 @@ target_link_libraries(
    ${GSTREAMER_LIBRARIES}
  )
 
-target_link_libraries(bt robot_function)
+target_link_libraries(bt robot_function robot_gripper)
 
 target_link_libraries(main robot_function robot_gripper bt)
 

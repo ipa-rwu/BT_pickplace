@@ -136,11 +136,6 @@ BT::NodeStatus BTWaitForTarget::tick()
   //   // return BT::NodeStatus::FAILURE;  
   //   return BT::NodeStatus::FAILURE;
   // }
-  _stateexecutefree = true;
-  _statewaitfortarget = true;
-  setOutput<bool>("statewaittarget", _statewaitfortarget);
-  std::cout << "[ BT_state wait for target: ]" << _statewaitfortarget << std::endl;
-  setOutput<bool>("stateexecutefree", _stateexecutefree);
   while (!_aborted)
   {
     _pretarget = _target;
@@ -162,9 +157,7 @@ BT::NodeStatus BTWaitForTarget::tick()
     }
   }
   std::cout << "BTWaitForTarget: SUCCESS"<< std::endl;
-  _statewaitfortarget = false;
   setOutput<geometry_msgs::Pose>("targetout", _target);
-  setOutput<bool>("statewaittarget", _statewaitfortarget);
   return BT::NodeStatus::SUCCESS;
 }
 
@@ -232,11 +225,8 @@ BT::NodeStatus BTFollowPath::tick()
 
     // Reset this flag
   _aborted = false;
-  _statewaitfortarget = false;
-  _stateexecutefree = false;
   _counter = 0;
-   setOutput<bool>("statewaittarget", _statewaitfortarget);
-   setOutput<bool>("stateexecutefree", _stateexecutefree);
+
 
   _success = robot_obj.MoveGroupExecutePlan(_move_group, _myplan);
   
@@ -244,23 +234,15 @@ BT::NodeStatus BTFollowPath::tick()
   {
     // this happens only if method halt() was invoked
     //_client.cancelAllGoals();
-    _stateexecutefree = true;   
-    setOutput<bool>("stateexecutefree", _stateexecutefree);
     return BT::NodeStatus::FAILURE; 
   }
 
   if (!_success)
   {
     std::cout << "[BTFollowPath: FAILED]" << std::endl;
-    _stateexecutefree = true;
-    setOutput<bool>("stateexecutefree", _stateexecutefree);
     return BT::NodeStatus::FAILURE;
   }
   std::cout << "[BTFollowPath: SUCCESS]" << _success << std::endl;
-  _stateexecutefree = true;
-  // _statewaitfortarget = true;
-  setOutput<bool>("stateexecutefree", _stateexecutefree);
-  // setOutput<bool>("statewaittarget", _statewaitfortarget);
 
   return BT::NodeStatus::SUCCESS; 
 }
@@ -270,7 +252,7 @@ void BTFollowPath::halt()
   _aborted = true;
 }
 
-BT::NodeStatus BTHoldObjTarget::tick()
+BT::NodeStatus BTIsHoldObj::tick()
 {
   RobotFunction robot_obj(_nh);
   bool isholdobj;
@@ -279,16 +261,69 @@ BT::NodeStatus BTHoldObjTarget::tick()
   isholdobj = robot_obj.TagHoldObj;
   while (!_aborted)
   {
-    isholdobj = robot_obj.TagHoldObj;
-    if(isholdobj)
+    isholdobj = false;
+    if(isholdobj == true)
     {
       break;
     }
+    if (isholdobj == false)
+    {
+      return BT::NodeStatus::FAILURE;
+    }
+    
   }
-  std::cout << "BTCameraFindTarget: SUCCESS"<< std::endl;
+  std::cout << "BTIsHoldObj: SUCCESS"<< std::endl;
 
   return BT::NodeStatus::SUCCESS;
 }
+
+BT::NodeStatus BTCheckGripperCommand::tick()
+{
+  if( !getInput<std::string>("commandin") )
+  {
+    throw BT::RuntimeError("missing required input [plan]");
+  }
+  while (!_aborted)
+  {
+    getInput<std::string>("commandin", _commandin);
+    if( _commandin == "open" )
+    {
+      setOutput<std::string>("commandout", _commandin);
+      break;
+    }
+    if( _commandin == "close" )
+    {
+      setOutput<std::string>("commandout", _commandin);
+      break;
+    }
+    if( _commandin == "no" )
+    {
+      std::cout << "[ BTCheckGripperCommand: No command for gripper ]" << std::endl;
+      break;    
+    }        
+  }
+  return BT::NodeStatus::SUCCESS;
+}
+
+BT::NodeStatus BTGripperMove::tick()
+{
+  if( !getInput<std::string>("commandin", _commandin) )
+  {
+    throw BT::RuntimeError("missing required input [plan]");
+  }
+  while (!_aborted)
+  {
+    if (_gripper_obj.MoveGripper(_gripper_group, _commandin))
+    {
+      return BT::NodeStatus::SUCCESS;
+    }
+    else
+    {
+        return BT::NodeStatus::FAILURE;
+    }
+  }
+}
+
 
 
 BT::NodeStatus BTCameraFindTarget::tick()
@@ -333,9 +368,8 @@ BT::NodeStatus BTCloseToTarget::tick()
   gettarget subtarget;
   gettarget presubtarget;
   subtarget.success = false;
-  _counter = 0;
-  _pretarget = _obstarget;
-  _preheight = _height;
+  // _pretarget = _obstarget;
+  // _preheight = _height;
   std::cout << "[ BT CLoseToTarget : I am here]"<< std::endl;
   while (!_aborted)
   {

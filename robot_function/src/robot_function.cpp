@@ -81,7 +81,16 @@ void RobotFunction::CameraCallback(const geometry_msgs::Pose::ConstPtr& camera_m
 
 void RobotFunction::HoldObjCallback(const std_msgs::Bool::ConstPtr& holdobj_msg)
 {
-  TagHoldObj = holdobj_msg->data;
+  if (holdobj_msg->data)
+  {
+      TagHoldObj =true;
+  }
+  else
+  {
+      TagHoldObj = false;
+  }
+  TagHoldObj = false;
+  ROS_INFO_STREAM("HoldObjCallback callback heard TagHoldObj: " << holdobj_msg->data);
 }
 
 pathplan RobotFunction::PathPlanning(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group)
@@ -148,7 +157,7 @@ gettarget RobotFunction::CameraFindTarget()
   if (newtarget.success)
   {
     newtarget.target_pose = newTarget;
-  //  std::cout << "CameraFindTarget: "<< newtarget.success << std::endl;
+    std::cout << "CameraFindTarget: "<< newtarget.success << std::endl;
     return newtarget;
   }
 }

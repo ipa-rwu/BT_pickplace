@@ -82,7 +82,7 @@ public:
     bool IsHoldObj();
     bool comparePoses(moveit::planning_interface::MoveGroupInterface *move_group, geometry_msgs::Pose pose2, double delta_posistion=0.05, double delta_orientation=0.01);
     // void MoveToNamedTarget(std::string target);
-    pathplan PathPlanning(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group);
+    pathplan PathPlanning(geometry_msgs::Pose target_pose, std::string target_name, moveit::planning_interface::MoveGroupInterface *move_group);
     
     void AdjustTrajectoryToFixTimeSequencing(moveit_msgs::RobotTrajectory &trajectory);
 

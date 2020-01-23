@@ -105,26 +105,26 @@ bool RobotFunction::IsHoldObj()
   
 }
 
-// Planning to a Pose goal
-pathplan RobotFunction::PathPlanning(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group)
+// Planning to a Pose goal or taget name
+pathplan RobotFunction::PathPlanning(geometry_msgs::Pose target_pose, std::string target_name, moveit::planning_interface::MoveGroupInterface *move_group)
 {
     TagGetTargetPose = false;
     std::cout<<"pathpanning"<<std::endl;
 
-    namespace rvt = rviz_visual_tools;
     pathplan result;
-    std::cout<<"target:" << target_pose << std::endl;
 
-    move_group->setPoseTarget(target_pose);
-    std::cout<<"set target" <<  std::endl;
-    // // show 
-    // visual_tools->publishAxisLabeled(target_pose, "pose");
-    // visual_tools->publishText(text_pose, "Pose Goal", rvt::WHITE, rvt::XLARGE);
-    // visual_tools->publishTrajectoryLine(result.plan.trajectory_, joint_model_group);
-    // visual_tools->trigger();
-    std::cout<<"move" <<  std::endl;
+    // provide target pose
+    if (target_name == "none")
+    {
+      std::cout<<"target:" << target_pose << std::endl;
+      move_group->setPoseTarget(target_pose);
+    }
+    // provide target name
+    else
+    {
+      move_group->setNamedTarget(target_name);
+    }
     result.success = (move_group->plan(result.plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-    ROS_INFO_NAMED("Demo", "Visualizing plan (pose goal) %s", result.success ? "" : "FAILED");
     return result;
 }
 

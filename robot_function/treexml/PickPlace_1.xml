@@ -13,8 +13,8 @@
                 <Action ID="BTIsHoldObj" tagisholdin="{tagishold}"/>
                 <SetBlackboard output_key="containerpose" value=""/>
                 <Parallel threshold="2">
-                    <SubTree GripperOut="gripperout" ID="Execution" TargetPose="targetpose"/>
-                    <SubTree ContainerPose="ContainerPose" GripperOut="gripperout" ID="Place_subtree" TagIsObjCon="tagisobjcon" TargetPose="targetpose"/>
+                    <SubTree GripperOut="gripperout" ID="Execution" TargetPose="targetpose" TargetName="targetname"/>
+                    <SubTree ContainerPose="ContainerPose" GripperOut="gripperout" ID="Place_subtree" TagIsObjCon="tagisobjcon" TargetPose="targetpose" />
                 </Parallel>
             </Sequence>
             <Sequence name="Pick">
@@ -29,7 +29,13 @@
     </BehaviorTree>
     <!-- ////////// -->
     <BehaviorTree ID="Execution">
-        <Action ID="BTWaitForTarget" targetin="{TargetPose}" targetout="{targetpose}"/>
+        <SequenceStar>
+            <Action ID="BTWaitForTarget" targetin="{TargetPose}" targetout="{targetpose}"/>
+            <Action ID="BTPathPlanning" goal="{targetpose}" makeplan="{plan}"/>
+            <Action ID="BTFollowPath" planedplan="{plan}"/>
+            <Action ID="BTCheckGripperCommand" commandin="{GripperOut}" commandout="{grippercom}"/>
+            <Action ID="BTGripperMove" commandin="{grippercom}"/>
+        </SequenceStar>
     </BehaviorTree>
     <!-- ////////// -->
     <BehaviorTree ID="Pick_subtree">
@@ -166,6 +172,7 @@
         <SubTree ID="Execution">
             <input_port default="gripperout" name="GripperOut"/>
             <input_port default="targetpose" name="TargetPose"/>
+            <input_port default="targetname" name="TargetName"/>
         </SubTree>
         <SubTree ID="Pick_subtree">
             <output_port default="gripperout" name="GripperOut"/>

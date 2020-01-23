@@ -139,36 +139,68 @@ BT::NodeStatus BTWaitForTarget::tick()
   while (!_aborted)
   {
     _pretarget = _target;
-    if(getInput<geometry_msgs::Pose>("targetin", _target) )
-    { 
-          std::cout << "BTWaitForTarget: got" << std::endl;    
-
-              break;
+    if( !getInput<std::string>("targetnamein", _target_name) )
+    {
+      throw BT::RuntimeError("missing required input [targetname]");
     }
-  }
-  std::cout << "BTWaitForTarget: SUCCESS"<< std::endl;
-  setOutput<geometry_msgs::Pose>("targetout", _target);
-  return BT::NodeStatus::SUCCESS;
+    // give name i.e. home
+    if (getInput<std::string>("targetnamein", _target_name))
+    {
+
+        setOutput<std::string>("targetnameout", _target_name);
+      if(getInput<geometry_msgs::Pose>("targetin", _target))
+      {
+        setOutput<geometry_msgs::Pose>("targetout", _target);
+        return BT::NodeStatus::SUCCESS;
+      }
+      if(getInput<geometry_msgs::Pose>("targetwaypointin", _target_waypoint))
+      {
+        setOutput<geometry_msgs::Pose>("targetwaypointout", _target_waypoint);
+        return BT::NodeStatus::SUCCESS;
+      }
+    }
+      
+  }  
 }
 
 
 BT::NodeStatus BTPathPlanning::tick()
 {
   RobotFunction robot_obj(_nh);
+  pathplan planpath;
   // auto res = getInput<geometry_msgs::Pose>("target");
-  if( !getInput<geometry_msgs::Pose>("goal", _target) )
+  // must define target name 
+  if( !getInput<std::string>("targetnamein", _target_name) )
   {
     // no target go back to wait for target
-    std::cout << "[ BTPathPlanning: No goal ]" << std::endl;
     // return BT::NodeStatus::FAILURE;  
-    throw BT::RuntimeError("missing required input [foal]");
+    throw BT::RuntimeError("missing required input [taget name]");
   }
+
+  // define waypoint or target pose
+  if( !getInput<geometry_msgs::Pose>("targetwaypointin", _target_waypoint) && !getInput<geometry_msgs::Pose>("goal", _target) )
+  {
+    // no target go back to wait for target
+    // return BT::NodeStatus::FAILURE;  
+    throw BT::RuntimeError("missing required input [goal or taget name]");
+  }
+
+  // get target waypoint
+  if(getInput<geometry_msgs::Pose>("targetwaypointin", _target_waypoint))
+  {
+    printf("[ BTPathPlanning: STARTED ]. Target: x=%.2f y=%.2f z=%.2f w=%.2f\n", _target.position.x, _target.position.y, _target.position.z, _target.orientation.x);
+    planpath = robot_obj.CartesianPathPlan(_target_waypoint, _move_group, _eef_step, _jump_threshold);
+  }
+
+  // get target pose
+
+  if(getInput<geometry_msgs::Pose>("goal", _target))
+  {
+   planpath = robot_obj.PathPlanning(_target, _target_name, _move_group);
+  }  
 
     // Reset this flag
   _aborted = false;
-  printf("[ BTPathPlanning: STARTED ]. Target: x=%.2f y=%.2f z=%.2f w=%.2f\n", _target.position.x, _target.position.y, _target.position.z, _target.orientation.x);
-  _counter = 0;
-  pathplan planpath = robot_obj.PathPlanning(_target,  _move_group);
   _success = planpath.success;
   // while (!_aborted && _counter++ < 25)
   //   while (!_aborted)
@@ -195,10 +227,6 @@ BT::NodeStatus BTPathPlanning::tick()
   return BT::NodeStatus::SUCCESS; 
 }
 
-void BTPathPlanning::halt()
-{
-  _aborted = true;
-}
 
 
 BT::NodeStatus BTFollowPath::tick()
@@ -236,15 +264,6 @@ BT::NodeStatus BTFollowPath::tick()
 
   return BT::NodeStatus::SUCCESS; 
 }
-
-void BTFollowPath::halt()
-{
-  _aborted = true;
-}
-
-
-
-
 
 
 BT::NodeStatus BTCheckGripperCommand::tick()
@@ -298,6 +317,25 @@ BT::NodeStatus BTGripperMove::tick()
 }
 
 
+BT::NodeStatus BTStringtoPose::tick()
+{
+  
+    if ( !getInput<PositionGo>("stringin", _goal))
+    {
+        throw BT::RuntimeError("missing required input [goal]");
+    }
+
+	
+	_target_pose.position.x = _goal.px;
+	_target_pose.position.y = _goal.py;
+	_target_pose.position.z = _goal.pz;
+  _target_pose.position.x = _goal.ox;
+  _target_pose.position.y = _goal.oy;
+  _target_pose.position.z = _goal.oz;
+  _target_pose.orientation.w = _goal.ow;
+  setOutput<geometry_msgs::Pose>("targetpose", _target_pose);
+  return BT::NodeStatus::SUCCESS;
+}
 
 BT::NodeStatus BTCameraFindTarget::tick()
 {

@@ -146,15 +146,17 @@ class BTWaitForTarget : public BT::AsyncActionNode
     static BT::PortsList providedPorts()
     {
       return { BT::InputPort<geometry_msgs::Pose>("targetin"), BT::OutputPort<geometry_msgs::Pose>("targetout"),
-      BT::OutputPort<bool>("statewaittarget"),
-      BT::OutputPort<bool>("stateexecutefree")};
+       BT::InputPort<std::string>("targetnamein"), BT::OutputPort<std::string>("targetnameout"),
+       BT::InputPort<geometry_msgs::Pose>("targetwaypointin"), BT::OutputPort<geometry_msgs::Pose>("targetwaypointout")};
     };
    private:
     bool _aborted;
     bool _gettarget;
     int _counter;
+    std::string _target_name;
     geometry_msgs::Pose _target;
     geometry_msgs::Pose _pretarget;
+    geometry_msgs::Pose _target_waypoint;
     bool _success;
 };   
 
@@ -201,11 +203,15 @@ class BTPathPlanning : public BT::AsyncActionNode
     {
       _aborted = false;
       _success = false;
+      _target_name = "home";
     }
 
     BT::NodeStatus tick() override;
 
-    virtual void halt() override;
+    virtual void halt() override
+    {
+      _aborted = true;
+    }
 
     // static BT::PortsList providedPorts() 
     // { 
@@ -216,6 +222,8 @@ class BTPathPlanning : public BT::AsyncActionNode
     static BT::PortsList providedPorts() 
     { 
       return{  BT::InputPort<geometry_msgs::Pose>("goal"),
+          BT::InputPort<std::string>("targetnamein"),
+           BT::InputPort<geometry_msgs::Pose>("targetwaypointin"),
          BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("makeplan")};
     } 
 
@@ -223,10 +231,14 @@ class BTPathPlanning : public BT::AsyncActionNode
     bool _success;
     bool _aborted; 
     geometry_msgs::Pose _target;
+    std::string _target_name;
+    geometry_msgs::Pose _target_waypoint;
     moveit::planning_interface::MoveGroupInterface::Plan _plan;
     int _counter;
     ros::NodeHandle _nh;
     moveit::planning_interface::MoveGroupInterface *_move_group;
+    const double _jump_threshold = 0.0;
+    const double _eef_step = 0.01;
     // RobotFunction _robot_obj();
 };
 
@@ -244,7 +256,10 @@ class BTFollowPath : public BT::AsyncActionNode
     
     BT::NodeStatus tick() override;
 
-    void halt() override;
+    virtual void halt() override
+    {
+      _aborted = true;
+    }
 
     static BT::PortsList providedPorts() 
     { 
@@ -376,6 +391,28 @@ class BTIsObjPose : public BT::SyncActionNode
     geometry_msgs::Pose _objpose;
 };
 
+class BTStringtoPose : public BT::SyncActionNode
+{
+  public:
+    BTStringtoPose(const std::string& name, const BT::NodeConfiguration& config)
+    : BT::SyncActionNode(name, config)
+    {
+    }
+
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts() 
+    { 
+      return{  BT::InputPort<PositionGo>("stringin"),
+               BT::OutputPort<geometry_msgs::Pose>("targetpose")};
+      // BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan"),
+    }
+
+  private:
+      geometry_msgs::Pose _target_pose;
+      PositionGo _goal;
+};
+
 class BTStringToBool : public BT::SyncActionNode
 {
   public:
@@ -398,7 +435,6 @@ class BTStringToBool : public BT::SyncActionNode
       bool _bool;
       std::string _string;
 };
-
 
 
 class BTIsHoldObj: public BT::SyncActionNode

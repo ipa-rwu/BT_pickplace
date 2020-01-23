@@ -47,7 +47,7 @@ static const char* xml_text = R"(
     spinner.start();
     
     std::string xml_filename;
-    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/kogrob_ws/src/robot_function/treexml/pick_subtree_1.xml");
+    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/kogrob_ws/src/robot_function/treexml/PickPlace.xml");
     ROS_INFO("Loading XML : %s", xml_filename.c_str());
     
 
@@ -196,6 +196,7 @@ static const char* xml_text = R"(
     factory.registerNodeType<BTIsObjPose>("BTIsObjPose");
     factory.registerNodeType<BTStringToBool>("BTStringToBool");
     factory.registerNodeType<BTIsObjContainer>("BTIsObjContainer");
+    factory.registerNodeType<BTStringtoPose>("BTStringtoPose");
 
 
     //PortsList robot_object_ports = { InputPort<boost::shared_ptr<Robot_Function>>(robot_obj) };

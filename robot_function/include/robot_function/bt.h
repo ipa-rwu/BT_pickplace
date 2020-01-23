@@ -334,7 +334,8 @@ class BTCameraFindTarget : public BT::AsyncActionNode
     static BT::PortsList providedPorts()
     {
       // return { BT::OutputPort<geometry_msgs::Pose>("targetout")};
-      return { BT::OutputPort<geometry_msgs::Pose>("targetout"), BT::InputPort<PositionGo>("targetin")};
+      return { BT::OutputPort<geometry_msgs::Pose>("targetout"), BT::InputPort<PositionGo>("targetin"),
+                BT::OutputPort<bool>("tagisobjposeout")};
     };
 
     virtual void halt() override
@@ -350,6 +351,100 @@ class BTCameraFindTarget : public BT::AsyncActionNode
     ros::NodeHandle _nh;
 };
 
+
+class BTIsObjPose : public BT::SyncActionNode
+{
+  public:
+    BTIsObjPose(const std::string& name, const BT::NodeConfiguration& config)
+    : BT::SyncActionNode(name, config)
+    {
+      _tagisobjpose = false;
+    }
+
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts() 
+    { 
+      return{  BT::InputPort<geometry_msgs::Pose>("targetin"),
+               BT::InputPort<bool>("tagisobjposein"), 
+               BT::OutputPort<geometry_msgs::Pose>("targetout") };
+      // BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan"),
+    } 
+
+    private:
+    bool _tagisobjpose;
+    geometry_msgs::Pose _objpose;
+};
+
+class BTStringToBool : public BT::SyncActionNode
+{
+  public:
+    BTStringToBool(const std::string& name, const BT::NodeConfiguration& config)
+    : BT::SyncActionNode(name, config)
+    {
+      _bool = false;
+    }
+
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts() 
+    { 
+      return{  BT::InputPort<std::string>("stringin"),
+               BT::OutputPort<bool>("boolout")};
+      // BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan"),
+    }
+
+  private:
+      bool _bool;
+      std::string _string;
+};
+
+
+
+class BTIsHoldObj: public BT::SyncActionNode
+{
+  public:
+    BTIsHoldObj(const std::string& name, const BT::NodeConfiguration& config)
+    : BT::SyncActionNode(name,config)
+    {
+      _tagishold = false;
+    }
+
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts() 
+    { 
+      return{ BT::InputPort<bool>("tagisholdin") };
+      // BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan"),
+    } 
+
+    private:
+    bool _tagishold;
+};
+
+class BTIsObjContainer: public BT::SyncActionNode
+{
+  public:
+    BTIsObjContainer(const std::string& name, const BT::NodeConfiguration& config)
+    : BT::SyncActionNode(name,config)
+    {
+      _tagisobjcon = false;
+    }
+
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts() 
+    { 
+      return{ BT::InputPort<bool>("tagisobjconin") };
+      // BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan"),
+    } 
+
+    private:
+    bool _tagisobjcon;
+};
+
+
+/*
 class BTIsHoldObj: public BT::CoroActionNode
 {
   public:
@@ -372,7 +467,7 @@ class BTIsHoldObj: public BT::CoroActionNode
     ros::NodeHandle _nh;
 
 };
-
+*/
 
 class BTCloseToTarget: public BT::AsyncActionNode
 {

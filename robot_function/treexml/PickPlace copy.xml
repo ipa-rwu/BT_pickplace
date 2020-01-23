@@ -14,7 +14,8 @@
                 <SetBlackboard output_key="containerpose" value=""/>
                 <Parallel threshold="2">
                     <SubTree GripperOut="gripperout" ID="Execution" TargetPose="targetpose"/>
-                    <SubTree ContainerPose="containerpose" GripperOut="gripperout" ID="Place_subtree" TagIsObjCon="tagisobjcon" TargetPose="targetpose"/>                       </Parallel>
+                    <SubTree GripperOut="gripperout" ID="Place_subtree" ConPose="containerpose" TagIsObjCon="tagisobjcon" TargetPose="targetpose"/>
+                </Parallel>
             </Sequence>
             <Sequence name="Pick">
                 <Action ID="BTIsObjPose" tagisobjposein="{tagisobjpose}" targetin="{observedpose}" targetout="{observedpose}"/>
@@ -81,7 +82,7 @@
             <Sequence name="Check back">
                 <Sequence name="Placed?">
                     <SetBlackboard output_key="height" value="0.4"/>
-                    <Action ID="BTCheckCondition" heightin="{height}" targetin="{ContainerPose}"/>
+                    <Action ID="BTCheckCondition" heightin="{height}" targetin="{ObsObjPose}"/>
                     <SetBlackboard output_key="string" value="true"/>
                     <Action ID="BTStringToBool" boolout="{IsInContainer}" stringin="string"/>
                 </Sequence>
@@ -89,20 +90,20 @@
             <Sequence name="go up">
                 <Sequence>
                     <SetBlackboard output_key="height" value="-0.2"/>
-                    <Action ID="BTCheckCondition" heightin="{height}" targetin="{ContainerPose}"/>
+                    <Action ID="BTCheckCondition" heightin="{height}" targetin="{ObsObjPose}"/>
                 </Sequence>
                 <SetBlackboard output_key="height" value="0.4"/>
-                <Action ID="BTCloseToTarget" height="{height}" targetin="{ContainerPose}" targetout="{TargetPose}"/>
+                <Action ID="BTCloseToTarget" height="{height}" targetin="{ObsObjPose}" targetout="{TargetPose}"/>
                 <SetBlackboard output_key="gripperin" value="open"/>
                 <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{GripperOut}"/>
             </Sequence>
             <Sequence name="Go down into container">
                 <Sequence>
                     <SetBlackboard output_key="height" value="0.15"/>
-                    <Action ID="BTCheckCondition" heightin="{height}" targetin="{ContainerPose}"/>
+                    <Action ID="BTCheckCondition" heightin="{height}" targetin="{ObsObjPose}"/>
                 </Sequence>
                 <SetBlackboard output_key="height" value="- 0.2"/>
-                <Action ID="BTCloseToTarget" height="{height}" targetin="{ContainerPose}" targetout="{TargetPose}"/>
+                <Action ID="BTCloseToTarget" height="{height}" targetin="{ObsObjPose}" targetout="{TargetPose}"/>
                 <SetBlackboard output_key="gripperin" value="open"/>
                 <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{GripperOut}"/>
             </Sequence>
@@ -179,10 +180,10 @@
             <output_port default="targetpose" name="TargetPose"/>
         </SubTree>
         <SubTree ID="Place_subtree"/>
-            <input_port default="ContainerPose" name="ContainerPose"/>
             <output_port default="gripperout" name="GripperOut"/>
+            <input_port default="containerpose" name="ContainerPose"/>
             <output_port default="tagisobjcon" name="TagIsObjCon"/>
-            <output_port default="targetpose" name="TargetPose"/>     
+            <output_port default="targetpose" name="TargetPose"/>        
     </TreeNodesModel>
     <!-- ////////// -->
 </root>

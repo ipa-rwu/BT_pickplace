@@ -105,6 +105,7 @@ bool RobotFunction::IsHoldObj()
   
 }
 
+// Planning to a Pose goal
 pathplan RobotFunction::PathPlanning(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group)
 {
     TagGetTargetPose = false;
@@ -126,6 +127,78 @@ pathplan RobotFunction::PathPlanning(geometry_msgs::Pose target_pose, moveit::pl
     ROS_INFO_NAMED("Demo", "Visualizing plan (pose goal) %s", result.success ? "" : "FAILED");
     return result;
 }
+
+
+void RobotFunction::AdjustTrajectoryToFixTimeSequencing(moveit_msgs::RobotTrajectory &trajectory)
+{
+
+  std::vector<ros::Duration> times_from_start;
+  times_from_start.resize(trajectory.joint_trajectory.points.size());
+
+  for(int i=0; i < times_from_start.size() ; i++)
+  {
+    times_from_start[i]= trajectory.joint_trajectory.points[i].time_from_start;
+  }
+
+  bool adjusted_flag=false;
+  for(int i=1; i< times_from_start.size()-1;i++)
+  {
+    if(times_from_start[i]==ros::Duration(0))
+    {
+      ros::Duration prev = times_from_start[i];
+      times_from_start[i] = ros::Duration((times_from_start[i-1].toSec()+times_from_start[i+1].toSec())/2.0);
+      ROS_WARN_STREAM("Recomputing point " << i << " from " << prev <<  " to: " << times_from_start[i-1] << " + " << times_from_start[i+1] << " = " <<times_from_start[i]);
+      adjusted_flag=true;
+    }
+  }
+
+  if( times_from_start.size()>1 &&  times_from_start[times_from_start.size()-1] == ros::Duration(0))
+  {
+    ROS_WARN_STREAM("Final point in trajectory has 0 timestamp, incrementing logically");
+    times_from_start[times_from_start.size()-1] = times_from_start[times_from_start.size()-2] + ros::Duration(0.1);
+    adjusted_flag=true;
+  }
+
+  if(adjusted_flag)
+  {
+    for(int i=0; i< times_from_start.size(); i++)
+    {
+      trajectory.joint_trajectory.points[i].time_from_start = times_from_start[i];
+      ROS_INFO_STREAM("Recomputed time point " << i << " : " << trajectory.joint_trajectory.points[i].time_from_start );
+    }
+  }
+
+}
+
+
+// Planning Cartesian Paths waypoints
+pathplan RobotFunction::CartesianPathPlan(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group,
+double eef_step, double jump_threshold)
+{
+  TagGetTargetPose = false;
+  pathplan result;
+  move_group->setStartStateToCurrentState();
+  std::vector<geometry_msgs::Pose> waypoints;
+  waypoints.push_back(move_group->getCurrentPose().pose);
+  waypoints.push_back(target_pose);
+
+  moveit_msgs::RobotTrajectory trajectory;
+  double fraction=0.0;
+  while(fraction<0.5)
+  {
+    fraction = move_group->computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
+  }
+
+  AdjustTrajectoryToFixTimeSequencing(trajectory);
+
+  result.plan.trajectory_ = trajectory;
+  result.success = true;
+
+  return result;
+}
+
+
+
 
 /*
 bool RobotFunction::PathPlanning(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group)
@@ -213,3 +286,10 @@ bool RobotFunction::MoveGroupExecutePlan(moveit::planning_interface::MoveGroupIn
 // {
 
 // }
+
+void RobotFunction::PubFakeHoldObj()
+{
+  std_msgs::Bool msg;
+  msg.data = true;
+  pub_fake_hold_obj.publish(msg);
+}

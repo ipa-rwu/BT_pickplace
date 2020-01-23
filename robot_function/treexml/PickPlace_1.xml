@@ -14,7 +14,8 @@
                 <SetBlackboard output_key="containerpose" value=""/>
                 <Parallel threshold="2">
                     <SubTree GripperOut="gripperout" ID="Execution" TargetPose="targetpose"/>
-                    <SubTree ContainerPose="containerpose" GripperOut="gripperout" ID="Place_subtree" TagIsObjCon="tagisobjcon" TargetPose="targetpose"/>                       </Parallel>
+                    <SubTree ContainerPose="ContainerPose" GripperOut="gripperout" ID="Place_subtree" TagIsObjCon="tagisobjcon" TargetPose="targetpose"/>
+                </Parallel>
             </Sequence>
             <Sequence name="Pick">
                 <Action ID="BTIsObjPose" tagisobjposein="{tagisobjpose}" targetin="{observedpose}" targetout="{observedpose}"/>
@@ -28,13 +29,7 @@
     </BehaviorTree>
     <!-- ////////// -->
     <BehaviorTree ID="Execution">
-        <Root>
-            <Action ID="BTWaitForTarget" targetin="{TargetPose}" targetout="{targetpose}"/>
-            <Action ID="BTPathPlanning" goal="{targetpose}" makeplan="{plan}"/>
-            <Action ID="BTFollowPath" planedplan="{plan}"/>
-            <Action ID="BTCheckGripperCommand" commandin="{GripperOut}" commandout="{grippercom}"/>
-            <Action ID="BTGripperMove" commandin="{grippercom}"/>
-        </Root>
+        <Action ID="BTWaitForTarget" targetin="{TargetPose}" targetout="{targetpose}"/>
     </BehaviorTree>
     <!-- ////////// -->
     <BehaviorTree ID="Pick_subtree">
@@ -75,7 +70,7 @@
             </Sequence>
         </Fallback>
     </BehaviorTree>
-    <!-- ////////// -->
+     <!-- ////////// -->
     <BehaviorTree ID="Place_subtree">
         <Fallback>
             <Sequence name="Check back">
@@ -113,7 +108,7 @@
                 <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{GripperOut}"/>
             </Sequence>
         </Fallback>
-    </BehaviorTree>
+    </BehaviorTree>   
     <!-- ////////// -->
     <TreeNodesModel>
         <Undefined ID=""/>
@@ -178,11 +173,12 @@
             <output_port default="tagishold" name="TagIsHold"/>
             <output_port default="targetpose" name="TargetPose"/>
         </SubTree>
-        <SubTree ID="Place_subtree"/>
+        <SubTree ID="Place_subtree">
             <input_port default="ContainerPose" name="ContainerPose"/>
             <output_port default="gripperout" name="GripperOut"/>
             <output_port default="tagisobjcon" name="TagIsObjCon"/>
-            <output_port default="targetpose" name="TargetPose"/>     
+            <output_port default="targetpose" name="TargetPose"/>
+        </SubTree>
     </TreeNodesModel>
     <!-- ////////// -->
 </root>

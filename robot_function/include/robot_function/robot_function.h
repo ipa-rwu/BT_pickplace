@@ -83,12 +83,20 @@ public:
     bool comparePoses(moveit::planning_interface::MoveGroupInterface *move_group, geometry_msgs::Pose pose2, double delta_posistion=0.05, double delta_orientation=0.01);
     // void MoveToNamedTarget(std::string target);
     pathplan PathPlanning(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group);
+    
+    void AdjustTrajectoryToFixTimeSequencing(moveit_msgs::RobotTrajectory &trajectory);
+
+    pathplan CartesianPathPlan(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group,
+    double eef_step, double jump_threshold);
+
     bool MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface *move_group, moveit::planning_interface::MoveGroupInterface::Plan my_plan);
     gettarget CameraFindTarget();
     gettarget KeepDistanceToTarget(geometry_msgs::Pose target_pose, double height);
     // bool CameraFindTarget();
     // bool MoveToPose(); 
     bool MoveGripper(moveit::planning_interface::MoveGroupInterface *move_group, std::string target);
+    void PubFakeHoldObj();
+
 };
 
 

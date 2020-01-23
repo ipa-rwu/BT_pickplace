@@ -144,16 +144,6 @@ BT::NodeStatus BTWaitForTarget::tick()
           std::cout << "BTWaitForTarget: got" << std::endl;    
 
               break;
-
-      // if (!comparePoses (_pretarget, _target, 0.00, 0.00))
-      // {
-      //   break;
-      // }
-      // else
-      // {
-      //   return BT::NodeStatus::FAILURE;
-      // }
-      
     }
   }
   std::cout << "BTWaitForTarget: SUCCESS"<< std::endl;
@@ -252,26 +242,7 @@ void BTFollowPath::halt()
   _aborted = true;
 }
 
-BT::NodeStatus BTIsHoldObj::tick()
-{
-  RobotFunction robot_obj(_nh);
-  bool isholdobj;
-  isholdobj = false;
-  isholdobj = robot_obj.IsHoldObj();
-  while (!_aborted)
-  {
-    isholdobj = robot_obj.IsHoldObj();
-    // std::cout << "BTIsHoldObj: "<< isholdobj<<std::endl;
 
-    if(!isholdobj)
-    {
-      break;
-    }
-  }
-  std::cout << "BTIsHoldObj: SUCCESS"<< std::endl;
-  return BT::NodeStatus::SUCCESS;
-      
-}
 
 
 
@@ -352,6 +323,7 @@ BT::NodeStatus BTCameraFindTarget::tick()
   while (!_aborted)
   {
     subtarget = robot_obj.CameraFindTarget();
+    setOutput<bool>("tagisobjpose", false);
     if(subtarget.success)
     {
       break;
@@ -359,10 +331,79 @@ BT::NodeStatus BTCameraFindTarget::tick()
   }
   std::cout << "BTCameraFindTarget: SUCCESS"<< std::endl;
   setOutput<geometry_msgs::Pose>("targetout", subtarget.target_pose);
+  setOutput<bool>("tagisobjposeout", true);
   // setOutput<geometry_msgs::Pose>("targetout", target_pose);
 
   return BT::NodeStatus::SUCCESS;
 }
+
+BT::NodeStatus BTIsObjPose::tick()
+{
+  if( !getInput<bool>("tagisobjposein", _tagisobjpose) )
+  {
+    _tagisobjpose = false;
+    return BT::NodeStatus::FAILURE; 
+  }
+  if( _tagisobjpose )
+  {
+    if( !getInput<geometry_msgs::Pose>("targetin", _objpose))
+    {
+    throw BT::RuntimeError("missing required input [plan]");
+   }
+    setOutput<geometry_msgs::Pose>("targetout", _objpose);
+    return BT::NodeStatus::SUCCESS;
+  }
+  if ( !_tagisobjpose )
+  {
+    return BT::NodeStatus::FAILURE; 
+  }
+}
+
+
+BT::NodeStatus BTIsHoldObj::tick()
+{
+  /*
+  RobotFunction robot_obj(_nh);
+  bool isholdobj;
+  isholdobj = false;
+  isholdobj = robot_obj.IsHoldObj();
+  while (!_aborted)
+  {
+    isholdobj = robot_obj.IsHoldObj();
+    // std::cout << "BTIsHoldObj: "<< isholdobj<<std::endl;
+
+    if(!isholdobj)
+    {
+      break;
+    }
+  }
+  std::cout << "BTIsHoldObj: SUCCESS"<< std::endl;
+  return BT::NodeStatus::SUCCESS;
+  */
+  if( !getInput<bool>("tagisholdin", _tagishold) || !_tagishold)
+  {
+    _tagishold = false;
+    return BT::NodeStatus::FAILURE; 
+  }
+  if( _tagishold )
+  {
+    return BT::NodeStatus::SUCCESS;
+  }      
+}
+
+BT::NodeStatus BTIsObjContainer::tick()
+{
+  if( !getInput<bool>("tagisholdin", _tagisobjcon) || !_tagisobjcon)
+  {
+    _tagisobjcon = false;
+    return BT::NodeStatus::FAILURE; 
+  }
+  if( _tagisobjcon )
+  {
+    return BT::NodeStatus::SUCCESS;
+  }  
+}
+
 
 BT::NodeStatus BTCloseToTarget::tick()
 {
@@ -413,12 +454,31 @@ BT::NodeStatus BTAdvertiseGripperCommand::tick()
 
 BT::NodeStatus BTPubFakeHoldObj::tick()
 {
+  RobotFunction robot_obj(_nh);
   while(!_aborted)
   {
-    std_msgs::Bool msg;
-    msg.data = true;
-    RobotFunction robot_obj(_nh);
-    robot_obj.pub_fake_hold_obj.publish(msg);
+    robot_obj.PubFakeHoldObj();
     return BT::NodeStatus::SUCCESS;
   }
+}
+
+BT::NodeStatus BTStringToBool::tick()
+{
+  if( !getInput<std::string>("stringin", _string) )
+  {
+    throw BT::RuntimeError("missing required input [plan]");
+  }
+  if( _string == "true")
+  {
+    _bool = true;
+    setOutput<bool>("boolout", _bool);
+    
+  }
+  if( _string == "false")
+  {
+    _bool = false;
+    setOutput<bool>("boolout", _bool);
+    
+  }
+  return BT::NodeStatus::SUCCESS;
 }

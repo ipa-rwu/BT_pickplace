@@ -47,7 +47,7 @@ static const char* xml_text = R"(
     spinner.start();
     
     std::string xml_filename;
-    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/gripperpick_ws/src/robot_function/treexml/tree6_subtree.xml");
+    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/kogrob_ws/src/robot_function/treexml/pick_subtree_1.xml");
     ROS_INFO("Loading XML : %s", xml_filename.c_str());
     
 
@@ -172,16 +172,17 @@ static const char* xml_text = R"(
         return std::make_unique<BTCheckCondition>( name, config, nh, move_group);
     };
     factory.registerBuilder<BTCheckCondition>( "BTCheckCondition", builder_checkcondition);
-    
+
+    /*    
     NodeBuilder builder_isholdobj = [&nh](const std::string& name, const NodeConfiguration& config)
     {
         
         return std::make_unique<BTIsHoldObj>( name, config, nh);
     };
     factory.registerBuilder<BTIsHoldObj>( "BTIsHoldObj", builder_isholdobj);
+    */
+    factory.registerNodeType<BTIsHoldObj>( "BTIsHoldObj");
 
-    factory.registerNodeType<BTCheckGripperCommand>("BTCheckGripperCommand");
-    factory.registerNodeType<BTAdvertiseGripperCommand>("BTAdvertiseGripperCommand");
 
     NodeBuilder builder_fakepublish = [&nh](const std::string& name, const NodeConfiguration& config)
     {
@@ -190,6 +191,11 @@ static const char* xml_text = R"(
     };
     factory.registerBuilder<BTPubFakeHoldObj>( "BTPubFakeHoldObj", builder_fakepublish);
 
+    factory.registerNodeType<BTCheckGripperCommand>("BTCheckGripperCommand");
+    factory.registerNodeType<BTAdvertiseGripperCommand>("BTAdvertiseGripperCommand");
+    factory.registerNodeType<BTIsObjPose>("BTIsObjPose");
+    factory.registerNodeType<BTStringToBool>("BTStringToBool");
+    factory.registerNodeType<BTIsObjContainer>("BTIsObjContainer");
 
 
     //PortsList robot_object_ports = { InputPort<boost::shared_ptr<Robot_Function>>(robot_obj) };

@@ -8,6 +8,9 @@
                 <SetBlackboard output_key="target" value="name;home"/>
                 <SetBlackboard output_key="gripperout" value="open"/>
                 <SubTree GripperOut="gripperout" ID="Execution" Target="target"/>
+                <SetBlackboard output_key="tagishold" value="0"/>
+                <SetBlackboard output_key="tagisobjcon" value="0"/>
+                <SetBlackboard output_key="tagisobjpose" value="0"/>
             </Sequence>
             <Sequence name="Place">
                 <Action ID="BTIsHoldObj" tagisholdin="{tagishold}"/>
@@ -45,8 +48,7 @@
                     <SetBlackboard output_key="height" value="0.15"/>
                     <Action ID="BTCheckCondition" heightin="{height}" targetin="{ObsObjPose}"/>
                 </Sequence>
-                <SetBlackboard output_key="string" value="true"/>
-                <Action ID="BTStringToBool" boolout="{TagIsHold}" stringin="{string}"/>
+                <SetBlackboard output_key="TagIsHold" value="1"/>
             </Sequence>
             <Sequence name="go up">
                 <Sequence name="Wen down to pick?">

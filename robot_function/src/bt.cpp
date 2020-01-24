@@ -475,10 +475,15 @@ BT::NodeStatus BTIsHoldObj::tick()
 
 BT::NodeStatus BTIsObjContainer::tick()
 {
-  if( !getInput<bool>("tagisholdin", _tagisobjcon) || !_tagisobjcon)
+  if( !getInput<bool>("tagisobjconin", _tagisobjcon))
   {
     _tagisobjcon = false;
+    std::cout << "BTIsObjContainer missing required input [tagisobjcon]" << std::endl;
+  }
+  if (!_tagisobjcon)
+  {
     return BT::NodeStatus::FAILURE; 
+
   }
   if( _tagisobjcon )
   {

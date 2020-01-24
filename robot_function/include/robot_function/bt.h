@@ -68,33 +68,65 @@ struct PositionGo
   double px,py,pz,ox,oy,oz,ow;
 };
 
+struct TargetType
+{
+  std::string Name;
+  bool tag_name;
+  geometry_msgs::Pose Pose;
+  bool tag_pose; 
+  geometry_msgs::Pose Waypoint;
+  bool tag_waypoint;
+};
+
 
 namespace BT
 {
-	template <> inline PositionGo convertFromString(StringView str)
+	template <> inline TargetType convertFromString(StringView str)
 	{
 		// printf("Converting string: \"%s\"\n", str.data() );
 
 		// real numbers separated by semicolons
 		auto parts = splitString(str, ';');
-		if (parts.size() != 7)
-		{
-			throw RuntimeError("invalid input)");
-		}
-		else{
-			PositionGo output;
-			output.px     = convertFromString<double>(parts[0]);
-			output.py     = convertFromString<double>(parts[1]);
-      output.pz     = convertFromString<double>(parts[2]);
-      output.ox     = convertFromString<double>(parts[3]);
-      output.oy     = convertFromString<double>(parts[4]);
-      output.oz     = convertFromString<double>(parts[5]);
-      output.ow     = convertFromString<double>(parts[6]);
+    TargetType target;
+    target.tag_name = false;
+    target.tag_pose = false;
+    target.tag_waypoint = false;
+    target.Name = "none";
 
-			return output;
-		}
+    if (convertFromString<std::string>(parts[0]) == "name")
+    {
+      target.tag_name = true;
+      target.Name = convertFromString<std::string>(parts[1]);
+      return target;
+    }
+    if (convertFromString<std::string>(parts[0]) == "pose")
+    {
+      target.tag_pose = true;
+      target.Pose.position.x = convertFromString<double>(parts[1]);
+      target.Pose.position.y = convertFromString<double>(parts[2]);
+      target.Pose.position.z = convertFromString<double>(parts[3]);
+      target.Pose.orientation.x = convertFromString<double>(parts[4]);
+      target.Pose.orientation.y = convertFromString<double>(parts[5]);
+      target.Pose.orientation.z = convertFromString<double>(parts[6]);
+      target.Pose.orientation.w = convertFromString<double>(parts[7]);
+      return target;
+    }
+
+    if (convertFromString<std::string>(parts[0]) == "waypoint")
+    {
+      target.tag_waypoint = true;
+      target.Waypoint.position.x = convertFromString<double>(parts[1]);
+      target.Waypoint.position.y = convertFromString<double>(parts[2]);
+      target.Waypoint.position.z = convertFromString<double>(parts[3]);
+      target.Waypoint.orientation.x = convertFromString<double>(parts[4]);
+      target.Waypoint.orientation.y = convertFromString<double>(parts[5]);
+      target.Waypoint.orientation.z = convertFromString<double>(parts[6]);
+      target.Waypoint.orientation.w = convertFromString<double>(parts[7]);
+      return target;
+    }
 	}
 }
+
 
 class BTCheckCondition : public BT::SyncActionNode
 {
@@ -102,18 +134,23 @@ class BTCheckCondition : public BT::SyncActionNode
     BTCheckCondition(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface *move_group) :
         BT::SyncActionNode(name, config), _nh(nh), _move_group(move_group)
     {
+      _targetin.tag_name = false;
+      _targetin.tag_pose = false;
+      _targetin.tag_waypoint = false; 
+      _targetin.Name = "none";
     }
 
     // You must override the virtual function tick()
     BT::NodeStatus tick() override;
       static BT::PortsList providedPorts()
     {
-      return { BT::InputPort<geometry_msgs::Pose>("targetin"), BT::InputPort<double>("heightin")};
+      return { BT::InputPort<TargetType>("targetin"), BT::InputPort<double>("heightin")};
     };
   private:
     ros::NodeHandle _nh;
-    geometry_msgs::Pose _obstarget;
+    TargetType _targetin;
     double _height;
+    gettarget _subtarget;
     moveit::planning_interface::MoveGroupInterface *_move_group;
 
 };
@@ -125,39 +162,41 @@ class BTWaitForTarget : public BT::AsyncActionNode
     : BT::AsyncActionNode(name, config)
     {
       _aborted = false;
-      _gettarget = false;
-      _target.position.x = 0.0;
-      _target.position.y = 0.0;
-      _target.position.z = 0.0;
-      _target.orientation.x = 0.0;
-      _target.orientation.y = 0.0;
-      _target.orientation.z = 0.0;
-      _target.orientation.w = 0.0;
-      _pretarget = _target;
+      _targetout.Waypoint.position.x = 0.0;
+      _targetout.Waypoint.position.y = 0.0;
+      _targetout.Waypoint.position.z = 0.0;
+      _targetout.Waypoint.orientation.x = 0.0;
+      _targetout.Waypoint.orientation.y = 0.0;
+      _targetout.Waypoint.orientation.z = 0.0;
+      _targetout.Waypoint.orientation.w = 0.0;
+      _targetout.Pose.position.x = 0.0;
+      _targetout.Pose.position.y = 0.0;
+      _targetout.Pose.position.z = 0.0;
+      _targetout.Pose.orientation.x = 0.0;
+      _targetout.Pose.orientation.y = 0.0;
+      _targetout.Pose.orientation.z = 0.0;
+      _targetout.Pose.orientation.w = 0.0;
+      _targetout.tag_name = false;
+      _targetout.tag_pose = false;
+      _targetout.tag_waypoint = false; 
+      _targetout.Name = "none";
 
     }
     
     BT::NodeStatus tick() override;
-        virtual void halt() override
+    virtual void halt() override
     {
       _aborted = true;
     }
 
     static BT::PortsList providedPorts()
     {
-      return { BT::InputPort<geometry_msgs::Pose>("targetin"), BT::OutputPort<geometry_msgs::Pose>("targetout"),
-       BT::InputPort<std::string>("targetnamein"), BT::OutputPort<std::string>("targetnameout"),
-       BT::InputPort<geometry_msgs::Pose>("targetwaypointin"), BT::OutputPort<geometry_msgs::Pose>("targetwaypointout")};
+      return { BT::InputPort<TargetType>("targetin"), BT::OutputPort<TargetType>("targetout")};
     };
    private:
     bool _aborted;
-    bool _gettarget;
-    int _counter;
-    std::string _target_name;
-    geometry_msgs::Pose _target;
-    geometry_msgs::Pose _pretarget;
-    geometry_msgs::Pose _target_waypoint;
-    bool _success;
+    TargetType _targetin;
+    TargetType _targetout;
 };   
 
 /*
@@ -203,7 +242,10 @@ class BTPathPlanning : public BT::AsyncActionNode
     {
       _aborted = false;
       _success = false;
-      _target_name = "home";
+      _goal.tag_name = false;
+      _goal.tag_pose = false;
+      _goal.tag_waypoint = false; 
+      _goal.Name = "none";
     }
 
     BT::NodeStatus tick() override;
@@ -221,25 +263,20 @@ class BTPathPlanning : public BT::AsyncActionNode
 
     static BT::PortsList providedPorts() 
     { 
-      return{  BT::InputPort<geometry_msgs::Pose>("goal"),
-          BT::InputPort<std::string>("targetnamein"),
-           BT::InputPort<geometry_msgs::Pose>("targetwaypointin"),
+      return{  BT::InputPort<TargetType>("goal"),
          BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("makeplan")};
     } 
 
     private:
     bool _success;
     bool _aborted; 
-    geometry_msgs::Pose _target;
-    std::string _target_name;
-    geometry_msgs::Pose _target_waypoint;
+    TargetType _goal;
     moveit::planning_interface::MoveGroupInterface::Plan _plan;
-    int _counter;
+    pathplan _planpath;
     ros::NodeHandle _nh;
     moveit::planning_interface::MoveGroupInterface *_move_group;
     const double _jump_threshold = 0.0;
     const double _eef_step = 0.01;
-    // RobotFunction _robot_obj();
 };
 
 class BTFollowPath : public BT::AsyncActionNode
@@ -342,6 +379,10 @@ class BTCameraFindTarget : public BT::AsyncActionNode
     {
       _aborted = false;
       _gettarget = false;
+      _target.tag_name = false;
+      _target.tag_pose = false;
+      _target.tag_waypoint = false; 
+      _target.Name = "none";
     }
     
     BT::NodeStatus tick() override;
@@ -349,7 +390,7 @@ class BTCameraFindTarget : public BT::AsyncActionNode
     static BT::PortsList providedPorts()
     {
       // return { BT::OutputPort<geometry_msgs::Pose>("targetout")};
-      return { BT::OutputPort<geometry_msgs::Pose>("targetout"), BT::InputPort<PositionGo>("targetin"),
+      return { BT::OutputPort<TargetType>("targetout"), BT::InputPort<PositionGo>("targetin"),
                 BT::OutputPort<bool>("tagisobjposeout")};
     };
 
@@ -362,8 +403,12 @@ class BTCameraFindTarget : public BT::AsyncActionNode
     bool _aborted;
     bool _gettarget;
     int _counter;
+    TargetType _target;
     RobotFunction robot_obj();
     ros::NodeHandle _nh;
+    gettarget _subtarget;
+
+
 };
 
 
@@ -380,15 +425,15 @@ class BTIsObjPose : public BT::SyncActionNode
 
     static BT::PortsList providedPorts() 
     { 
-      return{  BT::InputPort<geometry_msgs::Pose>("targetin"),
+      return{  BT::InputPort<TargetType>("targetin"),
                BT::InputPort<bool>("tagisobjposein"), 
-               BT::OutputPort<geometry_msgs::Pose>("targetout") };
+               BT::OutputPort<TargetType>("targetout") };
       // BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan"),
     } 
 
     private:
     bool _tagisobjpose;
-    geometry_msgs::Pose _objpose;
+    TargetType _objpose;
 };
 
 class BTStringtoPose : public BT::SyncActionNode
@@ -411,6 +456,32 @@ class BTStringtoPose : public BT::SyncActionNode
   private:
       geometry_msgs::Pose _target_pose;
       PositionGo _goal;
+};
+
+class BTStringtoTarget : public BT::SyncActionNode
+{
+  public:
+    BTStringtoTarget(const std::string& name, const BT::NodeConfiguration& config)
+    : BT::SyncActionNode(name, config)
+    {
+      _targetout.tag_name = false;
+      _targetout.tag_pose = false;
+      _targetout.tag_waypoint = false; 
+      _targetout.Name = "none";
+    }
+
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts() 
+    { 
+      return{  BT::InputPort<std::string>("string"),
+               BT::OutputPort<TargetType>("targetout")};
+      // BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan"),
+    }
+
+  private:
+      TargetType _targetout;
+      std::string _stringin;
 };
 
 class BTStringToBool : public BT::SyncActionNode
@@ -514,15 +585,19 @@ class BTCloseToTarget: public BT::AsyncActionNode
     {
       _aborted = false;
       _gettarget = false;
-      _counter = 0;      
+      _counter = 0;   
+      _targetout.tag_name = false;
+      _targetout.tag_pose = false;
+      _targetout.tag_waypoint = false;
+      _targetout.Name = "none";   
     }
     
     BT::NodeStatus tick() override;
 
     static BT::PortsList providedPorts()
     {
-      return { BT::InputPort<geometry_msgs::Pose>("targetin"), BT::InputPort<double>("height"), 
-      BT::OutputPort<geometry_msgs::Pose>("targetout")};
+      return { BT::InputPort<TargetType>("targetin"), BT::InputPort<double>("height"), 
+      BT::OutputPort<TargetType>("targetout")};
     };
 
     virtual void halt() override
@@ -535,11 +610,11 @@ class BTCloseToTarget: public BT::AsyncActionNode
     bool _aborted;
     bool _gettarget;
     int _counter;
-    RobotFunction _robot_obj();
-    geometry_msgs::Pose _obstarget;
-    geometry_msgs::Pose _pretarget;
+    TargetType _obstarget;
+    TargetType _targetout;
+    geometry_msgs::Pose _goal;
     double _height;
-    double _preheight;
+    gettarget _subtarget;
     ros::NodeHandle _nh;
     moveit::planning_interface::MoveGroupInterface *_move_group;
 };

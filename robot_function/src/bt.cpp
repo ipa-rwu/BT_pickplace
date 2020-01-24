@@ -113,17 +113,32 @@ bool comparePoses(geometry_msgs::Pose pose1, geometry_msgs::Pose pose2, double d
 BT::NodeStatus BTCheckCondition::tick()
 {
     RobotFunction robot_obj(_nh);
-    if( !getInput<geometry_msgs::Pose>("targetin", _obstarget) || !getInput<double>("heightin", _height))
+    if( !getInput<TargetType>("targetin", _targetin))
     {
-      throw BT::RuntimeError("missing required input [targetin]");
+      throw BT::RuntimeError("BTCheckCondition missing required input [targetin]");
     }
-    std::cout << "container pose: " << _obstarget <<std::endl;
-    gettarget subtarget = robot_obj.KeepDistanceToTarget(_obstarget, _height);
-    if (robot_obj.comparePoses(_move_group, subtarget.target_pose, 0.01, 0.01))
+    if (!getInput<double>("heightin", _height))
+    {
+      throw BT::RuntimeError("BTCheckCondition missing required input [height]");
+
+    }
+
+    if(_targetin.tag_pose)
+    {
+      _subtarget = robot_obj.KeepDistanceToTarget(_targetin.Pose, _height);
+    }
+
+    if(_targetin.tag_waypoint)
+    {
+      _subtarget = robot_obj.KeepDistanceToTarget(_targetin.Waypoint, _height);
+    }
+
+    if (robot_obj.comparePoses(_move_group, _subtarget.target_pose, 0.01, 0.01))
     {
       return BT::NodeStatus::SUCCESS;
     }
-      return BT::NodeStatus::FAILURE;
+    
+    return BT::NodeStatus::FAILURE;
 }
 
 
@@ -137,89 +152,88 @@ BT::NodeStatus BTWaitForTarget::tick()
   //   // return BT::NodeStatus::FAILURE;  
   //   return BT::NodeStatus::FAILURE;
   // }
-  while (!_aborted)
+  while (!_aborted) 
   {
-    _pretarget = _target;
-    if( !getInput<std::string>("targetnamein", _target_name) )
-    {
-      throw BT::RuntimeError("missing required input [targetname]");
-    }
-    // give name i.e. home
-    if (getInput<std::string>("targetnamein", _target_name))
-    {
-
-        setOutput<std::string>("targetnameout", _target_name);
-        std::cout << "BTWaitForTarget got target name: "<< _target_name << std::endl;
-        if (_target_name != "none")
-        {
-          return BT::NodeStatus::SUCCESS;
-        }
-      if(getInput<geometry_msgs::Pose>("targetin", _target))
+  
+      if( getInput<TargetType>("targetin", _targetin))
       {
-        setOutput<geometry_msgs::Pose>("targetout", _target);
-        std::cout << "BTWaitForTarget got target pose: "<< _target.position.z << std::endl;
-        return BT::NodeStatus::SUCCESS;
-      }
-      if(getInput<geometry_msgs::Pose>("targetwaypointin", _target_waypoint))
-      {
-        setOutput<geometry_msgs::Pose>("targetwaypointout", _target_waypoint);
-         std::cout << "BTWaitForTarget got target waypoint: "<< _target_waypoint.position.z << std::endl;
-        return BT::NodeStatus::SUCCESS;
-      }
-    }
+        // throw BT::RuntimeError(" BTWaitForTarget missing required input [targetin]");
       
-  }  
+      _targetout = _targetin;
+      if (_targetout.tag_name == true)
+      {
+        // std::cout << "BTWaitForTarget got target name: "<< _targetout.Name << std::endl;
+        break;
+      }
+      if (_targetout.tag_pose == true)
+      {
+        // std::cout << "BTWaitForTarget got target pose: "<< _targetout.Pose.position.z << std::endl;
+        break;
+      }
+      if (_targetout.tag_waypoint == true)
+      {
+        // std::cout << "BTWaitForTarget got target waypoint: "<< _targetout.Waypoint.position.z  << std::endl;
+        break;
+      }    
+    }
+  }
+
+  std::cout << "BTWaitForTarget  target name: "<< _targetout.tag_name << std::endl;
+  std::cout << "BTWaitForTarget target pose: "<< _targetout.tag_pose << std::endl;
+  std::cout << "BTWaitForTarget target waypoint: "<< _targetout.tag_waypoint << std::endl;
+  setOutput<TargetType>("targetnameout", _targetout);
+  return BT::NodeStatus::SUCCESS;
+
 }
+
 
 
 BT::NodeStatus BTPathPlanning::tick()
 {
   RobotFunction robot_obj(_nh);
-  pathplan planpath;
+  _aborted = false;
   // auto res = getInput<geometry_msgs::Pose>("target");
   // must define target name 
-  if( !getInput<std::string>("targetnamein", _target_name) )
+  
+  if( !getInput<TargetType>("goal", _goal) )
   {
     // no target go back to wait for target
     // return BT::NodeStatus::FAILURE;  
-    throw BT::RuntimeError("missing required input [taget name]");
+    throw BT::RuntimeError("BTPathPlanning missing required input [goal]");
   }
-
   
-  if(_target_name != "none")
+  while(!_aborted)
   {
-    planpath = robot_obj.PathPlanning(_target, _target_name, _move_group);
-    std::cout << "BTPathPlanning: using name" << std::endl;
-  }
-  if(_target_name == "none")
-  {
-     // define waypoint or target pose
-    if( !getInput<geometry_msgs::Pose>("targetwaypointin", _target_waypoint) && !getInput<geometry_msgs::Pose>("goal", _target) )
+    if( getInput<TargetType>("goal", _goal) )
     {
-      // no target go back to wait for target
-      // return BT::NodeStatus::FAILURE;  
-      throw BT::RuntimeError("missing required input [goal or taget name]");
-    } 
-
-        // get target waypoint
-    if(getInput<geometry_msgs::Pose>("targetwaypointin", _target_waypoint))
-    {
-      printf("[ BTPathPlanning: Waypoint: x=%.2f y=%.2f z=%.2f w=%.2f\n", _target_waypoint.position.x, _target_waypoint.position.y, _target_waypoint.position.z, _target_waypoint.orientation.x);
-      planpath = robot_obj.CartesianPathPlan(_target_waypoint, _move_group, _eef_step, _jump_threshold);
+    if(_goal.tag_name)
+    {    
+      _planpath = robot_obj.PathPlanning(_goal.Pose, _goal.Name, _move_group);
+      std::cout << "BTPathPlanning: using name" << _goal.Name << std::endl;
+      break;
     }
-
-    // get target pose
-
-    if(getInput<geometry_msgs::Pose>("goal", _target))
+        
+    if(_goal.tag_pose)
+    {    
+      _planpath = robot_obj.PathPlanning(_goal.Pose, _goal.Name, _move_group);
+      printf("BTPathPlanning: Target pose: x=%.2f y=%.2f z=%.2f w=%.2f\n",
+      _goal.Pose.position.x, _goal.Pose.position.y, _goal.Pose.position.z, _goal.Pose.orientation.w);
+      break;    
+    }
+    
+    if(_goal.tag_waypoint)
     {
-      printf("[ BTPathPlanning: Target pose: x=%.2f y=%.2f z=%.2f w=%.2f\n", _target.position.x, _target.position.y, _target.position.z, _target.orientation.x);
-      planpath = robot_obj.PathPlanning(_target, _target_name, _move_group);
-    } 
+      _planpath = robot_obj.CartesianPathPlan( _goal.Waypoint, _move_group, _eef_step, _jump_threshold);
+      printf("BTPathPlanning: Waypoint: x=%.2f y=%.2f z=%.2f w=%.2f\n",
+      _goal.Waypoint.position.x, _goal.Waypoint.position.y, _goal.Waypoint.position.z, _goal.Waypoint.orientation.w);
+      break;  
+    }
+    }
   }
 
   // Reset this flag
-  _aborted = false;
-  _success = planpath.success;
+  
+  _success = _planpath.success;
   if (_aborted) 
   {
     // this happens only if method halt() was invoked
@@ -227,10 +241,11 @@ BT::NodeStatus BTPathPlanning::tick()
     return BT::NodeStatus::FAILURE;
   }
 
-  if (!_success) {
+  if (!_success) 
+  {
     return BT::NodeStatus::FAILURE;
   }
-  setOutput<moveit::planning_interface::MoveGroupInterface::Plan>("makeplan", planpath.plan);
+  setOutput<moveit::planning_interface::MoveGroupInterface::Plan>("makeplan", _planpath.plan);
   return BT::NodeStatus::SUCCESS; 
 }
 
@@ -345,11 +360,25 @@ BT::NodeStatus BTStringtoPose::tick()
   return BT::NodeStatus::SUCCESS;
 }
 
+
+BT::NodeStatus BTStringtoTarget::tick()
+{
+  
+    if ( !getInput<std::string>("stringin", _stringin))
+    {
+        throw BT::RuntimeError("missing required input [string]");
+    }
+  _targetout.Name = _stringin;
+  _targetout.tag_name = true;
+  setOutput<TargetType>("targetpose", _targetout);
+  return BT::NodeStatus::SUCCESS;
+}
+
+
 BT::NodeStatus BTCameraFindTarget::tick()
 {
   RobotFunction robot_obj(_nh);
-  gettarget subtarget;
-  subtarget.success = false;
+  _subtarget.success = false;
   // subtarget.success = true;
 	/*
   PositionGo goal;
@@ -365,18 +394,25 @@ BT::NodeStatus BTCameraFindTarget::tick()
   target_pose.orientation.w=1.0;
   */
 
-  subtarget = robot_obj.CameraFindTarget();
+  _subtarget = robot_obj.CameraFindTarget();
   while (!_aborted)
   {
-    subtarget = robot_obj.CameraFindTarget();
+    _subtarget = robot_obj.CameraFindTarget();
     setOutput<bool>("tagisobjpose", false);
-    if(subtarget.success)
+    if(_subtarget.success)
     {
+      _target.tag_pose = _subtarget.success;
       break;
     }
   }
   std::cout << "BTCameraFindTarget: SUCCESS"<< std::endl;
-  setOutput<geometry_msgs::Pose>("targetout", subtarget.target_pose);
+  _target.Pose = _subtarget.target_pose;
+  
+  std::cout << "BTCameraFindTarget  target name: "<< _target.tag_name << std::endl;
+  std::cout << "BTCameraFindTarget target pose: "<< _target.tag_pose << std::endl;
+  std::cout << "BTCameraFindTarget target waypoint: "<< _target.tag_waypoint << std::endl;
+  
+  setOutput<TargetType>("targetout", _target);
   setOutput<bool>("tagisobjposeout", true);
   // setOutput<geometry_msgs::Pose>("targetout", target_pose);
 
@@ -392,11 +428,11 @@ BT::NodeStatus BTIsObjPose::tick()
   }
   if( _tagisobjpose )
   {
-    if( !getInput<geometry_msgs::Pose>("targetin", _objpose))
+    if( !getInput<TargetType>("targetin", _objpose))
     {
     throw BT::RuntimeError("missing required input [plan]");
    }
-    setOutput<geometry_msgs::Pose>("targetout", _objpose);
+    setOutput<TargetType>("targetout", _objpose);
     return BT::NodeStatus::SUCCESS;
   }
   if ( !_tagisobjpose )
@@ -450,41 +486,57 @@ BT::NodeStatus BTIsObjContainer::tick()
   }  
 }
 
-
+// only accept pose or waypoint
+// update pose 
 BT::NodeStatus BTCloseToTarget::tick()
 {
   RobotFunction robot_obj(_nh);
-  gettarget subtarget;
-  gettarget presubtarget;
-  subtarget.success = false;
-  // _pretarget = _obstarget;
-  // _preheight = _height;
-  std::cout << "[ BT CLoseToTarget : I am here]"<< std::endl;
+  _subtarget.success = false;
+  
   while (!_aborted)
   {
-        if( !getInput<geometry_msgs::Pose>("targetin", _obstarget) || !getInput<double>("height", _height))
+        if( !getInput<TargetType>("targetin", _obstarget) || !getInput<double>("height", _height))
         {
-         throw BT::RuntimeError("missing required input [targetin]");
+         throw BT::RuntimeError("BTCloseToTarget missing required input [targetin]");
         }
-       else
+        if (_obstarget.tag_pose == true)
         {
-          subtarget = robot_obj.KeepDistanceToTarget(_obstarget, _height);
-          std::cout << "[ BT target z      : ]" << _obstarget.position.z << std::endl;
-          std::cout << "[ BT target height :  "<< _height << "]"<< std::endl;
-          setOutput<geometry_msgs::Pose>("targetout", subtarget.target_pose);
-          return BT::NodeStatus::SUCCESS;
+          std::cout << "BTCloseToTarget height: "<< _height << std::endl;
+          _subtarget = robot_obj.KeepDistanceToTarget(_obstarget.Pose, _height);   
+          if(_subtarget.success)
+          {
+            _targetout.Pose = _subtarget.target_pose;
+            _targetout.tag_pose = true;
+            break;      
+          }
+ 
         }
-       
-      // else
-      // {
-      //   return BT::NodeStatus::FAILURE;  
-      // }
-          
-    
-       
+        if (_obstarget.tag_waypoint == true)
+        {
+          std::cout << "BTCloseToTarget height: "<< _height << std::endl;
+          _subtarget = robot_obj.KeepDistanceToTarget(_obstarget.Waypoint, _height);   
+          if(_subtarget.success)
+          {
+            _targetout.Waypoint = _subtarget.target_pose;
+            _targetout.tag_waypoint = true;          
+            break;         
+          }
+        }     
   }
-  
-  return BT::NodeStatus::FAILURE;  
+  /*  
+  std::cout << "BTCloseToTarget obs target name: "<< _obstarget.tag_name << std::endl;
+  std::cout << "BTCloseToTarget obs target pose: "<< _obstarget.tag_pose << std::endl;
+  std::cout << "BTCloseToTarget obs target waypoint: "<< _obstarget.tag_waypoint << std::endl;
+  */
+ 
+  std::cout << "BTCloseToTarget target name: "<< _targetout.tag_name << std::endl;
+  std::cout << "BTCloseToTarget target pose: "<< _targetout.tag_pose << std::endl;
+  std::cout << "BTCloseToTarget target waypoint: "<< _targetout.tag_waypoint << std::endl;
+
+  std::cout << "BTCloseToTarget target z      : ]" << _targetout.Pose.position.z << std::endl;   
+  // std::cout << "[ BT target height :  "<< _height << "]"<< std::endl;
+  setOutput<TargetType>("targetout", _targetout);
+  return BT::NodeStatus::SUCCESS;
 }
 
 BT::NodeStatus BTAdvertiseGripperCommand::tick()

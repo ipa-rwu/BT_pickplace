@@ -197,6 +197,7 @@ static const char* xml_text = R"(
     factory.registerNodeType<BTStringToBool>("BTStringToBool");
     factory.registerNodeType<BTIsObjContainer>("BTIsObjContainer");
     factory.registerNodeType<BTStringtoPose>("BTStringtoPose");
+    factory.registerNodeType<BTStringtoTarget>("BTStringtoTarget");
 
 
     //PortsList robot_object_ports = { InputPort<boost::shared_ptr<Robot_Function>>(robot_obj) };

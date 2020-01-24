@@ -11,10 +11,12 @@
             </Sequence>
             <Sequence name="Place">
                 <Action ID="BTIsHoldObj" tagisholdin="{tagishold}"/>
-                <SetBlackboard output_key="string" value="-0.3,0.6,0.85,0,0,0,1"/>
-                <Action ID="BTStringtoPose" stringin="string" targetpose="containerpose"/>
                 <Parallel threshold="3">
-                    <SetBlackboard output_key="targetname" value="none"/>
+                    <Sequence>
+                        <SetBlackboard output_key="string" value="-0.3;0.6;0.85;0;0;0;1"/>
+                        <Action ID="BTStringtoPose" stringin="{string}" targetpose="{containerpose}"/>
+                        <SetBlackboard output_key="targetname" value="none"/>
+                    </Sequence>
                     <SubTree GripperOut="gripperout" ID="Execution" TargetName="targetname" TargetPose="targetpose" TargetWaypoint="targetwaypoint"/>
                     <SubTree ContainerPose="containerpose" GripperOut="gripperout" ID="Place_subtree" TagIsObjCon="tagisobjcon" TargetPose="targetpose" TargetWaypoint="targetwaypoint"/>
                 </Parallel>
@@ -45,7 +47,7 @@
         <Fallback name="pick_fallback">
             <Sequence name="hold">
                 <Sequence name="went up?">
-                    <SetBlackboard output_key="height" value="0.6"/>
+                    <SetBlackboard output_key="height" value="0.1"/>
                     <Action ID="BTCheckCondition" heightin="{height}" targetin="{ObsObjPose}"/>
                 </Sequence>
                 <SetBlackboard output_key="string" value="true"/>
@@ -53,26 +55,26 @@
             </Sequence>
             <Sequence name="go up">
                 <Sequence name="Wen down to pick?">
-                    <SetBlackboard name="SetBlackBoard" output_key="height" value="-0.2"/>
+                    <SetBlackboard name="SetBlackBoard" output_key="height" value="-0.05"/>
                     <Action ID="BTCheckCondition" heightin="{height}" targetin="{ObsObjPose}"/>
                 </Sequence>
-                <SetBlackboard output_key="height" value="0.6"/>
-                <Action ID="BTCloseToTarget" height="{height}" name="Go up" targetin="{ObsObjPose}" targetout="{TargetWaypoint}"/>
+                <SetBlackboard output_key="height" value="0.1"/>
+                <Action ID="BTCloseToTarget" height="{height}" name="Go up" targetin="{ObsObjPose}" targetout="{TargetPose}"/>
                 <SetBlackboard output_key="gripperin" value="close"/>
                 <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{GripperOut}" name="keep close"/>
             </Sequence>
             <Sequence name="go_down_close">
                 <Sequence name="Went above obj?">
-                    <SetBlackboard output_key="height" value="0.3"/>
+                    <SetBlackboard output_key="height" value="0.1"/>
                     <Action ID="BTCheckCondition" heightin="{height}" targetin="{ObsObjPose}"/>
                 </Sequence>
-                <SetBlackboard output_key="height" value="-0.2"/>
-                <Action ID="BTCloseToTarget" height="{height}" name="went down to pick" targetin="{ObsObjPose}" targetout="{TargetWaypoint}"/>
+                <SetBlackboard output_key="height" value="-0.05"/>
+                <Action ID="BTCloseToTarget" height="{height}" name="went down to pick" targetin="{ObsObjPose}" targetout="{TargetPose}"/>
                 <SetBlackboard output_key="gripperin" value="close"/>
                 <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{GripperOut}" name="close gripper"/>
             </Sequence>
             <Sequence name="go_above">
-                <SetBlackboard output_key="height" value="0.3"/>
+                <SetBlackboard output_key="height" value="0.1"/>
                 <Action ID="BTCloseToTarget" height="{height}" name="above obj" targetin="{ObsObjPose}" targetout="{TargetPose}"/>
                 <SetBlackboard output_key="gripperin" value="open"/>
                 <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{GripperOut}" name="open gripper"/>
@@ -92,26 +94,26 @@
             </Sequence>
             <Sequence name="Go up">
                 <Sequence>
-                    <SetBlackboard output_key="height" value="-0.2"/>
+                    <SetBlackboard output_key="height" value="-0.08"/>
                     <Action ID="BTCheckCondition" heightin="{height}" targetin="{ContainerPose}"/>
                 </Sequence>
-                <SetBlackboard output_key="height" value="0.4"/>
-                <Action ID="BTCloseToTarget" height="{height}" targetin="{ContainerPose}" targetout="{TargetWaypoint}"/>
+                <SetBlackboard output_key="height" value="0.15"/>
+                <Action ID="BTCloseToTarget" height="{height}" targetin="{ContainerPose}" targetout="{TargetPose}"/>
                 <SetBlackboard output_key="gripperin" value="open"/>
                 <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{GripperOut}"/>
             </Sequence>
             <Sequence name="Go down into container">
                 <Sequence>
-                    <SetBlackboard output_key="height" value="0.15"/>
+                    <SetBlackboard output_key="height" value="0.1"/>
                     <Action ID="BTCheckCondition" heightin="{height}" targetin="{ContainerPose}"/>
                 </Sequence>
-                <SetBlackboard output_key="height" value="- 0.2"/>
-                <Action ID="BTCloseToTarget" height="{height}" targetin="{ContainerPose}" targetout="{TargetWaypoint}"/>
+                <SetBlackboard output_key="height" value="-0.08"/>
+                <Action ID="BTCloseToTarget" height="{height}" targetin="{ContainerPose}" targetout="{TargetPose}"/>
                 <SetBlackboard output_key="gripperin" value="open"/>
                 <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{GripperOut}"/>
             </Sequence>
             <Sequence name="Go above container">
-                <SetBlackboard output_key="height" value="0.15"/>
+                <SetBlackboard output_key="height" value="0.1"/>
                 <Action ID="BTCloseToTarget" height="{height}" targetin="{ContainerPose}" targetout="{TargetPose}"/>
                 <SetBlackboard output_key="gripperin" value="close"/>
                 <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{GripperOut}"/>

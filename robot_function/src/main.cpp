@@ -69,6 +69,10 @@ static const char* xml_text = R"(
     envrionment_obj.AddCollissionObjects(nh, move_group);
 
     ROS_INFO("---------------------------");
+    move_group->setNamedTarget("home");
+    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+    move_group->plan(my_plan);
+    move_group->move();
     //Get moveit group name
     // robot_obj.InitialiseMoveit(nh);
     // robot_obj.GetBasicInfo();

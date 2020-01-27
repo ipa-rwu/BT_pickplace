@@ -9,6 +9,8 @@
   <xacro:include filename="$(find ur_e_description)/urdf/common.gazebo.xacro" />
 
   <!-- ur5e -->
+  <xacro:property name="damping_value" value="10" />
+  <xacro:property name="friction_value" value="0.1" />
   <xacro:include filename="$(find ur_e_description)/urdf/ur5e.urdf.xacro" />
    <xacro:include filename="$(find robotiq_85_description)/urdf/robotiq_85_gripper.urdf.xacro" />
   <!-- <xacro:include filename="$(find pr2_description)/urdf/common.xacro" /> -->

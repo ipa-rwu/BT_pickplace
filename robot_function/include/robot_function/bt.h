@@ -279,6 +279,7 @@ class BTPathPlanning : public BT::AsyncActionNode
     const double _eef_step = 0.01;
 };
 
+/*
 class BTFollowPath : public BT::AsyncActionNode
 {
   public:
@@ -314,6 +315,79 @@ class BTFollowPath : public BT::AsyncActionNode
     moveit::planning_interface::MoveGroupInterface *_move_group;
     moveit::planning_interface::MoveGroupInterface::Plan _myplan;
 };
+
+
+
+class BTFollowPath : public BT::SyncActionNode
+{
+  public:
+    BTFollowPath(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface *move_group)
+    : BT::SyncActionNode(name, config), _nh(nh), _move_group(move_group)
+    {
+      _aborted = false;
+      _success = false; 
+      _counter = 0;   
+  
+    }
+    
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts() 
+    { 
+      return{  BT::InputPort<moveit::planning_interface::MoveGroupInterface::Plan>("planedplan"), 
+      BT::OutputPort<bool>("statewaittarget"),
+      BT::OutputPort<bool>("stateexecutefree")};
+      // BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan"),
+    } 
+
+  private:
+    bool _success;
+    bool _aborted; 
+    ros::NodeHandle _nh;
+    int _counter;
+    moveit::planning_interface::MoveGroupInterface *_move_group;
+    moveit::planning_interface::MoveGroupInterface::Plan _myplan;
+};
+*/
+
+class BTFollowPath : public BT::CoroActionNode
+{
+  public:
+    BTFollowPath(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface *move_group)
+    : BT::CoroActionNode(name, config), _nh(nh), _move_group(move_group)
+    {
+      _aborted = false;
+      _success = false; 
+      _counter = 0;   
+  
+    }
+    
+    BT::NodeStatus tick() override;
+
+    void halt() override
+    {
+      _aborted = true;
+      BT::CoroActionNode::halt();
+    }
+
+    static BT::PortsList providedPorts() 
+    { 
+      return{  BT::InputPort<moveit::planning_interface::MoveGroupInterface::Plan>("planedplan"), 
+      BT::OutputPort<bool>("statewaittarget"),
+      BT::OutputPort<bool>("stateexecutefree")};
+      // BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan"),
+    } 
+
+  private:
+    bool _success;
+    bool _aborted; 
+    ros::NodeHandle _nh;
+    int _counter;
+    moveit::planning_interface::MoveGroupInterface *_move_group;
+    moveit::planning_interface::MoveGroupInterface::Plan _myplan;
+};
+
+
 
 class BTCheckGripperCommand: public BT::CoroActionNode
 {
@@ -597,7 +671,7 @@ class BTCloseToTarget: public BT::AsyncActionNode
     static BT::PortsList providedPorts()
     {
       return { BT::InputPort<TargetType>("targetin"), BT::InputPort<double>("height"), 
-      BT::OutputPort<TargetType>("targetout")};
+      BT::OutputPort<TargetType>("targetout"), BT::InputPort<std::string>("targettype")};
     };
 
     virtual void halt() override
@@ -616,6 +690,7 @@ class BTCloseToTarget: public BT::AsyncActionNode
     double _height;
     gettarget _subtarget;
     ros::NodeHandle _nh;
+    std::string _targettype;
     moveit::planning_interface::MoveGroupInterface *_move_group;
 };
 

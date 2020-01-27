@@ -52,12 +52,12 @@ bool RobotFunction::comparePoses(moveit::planning_interface::MoveGroupInterface 
 {
   geometry_msgs::Pose pose1 = move_group->getCurrentPose().pose;
   if (  abs(pose1.position.z-pose2.position.z ) <= delta_posistion
-        // && abs(pose1.position.y-pose2.position.y ) <= delta_posistion
-        // && abs(pose1.position.z-pose2.position.z ) <= delta_posistion
-        // && abs(pose1.orientation.x - pose2.orientation.x) <= delta_orientation
-        // && abs(pose1.orientation.y - pose2.orientation.y) <= delta_orientation
-        // && abs(pose1.orientation.z - pose2.orientation.z) <= delta_orientation
-        // && abs(pose1.orientation.w - pose2.orientation.w) <= delta_orientation
+        && abs(pose1.position.y-pose2.position.y ) <= delta_posistion
+        && abs(pose1.position.z-pose2.position.z ) <= delta_posistion
+        && abs(pose1.orientation.x - pose2.orientation.x) <= delta_orientation
+        && abs(pose1.orientation.y - pose2.orientation.y) <= delta_orientation
+        && abs(pose1.orientation.z - pose2.orientation.z) <= delta_orientation
+        && abs(pose1.orientation.w - pose2.orientation.w) <= delta_orientation
      )
   {
     return true;
@@ -73,7 +73,7 @@ void RobotFunction::CameraCallback(const geometry_msgs::Pose::ConstPtr& camera_m
   // msg: {"data": "start"}
   newTarget.position = camera_msg->position;
   newTarget.orientation = camera_msg->orientation;
-  ROS_INFO_STREAM("Camera callback heard position:" << newTarget.position.x);
+  ROS_INFO_STREAM("Camera callback heard position:" << newTarget.position.y);
   TagGetTargetPose = true;
 }
 
@@ -112,6 +112,7 @@ pathplan RobotFunction::PathPlanning(geometry_msgs::Pose target_pose, std::strin
     std::cout<<"pathpanning"<<std::endl;
 
     pathplan result;
+    move_group->setStartState(*move_group->getCurrentState());
 
     // provide target pose
     if (target_name == "none")
@@ -147,7 +148,7 @@ void RobotFunction::AdjustTrajectoryToFixTimeSequencing(moveit_msgs::RobotTrajec
     {
       ros::Duration prev = times_from_start[i];
       times_from_start[i] = ros::Duration((times_from_start[i-1].toSec()+times_from_start[i+1].toSec())/2.0);
-      ROS_WARN_STREAM("Recomputing point " << i << " from " << prev <<  " to: " << times_from_start[i-1] << " + " << times_from_start[i+1] << " = " <<times_from_start[i]);
+      // ROS_WARN_STREAM("Recomputing point " << i << " from " << prev <<  " to: " << times_from_start[i-1] << " + " << times_from_start[i+1] << " = " <<times_from_start[i]);
       adjusted_flag=true;
     }
   }
@@ -164,7 +165,7 @@ void RobotFunction::AdjustTrajectoryToFixTimeSequencing(moveit_msgs::RobotTrajec
     for(int i=0; i< times_from_start.size(); i++)
     {
       trajectory.joint_trajectory.points[i].time_from_start = times_from_start[i];
-      ROS_INFO_STREAM("Recomputed time point " << i << " : " << trajectory.joint_trajectory.points[i].time_from_start );
+      // ROS_INFO_STREAM("Recomputed time point " << i << " : " << trajectory.joint_trajectory.points[i].time_from_start );
     }
   }
 
@@ -177,7 +178,7 @@ double eef_step, double jump_threshold)
 {
   TagGetTargetPose = false;
   pathplan result;
-  move_group->setStartStateToCurrentState();
+  move_group->setStartState(*move_group->getCurrentState());
   std::vector<geometry_msgs::Pose> waypoints;
   waypoints.push_back(move_group->getCurrentPose().pose);
   waypoints.push_back(target_pose);
@@ -187,6 +188,8 @@ double eef_step, double jump_threshold)
   while(fraction<0.5)
   {
     fraction = move_group->computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
+        ROS_INFO_STREAM("fraction: " << fraction );
+
   }
 
   AdjustTrajectoryToFixTimeSequencing(trajectory);
@@ -266,7 +269,10 @@ gettarget RobotFunction::KeepDistanceToTarget(geometry_msgs::Pose target_pose, d
   newtarget.target_pose.position.x = target_pose.position.x;
   newtarget.target_pose.position.y = target_pose.position.y;
   newtarget.target_pose.position.z = target_pose.position.z + height;
-  newtarget.target_pose.orientation.w = 1.0;
+  newtarget.target_pose.orientation.x = target_pose.orientation.x;
+  newtarget.target_pose.orientation.y = target_pose.orientation.y;
+  newtarget.target_pose.orientation.z = target_pose.orientation.z;
+  newtarget.target_pose.orientation.w = target_pose.orientation.w;
   newtarget.success = true;
   return newtarget;
 }

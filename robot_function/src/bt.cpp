@@ -133,7 +133,7 @@ BT::NodeStatus BTCheckCondition::tick()
       _subtarget = robot_obj.KeepDistanceToTarget(_targetin.Waypoint, _height);
     }
 
-    if (robot_obj.comparePoses(_move_group, _subtarget.target_pose, 0.01, 0.01))
+    if (robot_obj.comparePoses(_move_group, _subtarget.target_pose, 0.005, 0.005))
     {
       return BT::NodeStatus::SUCCESS;
     }
@@ -475,10 +475,15 @@ BT::NodeStatus BTIsHoldObj::tick()
 
 BT::NodeStatus BTIsObjContainer::tick()
 {
-  if( !getInput<bool>("tagisholdin", _tagisobjcon) || !_tagisobjcon)
+  if( !getInput<bool>("tagisobjconin", _tagisobjcon))
   {
     _tagisobjcon = false;
+    std::cout << "BTIsObjContainer missing required input [tagisobjcon]" << std::endl;
+  }
+  if (!_tagisobjcon)
+  {
     return BT::NodeStatus::FAILURE; 
+
   }
   if( _tagisobjcon )
   {
@@ -495,19 +500,32 @@ BT::NodeStatus BTCloseToTarget::tick()
   
   while (!_aborted)
   {
-        if( !getInput<TargetType>("targetin", _obstarget) || !getInput<double>("height", _height))
+        if( !getInput<TargetType>("targetin", _obstarget) || !getInput<double>("height", _height) || !getInput<std::string>("targettype", _targettype))
         {
          throw BT::RuntimeError("BTCloseToTarget missing required input [targetin]");
         }
         if (_obstarget.tag_pose == true)
         {
-          std::cout << "BTCloseToTarget height: "<< _height << std::endl;
+          
           _subtarget = robot_obj.KeepDistanceToTarget(_obstarget.Pose, _height);   
           if(_subtarget.success)
           {
-            _targetout.Pose = _subtarget.target_pose;
-            _targetout.tag_pose = true;
-            break;      
+            
+            if (_targettype == "pose")
+            {
+              _targetout.Pose = _subtarget.target_pose;
+              _targetout.tag_pose = true;
+              std::cout << "BTCloseToTarget pose height: "<< _height << std::endl;
+              break;
+            }
+
+            if (_targettype == "waypoint")
+            {
+              _targetout.Waypoint = _subtarget.target_pose;
+              _targetout.tag_waypoint = true;
+              std::cout << "BTCloseToTarget waypoint height: "<< _height << std::endl;
+              break;
+            }            
           }
  
         }

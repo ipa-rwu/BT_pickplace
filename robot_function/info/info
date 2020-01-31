@@ -1,0 +1,22 @@
+from gazebo to moveit 
+
+/arm_controller/follow_joint_trajectory/status
+Type: actionlib_msgs/GoalStatusArray
+
+/arm_controller/follow_joint_trajectory/result 
+Type: control_msgs/FollowJointTrajectoryActionResult
+
+/arm_controller/follow_joint_trajectory/feedback 
+ Type: control_msgs/FollowJointTrajectoryActionFeedback
+
+/joint_states
+sensor_msgs/JointState
+
+
+from moveit to gazebo
+/arm_controller/follow_joint_trajectory/goal
+control_msgs/FollowJointTrajectoryActionGoal
+
+/arm_controller/follow_joint_trajectory/cancel
+Type: actionlib_msgs/GoalID
+

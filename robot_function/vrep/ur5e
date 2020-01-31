@@ -1,0 +1,54 @@
+function sysCall_init()
+        
+    -- Get some handles:
+    shoulder_pan_handle=sim.getObjectHandle('shoulder_pan_joint') 
+    shoulder_lift_handle=sim.getObjectHandle('shoulder_lift_joint') 
+    elbow_handle=sim.getObjectHandle('elbow_joint') 
+    wrist_1_handle=sim.getObjectHandle('wrist_1_joint') 
+    wrist_2_handle=sim.getObjectHandle('wrist_2_joint') 
+    wrist_3_handle=sim.getObjectHandle('wrist_3_joint') 
+    ee_fixed_handle=sim.getObjectHandle('ee_fixed_joint') 
+
+    -- Enable an image publisher and subscriber:
+    if simROS then
+    -- Enable joint publishing 
+        pub_shoulder_pan=('/vrep_demo/ur5e_gripper//state', 10, ,shoulder_pan_handle,0,'')       
+        pub_shoulder_lift=('/vrep_demo/ur5e_gripper/shoulder_lift/state', 10, simros_strmcmd_get_joint_state,shoulder_lift_handle,0,'')       
+        pub_elbow=('/vrep_demo/ur5e_gripper/elbow/state', 10, simros_strmcmd_get_joint_state,elbow_handle,0,'')       
+        pub_wrist_1=('/vrep_demo/ur5e_gripper/wrist_1/state', 10, simros_strmcmd_get_joint_state,elbow_pitch_handle,0,'')       
+        pub_wrist_2=('/vrep_demo/ur5e_gripper/wrist_2/state', 10, simros_strmcmd_get_joint_state,wrist_1_handle,0,'')        
+        pub_wrist_3=('/vrep_demo/ur5e_gripper/wrist_3/state', 10, simros_strmcmd_get_joint_state,wrist_2_handle,0,'')        
+        pub_ee_fixed=('/vrep_demo/ur5e_gripper/ ee_fixed/state', 10, simros_strmcmd_get_joint_state,wrist_3_handle,0,'')        
+    --Enable joint subscriber       
+        simExtROS_enableSubscriber('/vrep_demo/seven_dof_arm/shoulder_pan/ctrl', 10, simros_strmcmd_set_joint_target_position, shoulder_pan_handle, 0, '')       
+        simExtROS_enableSubscriber('/vrep_demo/seven_dof_arm/shoulder_pitch/ctrl', 10, simros_strmcmd_set_joint_target_position, shoulder_pitch_handle, 0, '') 
+        simExtROS_enableSubscriber('/vrep_demo/seven_dof_arm/elbow_roll/ctrl', 10, simros_strmcmd_set_joint_target_position, elbow_roll_handle, 0, '')        
+        simExtROS_enableSubscriber('/vrep_demo/seven_dof_arm/elbow_pitch/ctrl', 10, simros_strmcmd_set_joint_target_position, elbow_pitch_handle, 0, '')        
+        simExtROS_enableSubscriber('/vrep_demo/seven_dof_arm/wrist_roll/ctrl', 10, simros_strmcmd_set_joint_target_position, wrist_roll_handle, 0, '')        
+        simExtROS_enableSubscriber('/vrep_demo/seven_dof_arm/wrist_pitch/ctrl', 10, simros_strmcmd_set_joint_target_position, wrist_pitch_handle, 0, '')        
+        simExtROS_enableSubscriber('/vrep_demo/seven_dof_arm/gripper_roll/ctrl', 10, simros_strmcmd_set_joint_target_position, gripper_roll_handle, 0, '')  
+
+        print("<font color='#0F0'>ROS interface was found.</font>@html")
+        pub=simROS.advertise('/image', 'sensor_msgs/Image')
+        simROS.publisherTreatUInt8ArrayAsString(pub) -- treat uint8 arrays as strings (much faster, tables/arrays are kind of slow in Lua)
+        sub=simROS.subscribe('/image', 'sensor_msgs/Image', 'imageMessage_callback')
+        simROS.subscriberTreatUInt8ArrayAsString(sub) -- treat uint8 arrays as strings (much faster, tables/arrays are kind of slow in Lua)
+    else
+        print("<font color='#F00'>ROS interface was not found. Cannot run.</font>@html")
+    end
+end
+
+function imageMessage_callback(msg)
+end
+
+
+function sysCall_sensing()
+end
+
+function sysCall_cleanup()
+    if simROS then   
+        -- Shut down publisher and subscriber. Not really needed from a simulation script (automatic shutdown)
+        simROS.shutdownPublisher(pub)
+        simROS.shutdownSubscriber(sub)
+    end
+end

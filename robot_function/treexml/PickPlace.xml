@@ -60,14 +60,14 @@
     <BehaviorTree ID="Pick_subtree">
         <Fallback name="pick_fallback">
             <Sequence name="hold">
-                <Sequence name="went up?">
+                <Sequence name="check went up?">
                     <SetBlackboard output_key="height" value="0.4"/>
                     <Action ID="BTCheckCondition" heightin="{height}" targetin="{ObsObjPose}"/>
                 </Sequence>
                 <SetBlackboard output_key="TagIsHold" value="1"/>
             </Sequence>
             <Sequence name="go up">
-                <Sequence name="Wen down to pick?">
+                <Sequence name="check went down to pick?">
                     <SetBlackboard name="SetBlackBoard" output_key="height" value="-0.01"/>
                     <Action ID="BTCheckCondition" heightin="{height}" targetin="{ObsObjPose}"/>
                 </Sequence>
@@ -76,8 +76,8 @@
                 <SetBlackboard output_key="gripperin" value="close"/>
                 <Action ID="BTAdvertiseGripperCommand" commandin="{gripperin}" commandout="{GripperOut}" name="keep close"/>
             </Sequence>
-            <Sequence name="go_down_close">
-                <Sequence name="Went above obj?">
+            <Sequence name="go down and close">
+                <Sequence name="check went above obj?">
                     <SetBlackboard output_key="height" value="0.3"/>
                     <Action ID="BTCheckCondition" heightin="{height}" targetin="{ObsObjPose}"/>
                 </Sequence>

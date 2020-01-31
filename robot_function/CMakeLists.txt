@@ -36,7 +36,6 @@ find_package(catkin REQUIRED
     std_msgs
     roscpp
     behaviortree_cpp_v3
-    bt_nodes
 )
 
 
@@ -132,7 +131,7 @@ find_package(Boost REQUIRED COMPONENTS system filesystem date_time thread)
 
 catkin_package(
     INCLUDE_DIRS include
-    LIBRARIES robot_function bt_nodes
+    LIBRARIES robot_function 
     CATKIN_DEPENDS
     roscpp std_msgs
     moveit_core
@@ -156,7 +155,6 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   ${GSTREAMER_INCLUDE_DIRS}
-  ${bt_nodes_INCLUDE_DIRS}
   )
 
 
@@ -200,13 +198,10 @@ target_link_libraries(main robot_function robot_gripper bt environment)
 #
 
 ## error can't find behaviortree_cpp_v3
-target_link_libraries(main
-   ${BEHAVIOR_TREE_LIBRARY}   bt_sample_nodes 
- )
+#target_link_libraries(main
+#   ${BEHAVIOR_TREE_LIBRARY}   bt_sample_nodes 
+# )
 
-target_link_libraries(main
-   ${bt_nodes_LIBRARIES} bt_nodes
- )
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

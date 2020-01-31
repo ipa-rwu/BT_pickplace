@@ -66,7 +66,7 @@ static const char* xml_text = R"(
 
     gripper_obj.InitialiseGripper(nh, gripper_group);
 
-    envrionment_obj.AddCollissionObjects(nh, move_group);
+    // envrionment_obj.AddCollissionObjects(nh, move_group);
 
     ROS_INFO("---------------------------");
     move_group->setNamedTarget("home");

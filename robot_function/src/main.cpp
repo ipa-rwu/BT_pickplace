@@ -155,6 +155,15 @@ static const char* xml_text = R"(
     factory.registerBuilder<BTGripperMove>( "BTGripperMove", builder_grippermove);
 
 
+    // schunk
+    NodeBuilder builder_schunkmove = [&nh, &gripper_group](const std::string& name, const NodeConfiguration& config)
+    {
+        
+        return std::make_unique<BTGripperMoveSchunk>( name, config, nh, gripper_group);
+    };
+    factory.registerBuilder<BTGripperMoveSchunk>( "BTGripperMoveSchunk", builder_schunkmove);
+
+
     // Camera find target
     NodeBuilder builder_camerafindtarget = [&nh](const std::string& name, const NodeConfiguration& config)
     {

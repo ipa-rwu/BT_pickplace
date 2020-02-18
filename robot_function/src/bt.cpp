@@ -319,7 +319,8 @@ BT::NodeStatus BTCheckGripperCommand::tick()
 
 BT::NodeStatus BTGripperMove::tick()
 {
-   GripperFunction _gripper_obj;
+  SleepMS(500);
+  GripperFunction _gripper_obj;
   if( !getInput<std::string>("commandin", _commandin) )
   {
     throw BT::RuntimeError("missing required input [gripper command]");
@@ -338,6 +339,42 @@ BT::NodeStatus BTGripperMove::tick()
   
 }
 
+
+BT::NodeStatus BTGripperMoveSchunk::tick()
+{
+  SleepMS(500);
+  GripperFunction _gripper_obj;
+  if( !getInput<std::string>("commandin", _commandin) )
+  {
+    throw BT::RuntimeError("missing required input [gripper command]");
+  }
+
+  if(_commandin == "open")
+  {
+    _result = _gripper_obj.GripperOpen(_nh);
+    if (_result)
+    {
+      return BT::NodeStatus::SUCCESS;
+    }
+    else
+    {
+      return BT::NodeStatus::FAILURE;
+    }
+  }
+
+  if(_commandin == "close")
+  {
+     _result = _gripper_obj.GripperClose(_nh);
+    if (_result)
+    {
+      return BT::NodeStatus::SUCCESS;
+    }
+    else
+    {
+      return BT::NodeStatus::FAILURE;
+    }
+  }
+}
 
 BT::NodeStatus BTStringtoPose::tick()
 {

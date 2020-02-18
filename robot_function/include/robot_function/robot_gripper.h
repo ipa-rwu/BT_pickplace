@@ -37,6 +37,8 @@ private:
     moveit_visual_tools::MoveItVisualTools *visual_tools;
     Eigen::Isometry3d text_pose = Eigen::Isometry3d::Identity();
 
+    const int IO_SERVICE_FUN_LEVEL_ = 1;   // Not exactly sure what this is, but 1 seems to work. If it fails, try 2.
+
 public:
     // GripperFunction(){};
     // GripperFunction(ros::NodeHandle nh);
@@ -51,6 +53,11 @@ public:
 
     // void CameraCallback(const geometry_msgs::Pose::ConstPtr& camera_msg);
     bool MoveGripper(moveit::planning_interface::MoveGroupInterface *gripper_group, std::string target);
+
+    //schunk 
+    bool GripperOpen(ros::NodeHandle nh);
+    bool GripperClose(ros::NodeHandle nh);
+
 
 };
 

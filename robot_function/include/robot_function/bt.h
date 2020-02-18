@@ -468,6 +468,27 @@ class BTGripperMove: public BT::SyncActionNode
 };
 
 
+class BTGripperMoveSchunk: public BT::SyncActionNode
+{
+  public:
+    BTGripperMoveSchunk(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface *gripper_group)
+    : BT::SyncActionNode(name,config),_nh(nh), _gripper_group(gripper_group)
+    {
+    }
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts() 
+    { 
+      return{  BT::InputPort<std::string>("commandin")};
+    } 
+
+    private:
+    std::string _commandin;
+    bool _result; 
+    ros::NodeHandle _nh;
+    moveit::planning_interface::MoveGroupInterface *_gripper_group;
+};
+
 class BTCameraFindTarget : public BT::AsyncActionNode
 {
   public:

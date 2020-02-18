@@ -350,11 +350,11 @@ class BTFollowPath : public BT::SyncActionNode
 };
 */
 
-class BTFollowPath : public BT::CoroActionNode
+class BTFollowPath : public BT::SyncActionNode
 {
   public:
     BTFollowPath(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface *move_group)
-    : BT::CoroActionNode(name, config), _nh(nh), _move_group(move_group)
+    : BT::SyncActionNode(name, config), _nh(nh), _move_group(move_group)
     {
       _aborted = false;
       _success = false; 
@@ -363,12 +363,14 @@ class BTFollowPath : public BT::CoroActionNode
     }
     
     BT::NodeStatus tick() override;
-
+  
+  /*
     void halt() override
     {
       _aborted = true;
       BT::CoroActionNode::halt();
     }
+    */
 
     static BT::PortsList providedPorts() 
     { 
@@ -415,7 +417,7 @@ class BTCheckGripperCommand: public BT::CoroActionNode
     std::string _commandin;
 };
 
-
+/*
 class BTGripperMove: public BT::CoroActionNode
 {
   public:
@@ -442,7 +444,28 @@ class BTGripperMove: public BT::CoroActionNode
     ros::NodeHandle _nh;
     moveit::planning_interface::MoveGroupInterface *_gripper_group;
 };
+*/
 
+class BTGripperMove: public BT::SyncActionNode
+{
+  public:
+    BTGripperMove(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh, moveit::planning_interface::MoveGroupInterface *gripper_group)
+    : BT::SyncActionNode(name,config),_nh(nh), _gripper_group(gripper_group)
+    {
+    }
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts() 
+    { 
+      return{  BT::InputPort<std::string>("commandin")};
+    } 
+
+    private:
+    std::string _commandin;
+    bool _aborted; 
+    ros::NodeHandle _nh;
+    moveit::planning_interface::MoveGroupInterface *_gripper_group;
+};
 
 
 class BTCameraFindTarget : public BT::AsyncActionNode

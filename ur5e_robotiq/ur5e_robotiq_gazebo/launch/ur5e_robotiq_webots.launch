@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="limited" default="false"  doc="If true, limits joint range [-PI, PI] on all joints." />
+  <arg name="prefix" default="" doc="Prefix to robot's joints' and links' names" />
+  <param name="prefix" value="$(arg prefix)" type="str" />
+  <param name="use_sim_time" value="true" type="bool" />
+
+  <arg name="paused" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="debug" default="false"/>
+  <arg name="sim" default="true" />
+
+  
+    <!-- probably useless -->
+  <arg name="min_payload"  default="0.0" doc="lower payload bound for the robot" />
+  <arg name="max_payload"  default="10.0" doc="upper payload bound for the robot" />
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur5e_robotiq_description)/urdf/ur5e_robotiq.urdf.xacro'" />
+
+  <!-- Robot state publisher -->
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="50.0" />
+    <param name="tf_prefix" type="string" value="" />
+  </node>
+
+  <!-- Remap follow_joint_trajectory -->
+  <remap if="$(arg sim)" from="/follow_joint_trajectory" to="/arm_controller/follow_joint_trajectory"/>
+
+  <!-- Fake Calibration -->
+  <node pkg="rostopic" type="rostopic" name="fake_joint_calibration" args="pub /calibrated std_msgs/Bool true" />
+
+  <include file="$(find ur5e_robotiq_moveit_config)/launch/move_group.launch">
+    <arg name="debug" default="$(arg debug)" />
+  </include>
+
+<!--   
+  <include file="$(find ur5e_robotiq_moveit_config)/launch/moveit_rviz.launch">
+    <arg name="debug" default="$(arg debug)" />
+    <arg name="config" default="true" />
+  </include> -->
+
+</launch>

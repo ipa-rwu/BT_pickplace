@@ -133,7 +133,7 @@ BT::NodeStatus BTCheckCondition::tick()
       _subtarget = robot_obj.KeepDistanceToTarget(_targetin.Waypoint, _height);
     }
 
-    if (robot_obj.comparePoses(_move_group, _subtarget.target_pose, 0.005, 0.005))
+    if (robot_obj.comparePoses(_move_group, _subtarget.target_pose, 0.03, 0.01))
     {
       return BT::NodeStatus::SUCCESS;
     }

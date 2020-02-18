@@ -1,0 +1,30 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/rachel/kogrob/kogrob_ws/devel/include/**",
+                "/opt/ros/melodic/include/**",
+                "/home/rachel/kogrob/kogrob_ws/src/BehaviorTree.CPP/include/**",
+                "/home/rachel/kogrob/kogrob_ws/src/bt_nodes/include/**",
+                "/home/rachel/kogrob/kogrob_ws/src/gazebo_grasp_plugin/include/**",
+                "/home/rachel/kogrob/kogrob_ws/src/gazebo_version_helpers/include/**",
+                "/home/rachel/kogrob/kogrob_ws/src/realsense-ros/realsense2_camera/include/**",
+                "/home/rachel/kogrob/kogrob_ws/src/robot_function/include/**",
+                "/home/rachel/kogrob/kogrob_ws/src/robotiq_85_gripper/robotiq_85_simulation/roboticsgroup_gazebo_plugins/include/**",
+                "/home/rachel/kogrob/kogrob_ws/src/robotiq_2finger_grippers/robotiq_2f_gripper_control/include/**",
+                "/home/rachel/kogrob/kogrob_ws/src/universal_robot/ur_kinematics/include/**",
+                "/usr/include/**"
+            ],
+            "name": "ROS",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

@@ -56,7 +56,7 @@
             </Sequence>
         </SequenceStar>
     </BehaviorTree>
-    <!-- ////////// -->
+    <!-- ////////// x 0.3 y 0.4 z 0.012 x' 0.05-->
     <BehaviorTree ID="Pick_subtree">
         <Fallback name="pick_fallback">
             <Sequence name="hold">

@@ -47,7 +47,7 @@ static const char* xml_text = R"(
     spinner.start();
     
     std::string xml_filename;
-    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/kogrob_ws/src/robot_function/treexml/PickPlace_waypoint.xml");
+    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/robot_function/treexml/PickPlace_schunk.xml");
     ROS_INFO("Loading XML : %s", xml_filename.c_str());
     
 
@@ -60,9 +60,11 @@ static const char* xml_text = R"(
     move_group = new moveit::planning_interface::MoveGroupInterface(GROUP_MANIP);
     gripper_group = new moveit::planning_interface::MoveGroupInterface(GROUP_GRIPP);
 
+    
     //robot_obj.reset(new Robot_Function);
     robot_obj.InitialiseMoveit(nh, move_group);
     robot_obj.GetBasicInfo(move_group);
+    move_group->setMaxVelocityScalingFactor(0.5);
 
     gripper_obj.InitialiseGripper(nh, gripper_group);
 

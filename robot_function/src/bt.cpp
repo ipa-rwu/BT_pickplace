@@ -94,22 +94,6 @@ bool comparePoses(geometry_msgs::Pose pose1, geometry_msgs::Pose pose2, double d
 }
 */
 
-bool comparePoses(geometry_msgs::Pose pose1, geometry_msgs::Pose pose2, double delta_posistion)
-{
-
-  if ( 
-      abs(pose1.position.z-pose2.position.z ) <= delta_posistion
-
-     )
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-
 BT::NodeStatus BTCheckCondition::tick()
 {
     RobotFunction robot_obj(_nh);
@@ -133,7 +117,7 @@ BT::NodeStatus BTCheckCondition::tick()
       _subtarget = robot_obj.KeepDistanceToTarget(_targetin.Waypoint, _height);
     }
 
-    if (robot_obj.comparePoses(_move_group, _subtarget.target_pose, 0.03, 0.01))
+    if (robot_obj.comparePoses(_move_group, _subtarget.target_pose, 0.0100, 0.0100))
     {
       return BT::NodeStatus::SUCCESS;
     }

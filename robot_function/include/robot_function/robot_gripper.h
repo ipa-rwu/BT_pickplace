@@ -55,6 +55,7 @@ public:
     bool MoveGripper(moveit::planning_interface::MoveGroupInterface *gripper_group, std::string target);
 
     //schunk 
+    void SleepSafeFor(double duration);
     bool GripperOpen(ros::NodeHandle nh);
     bool GripperClose(ros::NodeHandle nh);
 

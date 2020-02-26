@@ -26,6 +26,15 @@ bool GripperFunction::MoveGripper(moveit::planning_interface::MoveGroupInterface
 
 }
 
+void GripperFunction::SleepSafeFor(double duration)
+{
+  ros::Time start = ros::Time::now();
+  while(ros::Time::now() - start <= ros::Duration(duration))
+  {
+    ros::spinOnce();
+  }
+
+}
 
 bool GripperFunction::GripperOpen(ros::NodeHandle nh)
 {
@@ -38,7 +47,7 @@ bool GripperFunction::GripperOpen(ros::NodeHandle nh)
   if(client.call(io_msg))
   {
     ROS_INFO_STREAM("Open gripper initialise : " << ((io_msg.response.success==0)?"Failed":"Succeeded") );
-    //sleepSafeFor(0.5);
+    SleepSafeFor(0.3);
     io_msg.request.state = 0;
     if(client.call(io_msg))
     {
@@ -69,7 +78,7 @@ bool GripperFunction::GripperClose(ros::NodeHandle nh)
   if(client.call(io_msg))
   {
     ROS_INFO_STREAM("Close gripper initialise :  " << ((io_msg.response.success==0)?"Failed":"Succeeded") );
-    //sleepSafeFor(0.5);
+    SleepSafeFor(0.3);
     io_msg.request.state = 0;
     if(client.call(io_msg))
     {

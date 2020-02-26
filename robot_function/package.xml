@@ -65,7 +65,7 @@
   <!-- <build_depend>geometric_msgs</build_depend> -->
   <build_depend>tf</build_depend>
   <build_depend>tf_conversions</build_depend>
-  <build_depend>ur_msgs</build_depend>
+  <depend>ur_msgs</depend>
 
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
@@ -85,7 +85,7 @@
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>tf</exec_depend>
   <exec_depend>tf_conversions</exec_depend>
-  <exec_depend>ur_msgs</exec_depend>
+  <!-- <exec_depend>ur_msgs</exec_depend> -->
   <exec_depend>interactive_markers</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->

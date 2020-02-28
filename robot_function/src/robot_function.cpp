@@ -108,7 +108,7 @@ bool RobotFunction::IsHoldObj()
 // Planning to a Pose goal or taget name
 pathplan RobotFunction::PathPlanning(geometry_msgs::Pose target_pose, std::string target_name, moveit::planning_interface::MoveGroupInterface *move_group)
 {
-    TagGetTargetPose = false;
+    // TagGetTargetPose = false;
     std::cout<<"pathpanning"<<std::endl;
 
     pathplan result;
@@ -176,7 +176,7 @@ void RobotFunction::AdjustTrajectoryToFixTimeSequencing(moveit_msgs::RobotTrajec
 pathplan RobotFunction::CartesianPathPlan(geometry_msgs::Pose target_pose, moveit::planning_interface::MoveGroupInterface *move_group,
 double eef_step, double jump_threshold)
 {
-  TagGetTargetPose = false;
+  // TagGetTargetPose = false;
   pathplan result;
   move_group->setStartState(*move_group->getCurrentState());
   std::vector<geometry_msgs::Pose> waypoints;
@@ -253,6 +253,7 @@ gettarget RobotFunction::CameraFindTarget()
 {
   gettarget newtarget;
   newtarget.success = TagGetTargetPose;
+  TagGetTargetPose = false;
   //  std::cout << "TagGetTargetPose: "<< TagGetTargetPose << std::endl;
 
   if (newtarget.success)

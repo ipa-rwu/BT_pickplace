@@ -10,15 +10,21 @@
                 <SubTree GripperOut="gripperout" ID="Execution" Target="target"/>
                 <SetBlackboard output_key="tagishold" value="0"/>
                 <SetBlackboard output_key="tagisobjcon" value="0"/>
+                <SetBlackboard output_key="tagisconpose" value="0"/>
                 <SetBlackboard output_key="tagisobjpose" value="0"/>
             </Sequence>
             <Sequence name="Place">
-                <Action ID="BTIsHoldObj" tagisholdin="{tagishold}"/>
-                <Parallel threshold="3">
-                    <SetBlackboard output_key="containerpose" value="pose;-0.3;0.4;0.010;0;1;0;0.0002"/>
+                <Action ID="BTIsObjPose" tagisobjposein="{tagisconpose}" targetin="{containerpose}" targetout="{containerpose}"/>
+                <Parallel threshold="2">
                     <SubTree GripperOut="gripperout" ID="Execution" Target="target"/>
                     <SubTree ContainerPose="containerpose" GripperOut="gripperout" ID="Place_subtree" TagIsObjCon="tagisobjcon" Target="target"/>
                 </Parallel>
+            </Sequence>
+            <Sequence>
+                <Action ID="BTIsHoldObj" tagisholdin="{tagishold}"/>
+                <Action ID="BTCameraFindTarget" tagisobjposeout="{tagisconpose}" targetout="{containerpose}"/>
+                <SetBlackboard output_key="tagisconpose" value="1"/>
+                <SetBlackboard output_key="tagisobjcon" value="0"/>
             </Sequence>
             <Sequence name="Pick">
                 <Action ID="BTIsObjPose" tagisobjposein="{tagisobjpose}" targetin="{observedpose}" targetout="{observedpose}"/>
@@ -31,6 +37,7 @@
                 <Action ID="BTCameraFindTarget" tagisobjposeout="{tagisobjpose}" targetout="{observedpose}"/>
                 <SetBlackboard output_key="tagishold" value="0"/>
                 <SetBlackboard output_key="tagisobjcon" value="0"/>
+                <SetBlackboard output_key="tagisconpose" value="0"/>
             </Sequence>
         </Fallback>
     </BehaviorTree>
@@ -56,7 +63,7 @@
             </Sequence>
         </SequenceStar>
     </BehaviorTree>
-    <!-- ////////// x 0.3 y 0.4 z 0.012 x' 0.05-->
+    <!-- ////////// -->
     <BehaviorTree ID="Pick_subtree">
         <Fallback name="pick_fallback">
             <Sequence name="hold">
@@ -162,6 +169,9 @@
         </Action>
         <Action ID="BTGripperMove">
             <input_port default="{grippercom}" name="commandin"/>
+        </Action>
+        <Action ID="BTGripperMoveSchunk">
+            <inout_port name="commandin"/>
         </Action>
         <Action ID="BTIsHoldObj">
             <input_port name="tagisholdin"/>

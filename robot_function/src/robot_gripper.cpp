@@ -47,7 +47,7 @@ bool GripperFunction::GripperOpen(ros::NodeHandle nh)
   if(client.call(io_msg))
   {
     ROS_INFO_STREAM("Open gripper initialise : " << ((io_msg.response.success==0)?"Failed":"Succeeded") );
-    SleepSafeFor(0.3);
+    SleepSafeFor(0.5);
     io_msg.request.state = 0;
     if(client.call(io_msg))
     {
@@ -78,7 +78,7 @@ bool GripperFunction::GripperClose(ros::NodeHandle nh)
   if(client.call(io_msg))
   {
     ROS_INFO_STREAM("Close gripper initialise :  " << ((io_msg.response.success==0)?"Failed":"Succeeded") );
-    SleepSafeFor(0.3);
+    SleepSafeFor(0.7);
     io_msg.request.state = 0;
     if(client.call(io_msg))
     {

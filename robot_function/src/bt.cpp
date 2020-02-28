@@ -146,25 +146,33 @@ BT::NodeStatus BTWaitForTarget::tick()
       _targetout = _targetin;
       if (_targetout.tag_name == true)
       {
-        // std::cout << "BTWaitForTarget got target name: "<< _targetout.Name << std::endl;
+        std::cout << "BTWaitForTarget got target NAME: "<< _targetout.Name << std::endl;
         break;
       }
       if (_targetout.tag_pose == true)
       {
+        printf("BTWaitForTarget got target POSE: x=%.4f y=%.4f z=%.4f ox=%.4f oy=%.4f oz=%.4f ow=%.4f\n",
+        _targetout.Pose.position.x, _targetout.Pose.position.y, _targetout.Pose.position.z,
+        _targetout.Pose.orientation.x,_targetout.Pose.orientation.y,_targetout.Pose.orientation.z,_targetout.Pose.orientation.w);
+
         // std::cout << "BTWaitForTarget got target pose: "<< _targetout.Pose.position.z << std::endl;
         break;
       }
       if (_targetout.tag_waypoint == true)
       {
+        printf("BTWaitForTarget got target WAYPOINT: x=%.4f y=%.4f z=%.4f ox=%.4f oy=%.4f oz=%.4f ow=%.4f\n",
+        _targetout.Waypoint.position.x, _targetout.Waypoint.position.y, _targetout.Waypoint.position.z,
+        _targetout.Waypoint.orientation.x,_targetout.Waypoint.orientation.y,_targetout.Waypoint.orientation.z,_targetout.Waypoint.orientation.w);
+
         // std::cout << "BTWaitForTarget got target waypoint: "<< _targetout.Waypoint.position.z  << std::endl;
         break;
       }    
     }
   }
 
-  std::cout << "BTWaitForTarget  target name: "<< _targetout.tag_name << std::endl;
-  std::cout << "BTWaitForTarget target pose: "<< _targetout.tag_pose << std::endl;
-  std::cout << "BTWaitForTarget target waypoint: "<< _targetout.tag_waypoint << std::endl;
+  // std::cout << "BTWaitForTarget  target name: "<< _targetout.tag_name << std::endl;
+  // std::cout << "BTWaitForTarget target pose: "<< _targetout.tag_pose << std::endl;
+  // std::cout << "BTWaitForTarget target waypoint: "<< _targetout.tag_waypoint << std::endl;
   setOutput<TargetType>("targetnameout", _targetout);
   return BT::NodeStatus::SUCCESS;
 
@@ -200,16 +208,16 @@ BT::NodeStatus BTPathPlanning::tick()
     if(_goal.tag_pose)
     {    
       _planpath = robot_obj.PathPlanning(_goal.Pose, _goal.Name, _move_group);
-      printf("BTPathPlanning: Target pose: x=%.2f y=%.2f z=%.2f w=%.2f\n",
-      _goal.Pose.position.x, _goal.Pose.position.y, _goal.Pose.position.z, _goal.Pose.orientation.w);
+      printf("BTPathPlanning: Target pose: x=%.4f y=%.4f z=%.4f ox=%.4f oy=%.4f oz=%.4f ow=%.4f\n",
+      _goal.Pose.position.x, _goal.Pose.position.y, _goal.Pose.position.z, _goal.Pose.orientation.x, _goal.Pose.orientation.y, _goal.Pose.orientation.z, _goal.Pose.orientation.w);
       break;    
     }
     
     if(_goal.tag_waypoint)
     {
       _planpath = robot_obj.CartesianPathPlan( _goal.Waypoint, _move_group, _eef_step, _jump_threshold);
-      printf("BTPathPlanning: Waypoint: x=%.2f y=%.2f z=%.2f w=%.2f\n",
-      _goal.Waypoint.position.x, _goal.Waypoint.position.y, _goal.Waypoint.position.z, _goal.Waypoint.orientation.w);
+      printf("BTPathPlanning: Waypoint: x=%.4f y=%.4f z=%.4f ox=%.4f oy=%.4f oz=%.4f ow=%.4f\n",
+      _goal.Waypoint.position.x, _goal.Waypoint.position.y, _goal.Waypoint.position.z, _goal.Waypoint.orientation.x, _goal.Waypoint.orientation.y, _goal.Waypoint.orientation.z, _goal.Waypoint.orientation.w);
       break;  
     }
     }
@@ -276,9 +284,8 @@ BT::NodeStatus BTCheckGripperCommand::tick()
 {
   if( !getInput<std::string>("commandin", _commandin) )
   {
-    throw BT::RuntimeError("missing required input [commandin]");
+    throw BT::RuntimeError("BTCheckGripperCommand missing required input [commandin]");
   }
-  std::cout << "[ BTCheckGripperCommand: ]" << _commandin << std::endl;  
     if( _commandin == "open" )
     {
       setOutput<std::string>("commandout", _commandin);
@@ -295,6 +302,7 @@ BT::NodeStatus BTCheckGripperCommand::tick()
     }
     if( _commandin == "no" )
     {
+      setOutput<std::string>("commandout", _commandin);
       std::cout << "[ BTCheckGripperCommand: No command for gripper ]" << std::endl;  
       return BT::NodeStatus::SUCCESS;
     }        
@@ -357,6 +365,11 @@ BT::NodeStatus BTGripperMoveSchunk::tick()
     {
       return BT::NodeStatus::FAILURE;
     }
+  }
+
+    if(_commandin == "no")
+  {
+    return BT::NodeStatus::SUCCESS;
   }
 }
 
@@ -451,7 +464,7 @@ BT::NodeStatus BTIsObjPose::tick()
   {
     if( !getInput<TargetType>("targetin", _objpose))
     {
-    throw BT::RuntimeError("missing required input [plan]");
+    throw BT::RuntimeError("missing required input [obj pose]");
    }
     setOutput<TargetType>("targetout", _objpose);
     return BT::NodeStatus::SUCCESS;
@@ -536,6 +549,11 @@ BT::NodeStatus BTCloseToTarget::tick()
             {
               _targetout.Pose = _subtarget.target_pose;
               _targetout.tag_pose = true;
+             
+              printf("BTCloseToTarget: pose: x=%.4f y=%.4f z=%.4f ox=%.4f oy=%.4f oz=%.4f ow=%.4f\n",
+              _targetout.Pose.position.x, _targetout.Pose.position.y, _targetout.Pose.position.z,
+              _targetout.Pose.orientation.x,_targetout.Pose.orientation.y,_targetout.Pose.orientation.z,_targetout.Pose.orientation.w);
+
               std::cout << "BTCloseToTarget pose height: "<< _height << std::endl;
               break;
             }
@@ -544,7 +562,12 @@ BT::NodeStatus BTCloseToTarget::tick()
             {
               _targetout.Waypoint = _subtarget.target_pose;
               _targetout.tag_waypoint = true;
-              std::cout << "BTCloseToTarget waypoint height: "<< _height << std::endl;
+              
+              printf("BTCloseToTarget: pose: x=%.4f y=%.4f z=%.4f ox=%.4f oy=%.4f oz=%.4f ow=%.4f\n",
+              _targetout.Waypoint.position.x, _targetout.Waypoint.position.y, _targetout.Waypoint.position.z,
+              _targetout.Waypoint.orientation.x,_targetout.Waypoint.orientation.y,_targetout.Waypoint.orientation.z,_targetout.Waypoint.orientation.w);
+
+              // std::cout << "BTCloseToTarget waypoint height: "<< _height << std::endl;
               break;
             }            
           }

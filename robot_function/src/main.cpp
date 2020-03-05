@@ -47,7 +47,7 @@ static const char* xml_text = R"(
     spinner.start();
     
     std::string xml_filename;
-    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/kogrob_ws/src/BT_pickplace-realrobot/robot_function/treexml/PickPlace_waypoint.xml");
+    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/robot_function/treexml/PickPlace_waypoint.xml");
     ROS_INFO("Loading XML : %s", xml_filename.c_str());
     
 

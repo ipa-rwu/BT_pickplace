@@ -2,6 +2,7 @@
 #include "behaviortree_cpp_v3/loggers/bt_cout_logger.h"
 #include "behaviortree_cpp_v3/loggers/bt_file_logger.h"
 #include "behaviortree_cpp_v3/loggers/bt_minitrace_logger.h"
+#include "behaviortree_cpp_v3/loggers/bt_json_dynamic.h"
 
 
 #include <unistd.h>
@@ -238,8 +239,10 @@ static const char* xml_text = R"(
     // Create a logger
     StdCoutLogger logger_cout(tree);
 
-    MinitraceLogger logger_minitrace(tree, "bt_trace.json");
+    // MinitraceLogger logger_minitrace(tree, "bt_trace.json");
     FileLogger logger_file(tree, "bt_trace.fbl");
+    JsonDynamicLogger logger_json_file(tree, "bt_trace.json");
+
 #ifdef ZMQ_FOUND
     PublisherZMQ publisher_zmq(tree);
 #endif

@@ -236,10 +236,10 @@ static const char* xml_text = R"(
     auto tree = factory.createTreeFromFile(xml_filename);
 
     // Create a logger
-    StdCoutLogger logger_cout(tree.root_node);
+    StdCoutLogger logger_cout(tree);
 
-    MinitraceLogger logger_minitrace(tree.root_node, "bt_trace.json");
-    FileLogger logger_file(tree.root_node, "bt_trace.fbl");
+    MinitraceLogger logger_minitrace(tree, "bt_trace.json");
+    FileLogger logger_file(tree, "bt_trace.fbl");
 #ifdef ZMQ_FOUND
     PublisherZMQ publisher_zmq(tree);
 #endif

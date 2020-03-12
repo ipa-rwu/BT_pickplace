@@ -22,7 +22,6 @@ find_package(catkin REQUIRED
     moveit_ros_planning
     moveit_ros_planning_interface
     pluginlib
-    geometric_shapes
     pcl_ros
     pcl_conversions
     rosbag

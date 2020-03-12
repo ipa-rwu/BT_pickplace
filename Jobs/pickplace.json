@@ -1,0 +1,112 @@
+{
+    "Task_num": 3,
+
+    "Task1":{
+        "name": "FindObj"
+    },
+
+    "Task2": {
+        "name": "Pick",
+        "steps":{
+            "num": 3,
+            "step1": {
+                "name": "above",
+                "param":{
+                    "arm": 
+                    {
+                        "name": "dis",
+                        "value": "0.3"
+                    },
+                    "gripper": 
+                    {
+                        "name": "command",
+                        "value": "open"
+                    }
+                }
+            },            
+            "step2": {
+                "name": "grasp",
+                "param":{
+                    "arm": 
+                    {
+                        "name": "dis",
+                        "value": "0"
+                    },
+                    "gripper": 
+                    {
+                        "name": "command",
+                        "value": "close"
+                    }
+                }
+            },
+            "step3": {
+                "name": "readymove",
+                    "param":{
+                    "arm": 
+                    {
+                        "name": "dis",
+                        "value": "0.4"
+                    },
+                    "gripper": 
+                    {
+                        "name": "command",
+                        "value": "none"
+                    }
+                }
+            }
+        }
+    },
+
+    "Task3": {
+        "name": "Place",
+        "steps":{
+            "num": 3,
+            "step1": {
+                "name": "above",
+                "param":{
+                    "arm": 
+                    {
+                        "name": "dis",
+                        "value": "0.2"
+                    },
+                    "gripper": 
+                    {
+                        "name": "command",
+                        "value": "none"
+                    }
+                }   
+            },            
+            "step2": {
+                "name": "grasp",
+                "param":{
+                    "arm": 
+                    {
+                        "name": "dis",
+                        "value": "0"
+                    },
+                    "gripper": 
+                    {
+                        "name": "command",
+                        "value": "open"
+                    }
+                }
+            },
+            "step3": {
+                "name": "finish",
+                "param":{
+                    "arm": 
+                    {
+                        "name": "dis",
+                        "value": "0.4"
+                    },
+                    "gripper": 
+                    {
+                        "name": "command",
+                        "value": "none"
+                    }
+                }
+            }
+        }
+    }
+
+}

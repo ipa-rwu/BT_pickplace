@@ -1,0 +1,19 @@
+{
+    "robor":{
+        "T2S1rob": 0.3,
+        "T2S2rob": 0.0,
+        "T2S3rob": 0.4,
+        "T3S1rob": 0.3,
+        "T3S2rob": 0.0,
+        "T3S3rob": 0.4
+    }
+    "griiper":{
+        "T2S1gripper":"open",
+        "T2S2gripper":"close",
+        "T2S3gripper":"none",
+        "T3S1gripper":"none",
+        "T3S2gripper":"open",
+        "T3S3gripper":"none",
+    }
+
+}

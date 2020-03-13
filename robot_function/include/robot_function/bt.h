@@ -788,6 +788,43 @@ class BTPubFakeHoldObj: public BT::CoroActionNode
     ros::NodeHandle _nh;
 };
 
+// TODO genertate from configuration
+class AReloadParamArm: public BT::CoroActionNode
+{
+  public:
+    AReloadParamArm(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh)
+    : BT::CoroActionNode(name,config), _nh(nh)
+    {
+      _aborted = false;
+    }
+    BT::NodeStatus tick() override;
+
+    void halt() override
+    {
+      _aborted = true;
+      BT::CoroActionNode::halt();
+    }
+
+    // TODO: generate from configuration
+    static BT::PortsList providedPorts() 
+    { 
+      return{  
+        BT::OutputPort<double>("T2S1"),
+        BT::OutputPort<double>("T2S2"),
+        BT::OutputPort<double>("T2S3"),
+        BT::OutputPort<double>("T3S1"),
+        BT::OutputPort<double>("T3S2"),
+        BT::OutputPort<double>("T3S3") };
+      // BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan"),
+    } 
+
+    private:
+    bool _aborted;
+    RobotFunction robot_obj();
+    ros::NodeHandle _nh;
+
+};
+
 inline void RegisterNodes(BT::BehaviorTreeFactory& factory)
 {
 

@@ -18,7 +18,9 @@ class ParamClient
     private:
     /* data */
 
-        const std::string _server_arm = "arm_config";
+        const std::string _server_arm = "arm_param";
+        std::string param_arm_name[6] = {"T2S1arm", "T2S2arm", "T2S3arm", "T3S1arm", "T3S2arm", "T3S3arm"};
+        std::string param_topic;
         double* param_arm; 
 
         double T2S2arm;
@@ -40,7 +42,7 @@ class ParamClient
         void armparam_callback(const dynamic_parameter::PickPlaceArmConfig &data);
         void gripparam_callback(const dynamic_parameter::PickPlaceGripConfig &data);
 
-        void get_param_arm(ros::NodeHandle nh);
+        bool get_param_arm(ros::NodeHandle nh, double param_arm_temp[], int size);
 };
 
 

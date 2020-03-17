@@ -43,7 +43,21 @@ ParamClient::~ParamClient()
 }
 
 
-void ParamClient::get_param_arm(ros::NodeHandle nh)
+bool ParamClient::get_param_arm(ros::NodeHandle nh, double param_arm_temp[], int size)
 {
-
+    for (int i = 0; i<size; i++)
+    {
+        param_topic = "/" + _server_arm + "/" + param_arm_name[i];
+        if (nh.getParam(param_topic, param_arm[i]))
+        {
+            // ROS_INFO("double: %f",  param_arm[i]);
+            param_arm_temp[i] =  param_arm[i];
+        }
+        else
+        {
+            return false;
+        }
+    }
+    return true;
+    
 }

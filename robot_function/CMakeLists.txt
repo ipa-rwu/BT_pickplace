@@ -36,6 +36,8 @@ find_package(catkin REQUIRED
     roscpp
     behaviortree_cpp_v3
     bt_nodes
+    dynamic_reconfigure
+    dynamic_parameter
 )
 
 
@@ -186,6 +188,10 @@ add_library(robot_gripper
    src/environment.cpp
  )
 
+add_library(paramclient
+   src/parameter_client.cpp
+ )
+
 target_link_libraries(
   ${PROJECT_NAME}
    ${catkin_LIBRARIES}
@@ -195,7 +201,7 @@ target_link_libraries(
 
 target_link_libraries(bt robot_function robot_gripper)
 
-target_link_libraries(main robot_function robot_gripper bt environment)
+target_link_libraries(main robot_function robot_gripper bt environment paramclient)
 #
 
 ## error can't find behaviortree_cpp_v3

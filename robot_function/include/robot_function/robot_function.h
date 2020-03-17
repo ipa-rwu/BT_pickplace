@@ -58,7 +58,7 @@ private:
 public:
     RobotFunction(){};
     RobotFunction(ros::NodeHandle nh);
-    ~RobotFunction(){};
+    ~RobotFunction();
 
 
     // moveit::planning_interface::MoveGroupInterface *move_group;

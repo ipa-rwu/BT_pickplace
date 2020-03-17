@@ -53,7 +53,10 @@
   <build_depend>std_msgs</build_depend>
   <build_depend>eigen</build_depend>
   <depend>behaviortree_cpp_v3</depend>
-  <depend>bt_nodes</depend>
+  <depend>bt_nodes </depend>
+  <depend>dynamic_reconfigure </depend>
+  <depend>dynamic_parameter</depend>
+
 
   <build_depend>moveit_core</build_depend>
   <build_depend>moveit_ros_planning_interface</build_depend>

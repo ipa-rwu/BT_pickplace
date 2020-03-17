@@ -7,6 +7,7 @@ RobotFunction::RobotFunction(ros::NodeHandle nh)
     holdobj_subscriber = nh.subscribe<std_msgs::Bool>("/camera/target/hold", 1000, &RobotFunction::HoldObjCallback, this);
 }
 
+RobotFunction::~RobotFunction()  {} 
 
 
 void RobotFunction::GetBasicInfo(moveit::planning_interface::MoveGroupInterface *move_group)

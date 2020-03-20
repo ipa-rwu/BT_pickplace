@@ -436,7 +436,7 @@ BT::NodeStatus BTCameraFindTarget::tick()
     if(_subtarget.success)
     {
       _target.tag_pose = _subtarget.success;
-      system("/home/rachel/kogrob/kogrob_ws/src/dynamic_tutorials/src/nodes/test.sh");
+      system("/home/rachel/kogrob/kogrob_ws/src/dynamic_parameter/src/nodes/test.sh");
       break;
     }
   }

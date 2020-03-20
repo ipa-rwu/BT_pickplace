@@ -9,8 +9,16 @@
 
 #include "ros/ros.h"
 #include "robot_function/robot_function.h"
-// #include "bt_nodes.h"
+
+#include "robot_function/btnodes_param.h"
 #include "robot_function/bt.h"
+#include "robot_function/btnodes_arm.h"
+#include "robot_function/btnodes_gripper.h"
+#include "robot_function/btnodes_condition.h"
+#include "robot_function/btnodes_others.h"
+
+
+
 #include "robot_function/robot_gripper.h"
 #include "robot_function/environment.h"
 
@@ -34,6 +42,15 @@ static const char* xml_text = R"(
 
  int main(int argc, char **argv)
 {
+    BehaviorTreeFactory factory;
+
+    using namespace BTNodesArm;
+    using namespace BTNodesGripper;
+    using namespace BTNodesCondition;
+    using namespace BTNodesParameter;
+    using namespace BTNodesOthers;
+
+
     // boost::shared_ptr<Robot_Function> robot_obj;
     ros::init(argc, argv, "kogrob_demo");
     ros::NodeHandle nh;
@@ -42,6 +59,7 @@ static const char* xml_text = R"(
     RobotFunction robot_obj(nh);
     GripperFunction gripper_obj;
     EnvironmentSet envrionment_obj;
+    ParamClient param_obj();
 
     ros::AsyncSpinner spinner(1);
     spinner.start();
@@ -82,7 +100,6 @@ static const char* xml_text = R"(
     // using namespace RobotControl;
 
     // We use the BehaviorTreeFactory to register our custom nodes
-    BehaviorTreeFactory factory;
 
     // Note: the name used to register should be the same used in the XML.
     // using namespace BehaviorTreeNodes;
@@ -139,54 +156,65 @@ static const char* xml_text = R"(
     NodeBuilder builder_pathplan = [&nh, &move_group](const std::string& name, const NodeConfiguration& config)
     {
         
-        return std::make_unique<BTPathPlanning>( name, config, nh, move_group);
+        return std::make_unique<APathPlanning>( name, config, nh, move_group);
     };
-    factory.registerBuilder<BTPathPlanning>( "BTPathPlanning",builder_pathplan);
+    factory.registerBuilder<APathPlanning>( "APathPlanning",builder_pathplan);
 
     NodeBuilder builder_executeplan = [&nh, &move_group](const std::string& name, const NodeConfiguration& config)
     {
-        return std::make_unique<BTFollowPath>( name, config, nh, move_group);
+        return std::make_unique<AFollowPath>( name, config, nh, move_group);
     };
-    factory.registerBuilder<BTFollowPath>( "BTFollowPath",builder_executeplan);
+    factory.registerBuilder<AFollowPath>( "AFollowPath",builder_executeplan);
 
     NodeBuilder builder_grippermove = [&nh, &gripper_group](const std::string& name, const NodeConfiguration& config)
     {
         
-        return std::make_unique<BTGripperMove>( name, config, nh, gripper_group);
+        return std::make_unique<AGripperMove>( name, config, nh, gripper_group);
     };
-    factory.registerBuilder<BTGripperMove>( "BTGripperMove", builder_grippermove);
+    factory.registerBuilder<AGripperMove>( "AGripperMove", builder_grippermove);
 
 
     // schunk
     NodeBuilder builder_schunkmove = [&nh, &gripper_group](const std::string& name, const NodeConfiguration& config)
     {
         
-        return std::make_unique<BTGripperMoveSchunk>( name, config, nh, gripper_group);
+        return std::make_unique<AGripperMoveSchunk>( name, config, nh, gripper_group);
     };
-    factory.registerBuilder<BTGripperMoveSchunk>( "BTGripperMoveSchunk", builder_schunkmove);
+    factory.registerBuilder<AGripperMoveSchunk>( "AGripperMoveSchunk", builder_schunkmove);
 
 
     // Camera find target
     NodeBuilder builder_camerafindtarget = [&nh](const std::string& name, const NodeConfiguration& config)
     {
         std::cout << "Initial CameraFindTarget " << std::endl;
-        return std::make_unique<BTCameraFindTarget>( name, config, nh);
+        return std::make_unique<AFindObjContainers>( name, config, nh);
     };
-    factory.registerBuilder<BTCameraFindTarget>( "BTCameraFindTarget", builder_camerafindtarget);
+    factory.registerBuilder<AFindObjContainers>( "AFindObjContainers", builder_camerafindtarget);
 
     NodeBuilder builder_closetotarget = [&nh, &move_group](const std::string& name, const NodeConfiguration& config)
     {
         
-        return std::make_unique<BTCloseToTarget>( name, config, nh, move_group);
+        return std::make_unique<APreparePoseArm>( name, config, nh, move_group);
     };
-    factory.registerBuilder<BTCloseToTarget>( "BTCloseToTarget", builder_closetotarget);
+    factory.registerBuilder<APreparePoseArm>( "APreparePoseArm", builder_closetotarget);
 
     NodeBuilder builder_checkcondition = [&nh, &move_group](const std::string& name, const NodeConfiguration& config)
     {
         
-        return std::make_unique<BTCheckCondition>( name, config, nh, move_group);
+        return std::make_unique<ACheckConditionArm>( name, config, nh, move_group);
     };
-    factory.registerBuilder<BTCheckCondition>( "BTCheckCondition", builder_checkcondition);
+    factory.registerBuilder<ACheckConditionArm>( "ACheckConditionArm", builder_checkcondition);
+
+    NodeBuilder builder_reloadparam = [&nh](const std::string& name, const NodeConfiguration& config)
+    {
+        
+        return std::make_unique<AReloadParam>( name, config, nh);
+    };
+    factory.registerBuilder<AReloadParam>( "AReloadParam", builder_reloadparam);
+
+    factory.registerNodeType<ACheckConditionFlag>("ACheckConditionFlag");
+
+    factory.registerNodeType<ASetFlag>("ASetFlag");
 
     /*    
     NodeBuilder builder_isholdobj = [&nh](const std::string& name, const NodeConfiguration& config)

@@ -1,0 +1,8 @@
+prefix=/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/install/bt_nodes
+
+Name: bt_nodes
+Description: Description of bt_nodes
+Version: 0.0.0
+Cflags: -I${prefix}/include -I/usr/include/eigen3
+Libs: -L${prefix}/lib -lbt_nodes
+Requires: roscpp std_msgs moveit_core moveit_ros_planning_interface

@@ -7,125 +7,9 @@
 #include <moveit/move_group_interface/move_group_interface.h>
 #include "robot_function/robot_function.h"
 #include "robot_function/robot_gripper.h"
+#include "robot_function/btnodes_arm.h"
 
 
-inline void SleepMS(int ms)
-{
-    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-}
-
-
-
-// class BTWaitForTarget : public BT::SyncActionNode
-// {
-//   public:
-//     BTWaitForTarget(const std::string& name, const BT::NodeConfiguration& config)
-//     : BT::SyncActionNode(name, config)
-//     {}    
-//     BT::NodeStatus tick() override;
-
-//     static BT::PortsList providedPorts()
-//     { 
-//       return { BT::OutputPort<geometry_msgs::Pose>("target")};
-//     }
-
-
-//   private:
-//     bool _success;
-//     ros::NodeHandle _nh;
-//     int counter = 0;
-// };
-
-/*
-class BTWaitForTarget : public BT::CoroActionNode
-{
-  public:
-    BTWaitForTarget(const std::string& name):
-        CoroActionNode(name, {})
-    {}
-    
-    BT::NodeStatus tick() override;
-
-    static BT::PortsList providedPorts()
-    {
-      return { BT::OutputPort<geometry_msgs::Pose>("target")};
-    };
-
-    void halt() override;
-
-    bool wasHalted() const { return _halted; }
-
-  private:
-    bool _halted;
-    bool _success = false;
-    int counter = 0;
-     ros::NodeHandle _nh;
-};
-*/
-
-struct PositionGo
-{
-  double px,py,pz,ox,oy,oz,ow;
-};
-
-struct TargetType
-{
-  std::string Name;
-  bool tag_name;
-  geometry_msgs::Pose Pose;
-  bool tag_pose; 
-  geometry_msgs::Pose Waypoint;
-  bool tag_waypoint;
-};
-
-
-namespace BT
-{
-	template <> inline TargetType convertFromString(StringView str)
-	{
-		// printf("Converting string: \"%s\"\n", str.data() );
-
-		// real numbers separated by semicolons
-		auto parts = splitString(str, ';');
-    TargetType target;
-    target.tag_name = false;
-    target.tag_pose = false;
-    target.tag_waypoint = false;
-    target.Name = "none";
-
-    if (convertFromString<std::string>(parts[0]) == "name")
-    {
-      target.tag_name = true;
-      target.Name = convertFromString<std::string>(parts[1]);
-      return target;
-    }
-    if (convertFromString<std::string>(parts[0]) == "pose")
-    {
-      target.tag_pose = true;
-      target.Pose.position.x = convertFromString<double>(parts[1]);
-      target.Pose.position.y = convertFromString<double>(parts[2]);
-      target.Pose.position.z = convertFromString<double>(parts[3]);
-      target.Pose.orientation.x = convertFromString<double>(parts[4]);
-      target.Pose.orientation.y = convertFromString<double>(parts[5]);
-      target.Pose.orientation.z = convertFromString<double>(parts[6]);
-      target.Pose.orientation.w = convertFromString<double>(parts[7]);
-      return target;
-    }
-
-    if (convertFromString<std::string>(parts[0]) == "waypoint")
-    {
-      target.tag_waypoint = true;
-      target.Waypoint.position.x = convertFromString<double>(parts[1]);
-      target.Waypoint.position.y = convertFromString<double>(parts[2]);
-      target.Waypoint.position.z = convertFromString<double>(parts[3]);
-      target.Waypoint.orientation.x = convertFromString<double>(parts[4]);
-      target.Waypoint.orientation.y = convertFromString<double>(parts[5]);
-      target.Waypoint.orientation.z = convertFromString<double>(parts[6]);
-      target.Waypoint.orientation.w = convertFromString<double>(parts[7]);
-      return target;
-    }
-	}
-}
 
 
 class BTCheckCondition : public BT::SyncActionNode
@@ -788,6 +672,7 @@ class BTPubFakeHoldObj: public BT::CoroActionNode
     ros::NodeHandle _nh;
 };
 
+/*
 // TODO genertate from configuration
 class AReloadParamArm: public BT::CoroActionNode
 {
@@ -808,22 +693,30 @@ class AReloadParamArm: public BT::CoroActionNode
     // TODO: generate from configuration
     static BT::PortsList providedPorts() 
     { 
-      return{  
-        BT::OutputPort<double>("T2S1"),
-        BT::OutputPort<double>("T2S2"),
-        BT::OutputPort<double>("T2S3"),
-        BT::OutputPort<double>("T3S1"),
-        BT::OutputPort<double>("T3S2"),
-        BT::OutputPort<double>("T3S3") };
+      return{ 
+        BT::OutputPort<ParamType>("param"),
+         
+        // BT::OutputPort<double>("T2S1"),
+        // BT::OutputPort<double>("T2S2"),
+        // BT::OutputPort<double>("T2S3"),
+        // BT::OutputPort<double>("T3S1"),
+        // BT::OutputPort<double>("T3S2"),
+        // BT::OutputPort<double>("T3S3"),
+        BT::InputPort<bool>("bool") };
       // BT::OutputPort<moveit::planning_interface::MoveGroupInterface::Plan>("pathplan"),
     } 
 
     private:
     bool _aborted;
-    RobotFunction robot_obj();
+    bool _first;
+    ParamClient _paramcli_obj;
+    ParamType _param;
     ros::NodeHandle _nh;
-
+    static const int _size = 6;
+    double _param_arm_temp[_size] = {0.00};
+    const std::string _port_name[_size] = {"T2S1", "T2S2", "T2S3", "T3S1", "T3S2", "T3S3"};
 };
+*/
 
 inline void RegisterNodes(BT::BehaviorTreeFactory& factory)
 {

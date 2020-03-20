@@ -19,15 +19,19 @@ class ParamClient
     /* data */
 
         const std::string _server_arm = "arm_param";
-        std::string param_arm_name[6] = {"T2S1arm", "T2S2arm", "T2S3arm", "T3S1arm", "T3S2arm", "T3S3arm"};
-        std::string param_topic;
-        double* param_arm; 
+        std::string _param_name_arm[6] = {"T2S1arm", "T2S2arm", "T2S3arm", "T3S1arm", "T3S2arm", "T3S3arm"};
+        std::string _param_topic_arm;
+        double* _param_arm; 
 
-        double T2S2arm;
-        double T2S3arm;
-        double T3S1arm;
-        double T3S2arm;
-        double T3S3arm;
+        const std::string _server_flag = "flag_param";
+        std::string _param_name_flag[4] = {"FHelp" ,"FFindObj", "FPicked", "FPlaced" };
+        std::string _param_topic_flag;
+        bool* _param_flag; 
+
+        const std::string _server_gripper = "gripper_param";
+        std::string _param_name_gripper[6] = {"T2S1gripper", "T2S2gripper", "T2S3gripper", "T3S1gripper", "T3S2gripper", "T3S3gripper"};
+        std::string _param_topic_gripper;
+        std::string* _param_gripper; 
 
 
     public:
@@ -42,7 +46,9 @@ class ParamClient
         void armparam_callback(const dynamic_parameter::PickPlaceArmConfig &data);
         void gripparam_callback(const dynamic_parameter::PickPlaceGripConfig &data);
 
-        bool get_param_arm(ros::NodeHandle nh, double param_arm_temp[], int size);
+        bool get_param_arm(ros::NodeHandle nh, double param_temp[], int size);
+        bool get_param_gripper(ros::NodeHandle nh, std::string param_temp[], int size);
+        bool get_param_flag(ros::NodeHandle nh, bool param_temp[], int size);
 };
 
 

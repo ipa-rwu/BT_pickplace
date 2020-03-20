@@ -56,6 +56,8 @@
   <depend>bt_nodes </depend>
   <depend>dynamic_reconfigure </depend>
   <depend>dynamic_parameter</depend>
+  <depend>ar_marker_detector</depend>
+<build_depend>roslaunch</build_depend>
 
 
   <build_depend>moveit_core</build_depend>

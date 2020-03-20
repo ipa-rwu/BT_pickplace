@@ -1,0 +1,166 @@
+[0.000000] (-) TimerEvent: {}
+[0.000854] (bt_nodes) JobQueued: {'identifier': 'bt_nodes', 'dependencies': OrderedDict()}
+[0.000911] (robot_function) JobQueued: {'identifier': 'robot_function', 'dependencies': OrderedDict([('bt_nodes', '/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/install/bt_nodes')])}
+[0.000971] (bt_nodes) JobStarted: {'identifier': 'bt_nodes'}
+[0.040458] (bt_nodes) JobProgress: {'identifier': 'bt_nodes', 'progress': 'cmake'}
+[0.040829] (bt_nodes) Command: {'cmd': ['/usr/bin/cmake', '/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/bt_nodes', '-DCATKIN_INSTALL_INTO_PREFIX_ROOT=0', '-DCMAKE_INSTALL_PREFIX=/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/install/bt_nodes'], 'cwd': '/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/build/bt_nodes', 'env': OrderedDict([('VIRTUALENVWRAPPER_WORKON_CD', '1'), ('GJS_DEBUG_TOPICS', 'JS ERROR;JS LOG'), ('LESSOPEN', '| /usr/bin/lesspipe %s'), ('VSCODE_NLS_CONFIG', '{"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}'), ('WORKON_HOME', '/home/rachel/.virtualenvs'), ('USER', 'rachel'), ('TEXTDOMAIN', 'im-config'), ('VSCODE_HANDLES_UNCAUGHT_ERRORS', 'true'), ('XDG_SEAT', 'seat0'), ('SSH_AGENT_PID', '2990'), ('XDG_SESSION_TYPE', 'x11'), ('ROS_PACKAGE_PATH', '/home/rachel/kogrob/kogrob_ws/src:/opt/ros/melodic/share'), ('LD_LIBRARY_PATH', '/home/rachel/kogrob/kogrob_ws/devel/lib:/opt/ros/melodic/lib'), ('VSCODE_LOG_STACK', 'false'), ('ROS_ETC_DIR', '/opt/ros/melodic/etc/ros'), ('SHLVL', '3'), ('OLDPWD', '/home/rachel/kogrob/kogrob_ws/src'), ('CHROME_DESKTOP', 'code-url-handler.desktop'), ('QT4_IM_MODULE', 'fcitx'), ('HOME', '/home/rachel'), ('VIRTUALENVWRAPPER_PYTHON', '/usr/bin/python3'), ('DESKTOP_SESSION', 'ubuntu'), ('TERM_PROGRAM_VERSION', '1.43.1'), ('GIO_LAUNCHED_DESKTOP_FILE', '/usr/share/applications/terminator.desktop'), ('VSCODE_IPC_HOOK', '/run/user/1000/vscode-8834ff9e-1.43.1-main.sock'), ('VSCODE_LOGS', '/home/rachel/.config/Code/logs/20200319T200626'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL', 'true'), ('GTK_MODULES', 'gail:atk-bridge'), ('ROS_PYTHON_VERSION', '2'), ('GIT_PS1_SHOWUNTRACKEDFILES', 'true'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '4585'), ('TERMINATOR_DBUS_NAME', 'net.tenshu.Terminator20x1a6021154d881c'), ('PIPE_LOGGING', 'true'), ('MANDATORY_PATH', '/usr/share/gconf/ubuntu.mandatory.path'), ('IM_CONFIG_PHASE', '2'), ('ROS_DISTRO', 'melodic'), ('LOGNAME', 'rachel'), ('GTK_IM_MODULE', 'fcitx'), ('_', '/usr/bin/colcon'), ('DEFAULTS_PATH', '/usr/share/gconf/ubuntu.default.path'), ('ROS_VERSION', '1'), ('PKG_CONFIG_PATH', '/home/rachel/kogrob/kogrob_ws/devel/lib/pkgconfig:/opt/ros/melodic/lib/pkgconfig'), ('USERNAME', 'rachel'), ('XDG_SESSION_ID', '2'), ('TERM', 'xterm-256color'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('WINDOWPATH', '2'), ('PATH', '/opt/ros/melodic/bin:/home/rachel/.local/bin:/opt/GitHub Desktop:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'), ('GIT_PS1_SHOWDIRTYSTATE', 'true'), ('SESSION_MANAGER', 'local/rachel-Latitude-5480:@/tmp/.ICE-unix/2903,unix/rachel-Latitude-5480:/tmp/.ICE-unix/2903'), ('VSCODE_NODE_CACHED_DATA_DIR', '/home/rachel/.config/Code/CachedData/fe22a9645b44368865c0ba92e2fb881ff1afce94'), ('XDG_MENU_PREFIX', 'gnome-'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('TERMINATOR_DBUS_PATH', '/net/tenshu/Terminator2'), ('XDG_CURRENT_DESKTOP', 'Unity'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('TERM_PROGRAM', 'vscode'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('ROS_ROOT', '/opt/ros/melodic/share/ros'), ('XMODIFIERS', '@im=fcitx'), ('ROSLISP_PACKAGE_DIRECTORIES', '/home/rachel/kogrob/kogrob_ws/devel/share/common-lisp'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('TERMINATOR_UUID', 'urn:uuid:6782571e-03df-464e-a823-ae682adc375b'), ('SHELL', '/bin/bash'), ('QT_ACCESSIBILITY', '1'), ('ROS_MASTER_URI', 'http://localhost:11311'), ('ELECTRON_RUN_AS_NODE', '1'), ('GDMSESSION', 'ubuntu'), ('VERBOSE_LOGGING', 'true'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('VIRTUALENVWRAPPER_PROJECT_FILENAME', '.project'), ('VIRTUALENVWRAPPER_HOOK_DIR', '/home/rachel/.virtualenvs'), ('TEXTDOMAINDIR', '/usr/share/locale/'), ('GJS_DEBUG_OUTPUT', 'stderr'), ('GPG_AGENT_INFO', '/run/user/1000/gnupg/S.gpg-agent:0:1'), ('XDG_VTNR', '2'), ('VIRTUALENVWRAPPER_SCRIPT', '/usr/local/bin/virtualenvwrapper.sh'), ('QT_IM_MODULE', 'fcitx'), ('PWD', '/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/build/bt_nodes'), ('VSCODE_CLI', '1'), ('CLUTTER_IM_MODULE', 'xim'), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('AMD_ENTRYPOINT', 'vs/workbench/services/extensions/node/extensionHostProcess'), ('LC_NUMERIC', 'en_US.UTF-8'), ('PYTHONPATH', '/home/rachel/kogrob/kogrob_ws/devel/lib/python2.7/dist-packages:/opt/ros/melodic/lib/python2.7/dist-packages'), ('ELECTRON_NO_ATTACH_CONSOLE', '1'), ('VTE_VERSION', '5202'), ('VSCODE_IPC_HOOK_EXTHOST', '/tmp/vscode-ipc-09d10ee6-7da1-40d3-a049-e3bcea57394b.sock'), ('CMAKE_PREFIX_PATH', '/home/rachel/kogrob/kogrob_ws/devel:/opt/ros/melodic'), ('VSCODE_PID', '16569')]), 'shell': False}
+[0.099659] (-) TimerEvent: {}
+[0.200072] (-) TimerEvent: {}
+[0.226664] (bt_nodes) StdoutLine: {'line': b'-- The C compiler identification is GNU 7.5.0\n'}
+[0.300231] (-) TimerEvent: {}
+[0.376005] (bt_nodes) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 7.5.0\n'}
+[0.399250] (bt_nodes) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc\n'}
+[0.400299] (-) TimerEvent: {}
+[0.502866] (-) TimerEvent: {}
+[0.526725] (bt_nodes) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc -- works\n'}
+[0.529142] (bt_nodes) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.602950] (-) TimerEvent: {}
+[0.621819] (bt_nodes) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.634860] (bt_nodes) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.703081] (-) TimerEvent: {}
+[0.803389] (-) TimerEvent: {}
+[0.863020] (bt_nodes) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.867646] (bt_nodes) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++\n'}
+[0.903577] (-) TimerEvent: {}
+[0.951716] (bt_nodes) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ -- works\n'}
+[0.952397] (bt_nodes) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[1.003715] (-) TimerEvent: {}
+[1.061577] (bt_nodes) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[1.075036] (bt_nodes) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[1.103844] (-) TimerEvent: {}
+[1.204244] (-) TimerEvent: {}
+[1.304567] (-) TimerEvent: {}
+[1.405082] (-) TimerEvent: {}
+[1.505423] (-) TimerEvent: {}
+[1.605975] (-) TimerEvent: {}
+[1.611065] (bt_nodes) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[1.618462] (bt_nodes) StdoutLine: {'line': b'-- Using CATKIN_DEVEL_PREFIX: /home/rachel/kogrob/kogrob_ws/src/BT_pickplace/build/bt_nodes/devel\n'}
+[1.619059] (bt_nodes) StdoutLine: {'line': b'-- Using CMAKE_PREFIX_PATH: /home/rachel/kogrob/kogrob_ws/devel;/opt/ros/melodic\n'}
+[1.619230] (bt_nodes) StdoutLine: {'line': b'-- This workspace overlays: /home/rachel/kogrob/kogrob_ws/devel;/opt/ros/melodic\n'}
+[1.644371] (bt_nodes) StdoutLine: {'line': b'-- Found PythonInterp: /usr/bin/python2 (found suitable version "2.7.17", minimum required is "2") \n'}
+[1.644781] (bt_nodes) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/bin/python2\n'}
+[1.644880] (bt_nodes) StdoutLine: {'line': b'-- Using Debian Python package layout\n'}
+[1.645223] (bt_nodes) StdoutLine: {'line': b'-- Using empy: /usr/bin/empy\n'}
+[1.706204] (-) TimerEvent: {}
+[1.808740] (-) TimerEvent: {}
+[1.856977] (bt_nodes) StdoutLine: {'line': b'-- Using CATKIN_ENABLE_TESTING: ON\n'}
+[1.857384] (bt_nodes) StdoutLine: {'line': b'-- Call enable_testing()\n'}
+[1.860061] (bt_nodes) StdoutLine: {'line': b'-- Using CATKIN_TEST_RESULTS_DIR: /home/rachel/kogrob/kogrob_ws/src/BT_pickplace/build/bt_nodes/test_results\n'}
+[1.901998] (bt_nodes) StdoutLine: {'line': b"-- Found gtest sources under '/usr/src/googletest': gtests will be built\n"}
+[1.902234] (bt_nodes) StdoutLine: {'line': b"-- Found gmock sources under '/usr/src/googletest': gmock will be built\n"}
+[1.908859] (-) TimerEvent: {}
+[1.919068] (bt_nodes) StdoutLine: {'line': b'-- Found PythonInterp: /usr/bin/python2 (found version "2.7.17") \n'}
+[1.921618] (bt_nodes) StdoutLine: {'line': b'-- Looking for pthread.h\n'}
+[1.998744] (bt_nodes) StdoutLine: {'line': b'-- Looking for pthread.h - found\n'}
+[1.999520] (bt_nodes) StdoutLine: {'line': b'-- Looking for pthread_create\n'}
+[2.008977] (-) TimerEvent: {}
+[2.079415] (bt_nodes) StdoutLine: {'line': b'-- Looking for pthread_create - not found\n'}
+[2.079720] (bt_nodes) StdoutLine: {'line': b'-- Looking for pthread_create in pthreads\n'}
+[2.109150] (-) TimerEvent: {}
+[2.159254] (bt_nodes) StdoutLine: {'line': b'-- Looking for pthread_create in pthreads - not found\n'}
+[2.159624] (bt_nodes) StdoutLine: {'line': b'-- Looking for pthread_create in pthread\n'}
+[2.209269] (-) TimerEvent: {}
+[2.244988] (bt_nodes) StdoutLine: {'line': b'-- Looking for pthread_create in pthread - found\n'}
+[2.245346] (bt_nodes) StdoutLine: {'line': b'-- Found Threads: TRUE  \n'}
+[2.249302] (bt_nodes) StdoutLine: {'line': b'-- Using Python nosetests: /usr/bin/nosetests-2.7\n'}
+[2.309362] (-) TimerEvent: {}
+[2.328445] (bt_nodes) StdoutLine: {'line': b'-- catkin 0.7.20\n'}
+[2.328676] (bt_nodes) StdoutLine: {'line': b'-- BUILD_SHARED_LIBS is on\n'}
+[2.409511] (-) TimerEvent: {}
+[2.509812] (-) TimerEvent: {}
+[2.610183] (-) TimerEvent: {}
+[2.648171] (bt_nodes) StdoutLine: {'line': b'-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy\n'}
+[2.710320] (-) TimerEvent: {}
+[2.810679] (-) TimerEvent: {}
+[2.911041] (-) TimerEvent: {}
+[3.011358] (-) TimerEvent: {}
+[3.111730] (-) TimerEvent: {}
+[3.212072] (-) TimerEvent: {}
+[3.224951] (bt_nodes) StdoutLine: {'line': b'-- Boost version: 1.65.1\n'}
+[3.225201] (bt_nodes) StdoutLine: {'line': b'-- Found the following Boost libraries:\n'}
+[3.225335] (bt_nodes) StdoutLine: {'line': b'--   system\n'}
+[3.312216] (-) TimerEvent: {}
+[3.374433] (bt_nodes) StdoutLine: {'line': b'-- Configuring done\n'}
+[3.412304] (-) TimerEvent: {}
+[3.512635] (-) TimerEvent: {}
+[3.522986] (bt_nodes) StdoutLine: {'line': b'-- Generating done\n'}
+[3.533769] (bt_nodes) StdoutLine: {'line': b'-- Build files have been written to: /home/rachel/kogrob/kogrob_ws/src/BT_pickplace/build/bt_nodes\n'}
+[3.542974] (bt_nodes) CommandEnded: {'returncode': 0}
+[3.543989] (bt_nodes) JobProgress: {'identifier': 'bt_nodes', 'progress': 'build'}
+[3.546046] (bt_nodes) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/build/bt_nodes', '--', '-j4', '-l4'], 'cwd': '/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/build/bt_nodes', 'env': OrderedDict([('VIRTUALENVWRAPPER_WORKON_CD', '1'), ('GJS_DEBUG_TOPICS', 'JS ERROR;JS LOG'), ('LESSOPEN', '| /usr/bin/lesspipe %s'), ('VSCODE_NLS_CONFIG', '{"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}'), ('WORKON_HOME', '/home/rachel/.virtualenvs'), ('USER', 'rachel'), ('TEXTDOMAIN', 'im-config'), ('VSCODE_HANDLES_UNCAUGHT_ERRORS', 'true'), ('XDG_SEAT', 'seat0'), ('SSH_AGENT_PID', '2990'), ('XDG_SESSION_TYPE', 'x11'), ('ROS_PACKAGE_PATH', '/home/rachel/kogrob/kogrob_ws/src:/opt/ros/melodic/share'), ('LD_LIBRARY_PATH', '/home/rachel/kogrob/kogrob_ws/devel/lib:/opt/ros/melodic/lib'), ('VSCODE_LOG_STACK', 'false'), ('ROS_ETC_DIR', '/opt/ros/melodic/etc/ros'), ('SHLVL', '3'), ('OLDPWD', '/home/rachel/kogrob/kogrob_ws/src'), ('CHROME_DESKTOP', 'code-url-handler.desktop'), ('QT4_IM_MODULE', 'fcitx'), ('HOME', '/home/rachel'), ('VIRTUALENVWRAPPER_PYTHON', '/usr/bin/python3'), ('DESKTOP_SESSION', 'ubuntu'), ('TERM_PROGRAM_VERSION', '1.43.1'), ('GIO_LAUNCHED_DESKTOP_FILE', '/usr/share/applications/terminator.desktop'), ('VSCODE_IPC_HOOK', '/run/user/1000/vscode-8834ff9e-1.43.1-main.sock'), ('VSCODE_LOGS', '/home/rachel/.config/Code/logs/20200319T200626'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL', 'true'), ('GTK_MODULES', 'gail:atk-bridge'), ('ROS_PYTHON_VERSION', '2'), ('GIT_PS1_SHOWUNTRACKEDFILES', 'true'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '4585'), ('TERMINATOR_DBUS_NAME', 'net.tenshu.Terminator20x1a6021154d881c'), ('PIPE_LOGGING', 'true'), ('MANDATORY_PATH', '/usr/share/gconf/ubuntu.mandatory.path'), ('IM_CONFIG_PHASE', '2'), ('ROS_DISTRO', 'melodic'), ('LOGNAME', 'rachel'), ('GTK_IM_MODULE', 'fcitx'), ('_', '/usr/bin/colcon'), ('DEFAULTS_PATH', '/usr/share/gconf/ubuntu.default.path'), ('ROS_VERSION', '1'), ('PKG_CONFIG_PATH', '/home/rachel/kogrob/kogrob_ws/devel/lib/pkgconfig:/opt/ros/melodic/lib/pkgconfig'), ('USERNAME', 'rachel'), ('XDG_SESSION_ID', '2'), ('TERM', 'xterm-256color'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('WINDOWPATH', '2'), ('PATH', '/opt/ros/melodic/bin:/home/rachel/.local/bin:/opt/GitHub Desktop:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'), ('GIT_PS1_SHOWDIRTYSTATE', 'true'), ('SESSION_MANAGER', 'local/rachel-Latitude-5480:@/tmp/.ICE-unix/2903,unix/rachel-Latitude-5480:/tmp/.ICE-unix/2903'), ('VSCODE_NODE_CACHED_DATA_DIR', '/home/rachel/.config/Code/CachedData/fe22a9645b44368865c0ba92e2fb881ff1afce94'), ('XDG_MENU_PREFIX', 'gnome-'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('TERMINATOR_DBUS_PATH', '/net/tenshu/Terminator2'), ('XDG_CURRENT_DESKTOP', 'Unity'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('TERM_PROGRAM', 'vscode'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('ROS_ROOT', '/opt/ros/melodic/share/ros'), ('XMODIFIERS', '@im=fcitx'), ('ROSLISP_PACKAGE_DIRECTORIES', '/home/rachel/kogrob/kogrob_ws/devel/share/common-lisp'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('TERMINATOR_UUID', 'urn:uuid:6782571e-03df-464e-a823-ae682adc375b'), ('SHELL', '/bin/bash'), ('QT_ACCESSIBILITY', '1'), ('ROS_MASTER_URI', 'http://localhost:11311'), ('ELECTRON_RUN_AS_NODE', '1'), ('GDMSESSION', 'ubuntu'), ('VERBOSE_LOGGING', 'true'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('VIRTUALENVWRAPPER_PROJECT_FILENAME', '.project'), ('VIRTUALENVWRAPPER_HOOK_DIR', '/home/rachel/.virtualenvs'), ('TEXTDOMAINDIR', '/usr/share/locale/'), ('GJS_DEBUG_OUTPUT', 'stderr'), ('GPG_AGENT_INFO', '/run/user/1000/gnupg/S.gpg-agent:0:1'), ('XDG_VTNR', '2'), ('VIRTUALENVWRAPPER_SCRIPT', '/usr/local/bin/virtualenvwrapper.sh'), ('QT_IM_MODULE', 'fcitx'), ('PWD', '/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/build/bt_nodes'), ('VSCODE_CLI', '1'), ('CLUTTER_IM_MODULE', 'xim'), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('AMD_ENTRYPOINT', 'vs/workbench/services/extensions/node/extensionHostProcess'), ('LC_NUMERIC', 'en_US.UTF-8'), ('PYTHONPATH', '/home/rachel/kogrob/kogrob_ws/devel/lib/python2.7/dist-packages:/opt/ros/melodic/lib/python2.7/dist-packages'), ('ELECTRON_NO_ATTACH_CONSOLE', '1'), ('VTE_VERSION', '5202'), ('VSCODE_IPC_HOOK_EXTHOST', '/tmp/vscode-ipc-09d10ee6-7da1-40d3-a049-e3bcea57394b.sock'), ('CMAKE_PREFIX_PATH', '/home/rachel/kogrob/kogrob_ws/devel:/opt/ros/melodic'), ('VSCODE_PID', '16569')]), 'shell': False}
+[3.596762] (bt_nodes) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target bt_nodes\x1b[0m\n'}
+[3.612736] (-) TimerEvent: {}
+[3.707360] (bt_nodes) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding CXX object CMakeFiles/bt_nodes.dir/src/bt_nodes.cpp.o\x1b[0m\n'}
+[3.712831] (-) TimerEvent: {}
+[3.816447] (-) TimerEvent: {}
+[3.916779] (-) TimerEvent: {}
+[4.017124] (-) TimerEvent: {}
+[4.117588] (-) TimerEvent: {}
+[4.218070] (-) TimerEvent: {}
+[4.318574] (-) TimerEvent: {}
+[4.418977] (-) TimerEvent: {}
+[4.519318] (-) TimerEvent: {}
+[4.619631] (-) TimerEvent: {}
+[4.720076] (-) TimerEvent: {}
+[4.820662] (-) TimerEvent: {}
+[4.921034] (-) TimerEvent: {}
+[5.021428] (-) TimerEvent: {}
+[5.121797] (-) TimerEvent: {}
+[5.222159] (-) TimerEvent: {}
+[5.322572] (-) TimerEvent: {}
+[5.423035] (-) TimerEvent: {}
+[5.523535] (-) TimerEvent: {}
+[5.624172] (-) TimerEvent: {}
+[5.724517] (-) TimerEvent: {}
+[5.824885] (-) TimerEvent: {}
+[5.925199] (-) TimerEvent: {}
+[6.025549] (-) TimerEvent: {}
+[6.125913] (-) TimerEvent: {}
+[6.226269] (-) TimerEvent: {}
+[6.326586] (-) TimerEvent: {}
+[6.426946] (-) TimerEvent: {}
+[6.527303] (-) TimerEvent: {}
+[6.627633] (-) TimerEvent: {}
+[6.727979] (-) TimerEvent: {}
+[6.828345] (-) TimerEvent: {}
+[6.928721] (-) TimerEvent: {}
+[7.029072] (-) TimerEvent: {}
+[7.129425] (-) TimerEvent: {}
+[7.229807] (-) TimerEvent: {}
+[7.330302] (-) TimerEvent: {}
+[7.430645] (-) TimerEvent: {}
+[7.531004] (-) TimerEvent: {}
+[7.631439] (-) TimerEvent: {}
+[7.731954] (-) TimerEvent: {}
+[7.832661] (-) TimerEvent: {}
+[7.933039] (-) TimerEvent: {}
+[8.033384] (-) TimerEvent: {}
+[8.133860] (-) TimerEvent: {}
+[8.234285] (-) TimerEvent: {}
+[8.334789] (-) TimerEvent: {}
+[8.435251] (-) TimerEvent: {}
+[8.535752] (-) TimerEvent: {}
+[8.636226] (-) TimerEvent: {}
+[8.736762] (-) TimerEvent: {}
+[8.837604] (-) TimerEvent: {}
+[8.937952] (-) TimerEvent: {}
+[9.038298] (-) TimerEvent: {}
+[9.138648] (-) TimerEvent: {}
+[9.239002] (-) TimerEvent: {}
+[9.339363] (-) TimerEvent: {}
+[9.399889] (bt_nodes) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking CXX shared library devel/lib/libbt_nodes.so\x1b[0m\n'}
+[9.439524] (-) TimerEvent: {}
+[9.539935] (-) TimerEvent: {}
+[9.640407] (-) TimerEvent: {}
+[9.687495] (bt_nodes) StderrLine: {'line': b'/usr/bin/ld: cannot find -lbt_sample_nodes\n'}
+[9.687808] (bt_nodes) StderrLine: {'line': b'collect2: error: ld returned 1 exit status\n'}
+[9.689337] (bt_nodes) StderrLine: {'line': b'gmake[2]: *** [devel/lib/libbt_nodes.so] Error 1\n'}
+[9.689541] (bt_nodes) StdoutLine: {'line': b"CMakeFiles/bt_nodes.dir/build.make:187: recipe for target 'devel/lib/libbt_nodes.so' failed\n"}
+[9.689686] (bt_nodes) StdoutLine: {'line': b"CMakeFiles/Makefile2:1955: recipe for target 'CMakeFiles/bt_nodes.dir/all' failed\n"}
+[9.689800] (bt_nodes) StderrLine: {'line': b'gmake[1]: *** [CMakeFiles/bt_nodes.dir/all] Error 2\n'}
+[9.689957] (bt_nodes) StdoutLine: {'line': b"Makefile:140: recipe for target 'all' failed\n"}
+[9.690047] (bt_nodes) StderrLine: {'line': b'gmake: *** [all] Error 2\n'}
+[9.691908] (bt_nodes) CommandEnded: {'returncode': 2}
+[9.726165] (bt_nodes) JobEnded: {'identifier': 'bt_nodes', 'rc': 2}
+[9.727722] (robot_function) JobSkipped: {'identifier': 'robot_function'}
+[9.727767] (-) EventReactorShutdown: {}

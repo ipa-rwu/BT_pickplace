@@ -52,7 +52,7 @@ void RobotFunction::InitialiseMoveit(ros::NodeHandle nh, moveit::planning_interf
 bool RobotFunction::comparePoses(moveit::planning_interface::MoveGroupInterface *move_group, geometry_msgs::Pose pose2, double delta_posistion, double delta_orientation)
 {
   geometry_msgs::Pose pose1 = move_group->getCurrentPose().pose;
-  if (  abs(pose1.position.z-pose2.position.z ) <= delta_posistion
+  if (  abs(pose1.position.x-pose2.position.x ) <= delta_posistion
         && abs(pose1.position.y-pose2.position.y ) <= delta_posistion
         && abs(pose1.position.z-pose2.position.z ) <= delta_posistion
         && abs(pose1.orientation.x - pose2.orientation.x) <= delta_orientation

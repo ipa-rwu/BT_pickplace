@@ -91,6 +91,8 @@ public:
 
     bool MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface *move_group, moveit::planning_interface::MoveGroupInterface::Plan my_plan);
     gettarget CameraFindTarget();
+
+    // prepare pose
     gettarget KeepDistanceToTarget(geometry_msgs::Pose target_pose, double height);
     // bool CameraFindTarget();
     // bool MoveToPose(); 

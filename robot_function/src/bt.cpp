@@ -179,7 +179,7 @@ BT::NodeStatus BTWaitForTarget::tick()
 }
 
 
-
+/*
 BT::NodeStatus BTPathPlanning::tick()
 {
   RobotFunction robot_obj(_nh);
@@ -240,7 +240,7 @@ BT::NodeStatus BTPathPlanning::tick()
   setOutput<moveit::planning_interface::MoveGroupInterface::Plan>("makeplan", _planpath.plan);
   return BT::NodeStatus::SUCCESS; 
 }
-
+*/
 
 
 BT::NodeStatus BTFollowPath::tick()
@@ -311,7 +311,7 @@ BT::NodeStatus BTCheckGripperCommand::tick()
 
 BT::NodeStatus BTGripperMove::tick()
 {
-  SleepMS(500);
+  // SleepMS(500);
   GripperFunction _gripper_obj;
   if( !getInput<std::string>("commandin", _commandin) )
   {
@@ -334,7 +334,7 @@ BT::NodeStatus BTGripperMove::tick()
 
 BT::NodeStatus BTGripperMoveSchunk::tick()
 {
-  SleepMS(500);
+  // SleepMS(500);
   GripperFunction _gripper_obj;
   if( !getInput<std::string>("commandin", _commandin) )
   {
@@ -436,7 +436,7 @@ BT::NodeStatus BTCameraFindTarget::tick()
     if(_subtarget.success)
     {
       _target.tag_pose = _subtarget.success;
-      system("/home/rachel/kogrob/kogrob_ws/src/dynamic_tutorials/src/nodes/test.sh");
+      
       break;
     }
   }
@@ -662,14 +662,37 @@ std::string GetStdoutFromCommand(std::string cmd) {
   return data;
 }
 
+/*
 BT::NodeStatus AReloadParamArm::tick()
 {
-  RobotFunction robot_obj(_nh);
-  system("/home/rachel/kogrob/kogrob_ws/src/dynamic_tutorials/src/nodes/test.sh");
   
+  
+  if( !getInput<bool>("bool", _first) )
+  {
+    throw BT::RuntimeError("missing required input [flag_first_time]");
+  }
+
   while(!_aborted)
   {
+    if (!_first)
+    {
+      system("/home/rachel/kogrob/kogrob_ws/src/dynamic_tutorials/src/nodes/test.sh");
+    } 
+
+    if (_paramcli_obj.get_param_arm(_nh, _param_arm_temp, _size))
+    {
+      _param.Name = "arm";
+      for (int i = 0; i < _size; i++)
+      {
+        _param.Gripper.paramgrip[i] = _param_arm_temp[i];
+      }
+      setOutput<ParamType>("param", _param);
+
+    }
     // robot_obj.PubFakeHoldObj();
+
     return BT::NodeStatus::SUCCESS;
   }
+ 
 }
+ */

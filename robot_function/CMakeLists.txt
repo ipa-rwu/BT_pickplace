@@ -16,6 +16,7 @@ endif()
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED
   COMPONENTS
+    roslaunch
     interactive_markers
     moveit_core
     moveit_visual_tools
@@ -38,7 +39,9 @@ find_package(catkin REQUIRED
     bt_nodes
     dynamic_reconfigure
     dynamic_parameter
+    ar_marker_detector
 )
+
 
 
 ## System dependencies are found with CMake's conventions
@@ -176,13 +179,37 @@ add_library(robot_function
    src/robot_function.cpp
  )
 
-  add_library(bt
-   src/bt.cpp
- )
+add_library(bt
+  src/bt.cpp
+)
+
+add_library(btnodes_arm
+  src/btnodes_arm.cpp
+)
+
+add_library(btnodes_param
+src/btnodes_param.cpp
+)
+
+add_library(btnodes_gripper
+  src/btnodes_gripper.cpp
+)
+
+add_library(btnodes_condition
+  src/btnodes_condition.cpp
+)
+
+add_library(btnodes_others
+  src/btnodes_others.cpp
+)
 
 add_library(robot_gripper
    src/robot_gripper.cpp
  )
+
+add_library(robot_others
+   src/robot_others.cpp
+)
 
  add_library(environment
    src/environment.cpp
@@ -201,7 +228,15 @@ target_link_libraries(
 
 target_link_libraries(bt robot_function robot_gripper)
 
-target_link_libraries(main robot_function robot_gripper bt environment paramclient)
+target_link_libraries(btnodes_gripper robot_gripper)
+
+target_link_libraries(btnodes_others robot_others)
+
+
+target_link_libraries(main robot_function robot_gripper
+ bt environment paramclient btnodes_param 
+ btnodes_arm btnodes_gripper btnodes_condition
+ robot_others btnodes_others)
 #
 
 ## error can't find behaviortree_cpp_v3

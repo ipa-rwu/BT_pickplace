@@ -54,10 +54,30 @@ BT::NodeStatus ACheckConditionFlag::tick()
 {
     if( !getInput<ParamType>("param", _param) || !getInput<int>("task", _task))
     {
-        throw BT::RuntimeError("ASetFlag missing required input [param] or [task]"); 
+        // throw BT::RuntimeError("ACheckConditionFlag missing required input [param] or [task]"); 
+        return BT::NodeStatus::FAILURE;
+
     }
 
     if (_param.flag.param[_task])
+    {
+        return BT::NodeStatus::SUCCESS;
+    }
+    
+    return BT::NodeStatus::FAILURE;
+}
+
+
+BT::NodeStatus ACheckConditionLoad::tick()
+{
+    if( !getInput<bool>("oneparam", _load ) )
+    {
+        // throw BT::RuntimeError("ACheckConditionFlag missing required input [param] or [task]"); 
+        return BT::NodeStatus::FAILURE;
+
+    }
+
+    if (_load)
     {
         return BT::NodeStatus::SUCCESS;
     }

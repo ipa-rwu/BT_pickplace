@@ -76,6 +76,28 @@ class ACheckConditionFlag : public BT::SyncActionNode
     int _task;
 };
 
+class ACheckConditionLoad: public BT::SyncActionNode
+{
+  public:
+    ACheckConditionLoad(const std::string& name, const BT::NodeConfiguration& config)
+    : BT::SyncActionNode(name, config)
+    {
+    }
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts() 
+    { 
+      return
+      { 
+        BT::InputPort<bool>("oneparam")
+      };
+    } 
+
+  private:
+    bool _load;
+};
+
+
 inline void RegisterNodes(BT::BehaviorTreeFactory& factory)
 {
 

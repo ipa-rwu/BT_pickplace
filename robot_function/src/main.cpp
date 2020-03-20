@@ -65,7 +65,7 @@ static const char* xml_text = R"(
     spinner.start();
     
     std::string xml_filename;
-    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/robot_function/treexml/PickPlace_waypoint.xml");
+    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/robot_function/treexml/PickPlace_sim.xml");
     ROS_INFO("Loading XML : %s", xml_filename.c_str());
     
 
@@ -208,9 +208,10 @@ static const char* xml_text = R"(
     NodeBuilder builder_reloadparam = [&nh](const std::string& name, const NodeConfiguration& config)
     {
         
-        return std::make_unique<AReloadParam>( name, config, nh);
+        return std::make_unique<AReloadParam>( name, config, nh, true, false);
     };
     factory.registerBuilder<AReloadParam>( "AReloadParam", builder_reloadparam);
+
 
     factory.registerNodeType<ACheckConditionFlag>("ACheckConditionFlag");
 

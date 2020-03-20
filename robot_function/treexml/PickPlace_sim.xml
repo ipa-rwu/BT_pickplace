@@ -35,15 +35,20 @@
                 </Sequence>
             </Sequence>
             <Sequence name="Task1">
-                <Inverter>
-                    <Action ID="ACheckConditionFlag" param="{param}" task="0"/>
-                </Inverter>
-                <Sequence name="T1FindObj">
-                    <SubTree ID="T1FindObjs" blockmarker="1" blockpose="BlockPose" containermarkerA="2" containermarkerB="3" containerpose="ContainerPose" param="Param"/>
+                <Action ID="ACheckConditionFlag" param="{param}" task="0"/>
+                <Sequence name="T1FindObjStart">
+                    <Sequence name="SetMarker">
+                        <SetBlackboard output_key="BlockMarker" value="1"/>
+                        <SetBlackboard output_key="ContainerMarkerA" value="2"/>
+                        <SetBlackboard output_key="ContainerMarkerB" value="3"/>
+                    </Sequence>
+                    <SubTree ID="T1FindObjs" blockmarker="BlockMarker" blockpose="BlockPose" containermarkerA="ContainerMarkerA" containermarkerB="ContainerMarkerB" containerpose="ContainerPose" param="Param"/>
                 </Sequence>
             </Sequence>
             <Sequence name="Help">
-                <Action ID="AReloadParamArm" initial="" param="{param}"/>
+                <Action ID="AReloadParam" initial="" param="{Param}" type="gripper"/>
+                <Action ID="AReloadParam" initial="" param="{Param}" type="arm"/>
+                <Action ID="AReloadParam" initial="" param="{Param}" type="flag"/>
             </Sequence>
         </Fallback>
     </BehaviorTree>
@@ -84,8 +89,8 @@
     </BehaviorTree>
     <!-- ////////// -->
     <BehaviorTree ID="T1FindObjs">
-        <Sequence>
-            <Action ID="AFindObjContainers" blockmarker="{blockmarker}" blockpose="{blockpose}" containermarkerA="{containermarkerA}" containermarkerB="        {containermarkerB}" containerpose="{containerpose}"/>
+        <Sequence name="Searching">
+            <Action ID="AFindObjContainers" blockmarker="{blockmarker}" blockpose="{blockpose}" containermarkerA="{containermarkerA}" containermarkerB="{containermarkerB}" containerpose="{containerpose}"/>
             <Action ID="ASetFlag" flagupdate="{param}" param="{param}" task="1" value="true"/>
         </Sequence>
     </BehaviorTree>
@@ -131,123 +136,88 @@
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>
-        <Undefined ID=""/>
         <Action ID="ACheckConditionArm">
-            <input_port default="{goal}" name="goal"/>
-            <input_port default="{param}" name="param"/>
-            <input_port default="{step}" name="step"/>
+            <input_port name="goal"/>
+            <input_port name="param"/>
+            <input_port name="step"/>
         </Action>
         <Action ID="ACheckConditionFlag">
-            <input_port default="{param}" name="param"/>
+            <input_port name="param"/>
             <input_port name="task"/>
         </Action>
         <Action ID="AFindObjContainers">
             <input_port name="blockmarker"/>
-            <output_port name="blockpose"/>
+            <input_port name="blockpose"/>
             <input_port name="containermarkerA"/>
             <input_port name="containermarkerB"/>
-            <output_port name="containerpose"/>
+            <input_port name="containerpose"/>
         </Action>
         <Action ID="AFollowPath">
-            <input_port default="{plan}" name="plan"/>
+            <input_port name="plan"/>
         </Action>
         <Action ID="AGripperMove">
-            <input_port default="{commgripper}" name="command"/>
+            <input_port name="command"/>
         </Action>
         <Action ID="APathPlanning">
-            <input_port default="{commarm}" name="goal"/>
-            <output_port default="{_plan}" name="plan"/>
+            <input_port name="goal"/>
+            <input_port name="plan"/>
         </Action>
         <Action ID="APreparePoseArm">
-            <input_port default="{blockpose}" name="goal"/>
-            <input_port default="{param}" name="param"/>
-            <input_port default="{step}" name="step"/>
-            <output_port default="{target}" name="targetout"/>
-            <input_port default="{targettype}" name="targettype"/>
+            <input_port name="goal"/>
+            <input_port name="param"/>
+            <input_port name="step"/>
+            <input_port name="targetout"/>
+            <input_port name="targettype"/>
         </Action>
-        <Action ID="AReloadParamArm">
+        <Action ID="AReloadParam">
             <input_port name="initial"/>
-            <output_port default="{param}" name="param"/>
+            <input_port name="param"/>
+            <input_port name="type"/>
         </Action>
         <Action ID="ASetFlag">
-            <output_port name="flagupdate"/>
-            <input_port default="{param}" name="param"/>
+            <input_port name="flagupdate"/>
+            <input_port name="param"/>
             <input_port name="task"/>
             <input_port name="value"/>
         </Action>
-        <Action ID="BTAdvertiseGripperCommand">
-            <input_port default="{gripperin}" name="commandin"/>
-            <output_port default="{GripperOut}" name="commandout"/>
-        </Action>
-        <Action ID="BTCheckGripperCommand">
-            <input_port default="{GripperOut}" name="commandin"/>
-            <output_port default="{grippercom}" name="commandout"/>
-        </Action>
-        <Action ID="BTIsHoldObj">
-            <input_port name="tagisholdin"/>
-        </Action>
-        <Action ID="BTIsObjContainer">
-            <input_port default="{tagisobjcon}" name="tagisobjconin"/>
-        </Action>
-        <Action ID="BTIsObjPose">
-            <input_port name="tagisobjposein"/>
-            <input_port name="targetin"/>
-            <output_port name="targetout"/>
-        </Action>
-        <Action ID="BTPubFakeHoldObj"/>
-        <Action ID="BTStringToBool">
-            <output_port name="boolout"/>
-            <input_port name="stringin"/>
-        </Action>
-        <Action ID="BTStringtoTarget">
-            <input_port default="{string}" name="string"/>
-            <input_port default="{target}" name="targetout"/>
-        </Action>
-        <Action ID="BTWaitForTarget">
-            <input_port default="{Target}" name="targetin"/>
-            <output_port default="{target}" name="targetout"/>
-        </Action>
-        <Condition ID="CheckCondition">
-            <input_port name="FPicked"/>
-        </Condition>
         <SubTree ID="Execution">
-            <input_port default="CommArm" name="commarm"/>
-            <input_port default="CommGripper" name="commgripper"/>
-            <output_port default="FHelp" name="fhelp"/>
+            <input_port name="commarm"/>
+            <input_port name="commgripper"/>
+            <input_port name="fhelp"/>
         </SubTree>
         <SubTree ID="SubCheckPreCondition">
             <input_port name="goalarm"/>
-            <input_port default="{param}" name="param"/>
+            <input_port name="param"/>
             <input_port name="step"/>
         </SubTree>
         <SubTree ID="SubGenerateCommand">
-            <output_port default="{commarm}" name="commarm"/>
-            <output_port default="{commgripper}" name="commgripper"/>
+            <input_port name="commarm"/>
+            <input_port name="commgripper"/>
             <input_port name="goalarm"/>
             <input_port name="gripperaction"/>
-            <input_port default="{param}" name="param"/>
+            <input_port name="param"/>
             <input_port name="step"/>
             <input_port name="targettype"/>
         </SubTree>
         <SubTree ID="T1FindObjs">
             <input_port name="blockmarker"/>
-            <output_port default="BlockPose" name="blockpose"/>
+            <input_port name="blockpose"/>
             <input_port name="containermarkerA"/>
             <input_port name="containermarkerB"/>
-            <output_port default="ContainerPose" name="containerpose"/>
-            <input_port default="Param" name="param"/>
+            <input_port name="containerpose"/>
+            <input_port name="param"/>
         </SubTree>
         <SubTree ID="T2PickSteps">
-            <input_port default="BlockPose" name="blockpose"/>
-            <output_port default="CommArm" name="commarm"/>
-            <output_port default="CommGripper" name="commgripper"/>
-            <inout_port default="Param" name="param"/>
+            <input_port name="blockpose"/>
+            <input_port name="commarm"/>
+            <input_port name="commgripper"/>
+            <input_port name="param"/>
         </SubTree>
         <SubTree ID="T3PlaceSteps">
-            <output_port default="CommArm" name="commarm"/>
-            <output_port default="CommGripper" name="commgripper"/>
-            <input_port default="ContainerPose" name="containerpose"/>
-            <inout_port default="Param" name="param"/>
+            <input_port name="commarm"/>
+            <input_port name="commgripper"/>
+            <input_port name="containerpose"/>
+            <input_port name="param"/>
         </SubTree>
     </TreeNodesModel>
     <!-- ////////// -->

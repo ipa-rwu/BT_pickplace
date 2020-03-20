@@ -78,16 +78,18 @@ namespace BTNodesParameter
 // TODO genertate from configuration
 
 // AReloadParam:
-// input: initial
+// input: initial type param load
 // output: param: .arm.param . gripper.param
 class AReloadParam: public BT::CoroActionNode
 {
   public:
-    AReloadParam(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh)
-    : BT::CoroActionNode(name,config), _nh(nh)
+    AReloadParam(const std::string& name, const BT::NodeConfiguration& config, ros::NodeHandle nh,
+    bool first, bool load)
+    : BT::CoroActionNode(name,config), _nh(nh), _first(first), _load(load)
     {
       _aborted = false;
     }
+
     BT::NodeStatus tick() override;
 
     void halt() override
@@ -101,12 +103,18 @@ class AReloadParam: public BT::CoroActionNode
     { 
       return{ 
         BT::OutputPort<ParamType>("param"),
-        BT::InputPort<bool>("bool") };
+        BT::InputPort<bool>("bool"),
+        BT::InputPort<std::string>("type"),
+        BT::InputPort<bool>("initial"),
+        BT::OutputPort<bool>("initial"),
+        BT::InputPort<bool>("load"),
+        BT::OutputPort<bool>("load") };
     } 
 
   private:
     bool _aborted;
     bool _first;
+    bool _load;
     std::string _type;
     ParamClient _paramcli_obj;
     ParamType _param;
@@ -148,7 +156,7 @@ class ADistributeFlag: public BT::SyncActionNode
 };
 
 // ASetFlag
-// input: param task
+// input: param task value
 // output flagupdate
 class ASetFlag: public BT::SyncActionNode
 {
@@ -164,6 +172,7 @@ class ASetFlag: public BT::SyncActionNode
       return
       { 
         BT::InputPort<ParamType>("param"),
+        BT::InputPort<bool>("value"),
         BT::InputPort<int>("task"),
         BT::OutputPort<ParamType>("flagupdate")
         // ,

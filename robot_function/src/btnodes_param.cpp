@@ -12,65 +12,72 @@ namespace BTNodesParameter
 
 BT::NodeStatus AReloadParam::tick()
 {
-  // #!getInput<bool>("initial", _first) ||
-  if(  !getInput<std::string>("type", _type))
-  {
-    throw BT::RuntimeError("missing required input [type]");
-  }
-
-  while(!_aborted)
-  {
-    if (!_first)
+    // #!getInput<bool>("initial", _first) ||
+    if(  !getInput<std::string>("type", _type))
     {
-      system("/home/rachel/kogrob/kogrob_ws/src/dynamic_tutorials/src/nodes/test.sh");
-    } 
-    else
-    {
-      setOutput<bool>("initial", false);
+      throw BT::RuntimeError("AReloadParamArm missing required input [type]");
     }
 
-    if (_type == "arm")
+    getInput<bool>("initial", _first);
+    std::cout << "AReloadParamArm first: "<< _first << std::endl;
+    while(!_aborted)
     {
-      if (_paramcli_obj.get_param_arm(_nh, _param_temp_arm, _size))
+      if (!_first)
       {
-        _param.name = "arm";
-        for (int i = 0; i < _size; i++)
-        {
-          _param.arm.param[i] = _param_temp_arm[i];
-        }
-        setOutput<ParamType>("param", _param);
-      }
-    }
-
-    if (_type == "gripper")
-    {
-      if ( _paramcli_obj.get_param_gripper(_nh, _param_temp_gripper, _size) )
+        system("/home/rachel/kogrob/kogrob_ws/src/dynamic_parameter/src/nodes/test.sh");
+      } 
+      else
       {
-        _param.name = "gripper";
-        for (int i = 0; i < _size; i++)
-        {
-          _param.gripper.param[i] = _param_temp_gripper[i];
-        }
-        setOutput<ParamType>("param", _param);
+        _first = false;
+        setOutput<bool>("initial", _first);
       }
-    }
 
-    if (_type == "flag")
-    {
-      if (_paramcli_obj.get_param_flag(_nh, _param_temp_flag, _size_1))
+      if (_type == "arm")
       {
-        _param.name = "flag";
-        for (int i = 0; i < _size_1; i++)
+        if (_paramcli_obj.get_param_arm(_nh, _param_temp_arm, _size))
         {
-          _param.flag.param[i] = _param_temp_flag[i];
+          _param.name = "arm";
+          for (int i = 0; i < _size; i++)
+          {
+            _param.arm.param[i] = _param_temp_arm[i];
+          }
+          setOutput<ParamType>("param", _param);
         }
-        setOutput<ParamType>("param", _param);
       }
-    }
-    // robot_obj.PubFakeHoldObj();
 
-    return BT::NodeStatus::SUCCESS;
-  }
+      if (_type == "gripper")
+      {
+        if ( _paramcli_obj.get_param_gripper(_nh, _param_temp_gripper, _size) )
+        {
+          _param.name = "gripper";
+          for (int i = 0; i < _size; i++)
+          {
+            _param.gripper.param[i] = _param_temp_gripper[i];
+          }
+          setOutput<ParamType>("param", _param);
+        }
+      }
+
+      if (_type == "flag")
+      {
+        if (_paramcli_obj.get_param_flag(_nh, _param_temp_flag, _size_1))
+        {
+          _param.name = "flag";
+          for (int i = 0; i < _size_1; i++)
+          {
+            _param.flag.param[i] = _param_temp_flag[i];
+          }
+          setOutput<ParamType>("param", _param);
+        }
+      }
+      // robot_obj.PubFakeHoldObj();
+      if (!  getInput<bool>("load", _load))
+      {
+            setOutput<bool>("load", true);
+
+      }
+      return BT::NodeStatus::SUCCESS;
+    }
  } 
 
 BT::NodeStatus ADistributeFlag::tick()
@@ -105,6 +112,8 @@ BT::NodeStatus ASetFlag::tick()
   return BT::NodeStatus::SUCCESS;
 
 }
+
+
 
 
 }

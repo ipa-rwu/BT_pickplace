@@ -34,12 +34,21 @@ BT::NodeStatus AFindObjContainers::tick()
 {
   OtherFunction other_obj;
 
-  if( !getInput<int>("blockmarker", _block_marker) ||
-   !getInput<int>("containermarkerA", _container_marker_A) || 
-   !getInput<int>("containermarkerB", _container_marker_B))
+  if( !getInput<int>("blockmarker", _block_marker))
   {
-    throw BT::RuntimeError("AFindObjContainers missing required input [marker]");
+    throw BT::RuntimeError("AFindObjContainers missing required input [blockmarker]");
   }
+
+  if( !getInput<int>("containermarkerA", _container_marker_A))
+  {
+    throw BT::RuntimeError("AFindObjContainers missing required input [containermarkerA]");
+  }
+
+    if( !getInput<int>("containermarkerB", _container_marker_B))
+  {
+    throw BT::RuntimeError("AFindObjContainers missing required input [containermarkerB]");
+  }
+
 
   while(!_aborted)
   {

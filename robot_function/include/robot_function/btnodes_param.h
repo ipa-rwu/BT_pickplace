@@ -8,14 +8,14 @@
 
 
 
-template <int N>
+template <int m>
 struct ParamArmType
 {
-  static const int length = N;
-  double param[N];
+  static const int length = m;
+  double param[m];
 };
 
-template <int N>
+template <int n>
 struct ParamGripperType
 {
   // std::string T2S1grip;
@@ -24,15 +24,15 @@ struct ParamGripperType
   // std::string T3S1grip;
   // std::string T3S2grip;
   // std::string T3S3grip;
-  static const int length = N;
-  std::string param[N];
+  static const int length = n;
+  std::string param[n];
 };
 
-template <int N>
+template <int p>
 struct FlagType
 {
-  static const int length = N;
-  bool param[N];
+  static const int length = p;
+  bool param[p];
 };
 
 struct ParamType
@@ -69,6 +69,16 @@ template <> inline ParamType convertFromString(StringView str)
       }
       return param;
     }
+
+    if (convertFromString<std::string>(parts[0]) == "flag")
+    {
+      param.name = convertFromString<std::string>(parts[0]);
+      for (int i = 0; i < param.gripper.length; i++)
+      {
+        param.flag.param[i] = convertFromString<bool>(parts[i+1]);
+      }
+      return param;
+    }
 }
 }
 
@@ -102,11 +112,12 @@ class AReloadParam: public BT::CoroActionNode
     static BT::PortsList providedPorts() 
     { 
       return{ 
-        BT::OutputPort<ParamType>("param"),
+        BT::InputPort<ParamType>("paramin"),
+        BT::OutputPort<ParamType>("paramout"),
         BT::InputPort<bool>("bool"),
         BT::InputPort<std::string>("type"),
-        BT::InputPort<bool>("initial"),
-        BT::OutputPort<bool>("initial"),
+        BT::InputPort<bool>("initialin"),
+        BT::OutputPort<bool>("initialout"),
         BT::InputPort<bool>("load"),
         BT::OutputPort<bool>("load") };
     } 
@@ -188,6 +199,53 @@ class ASetFlag: public BT::SyncActionNode
     int _task;
     bool _value;
     ParamType _param;
+};
+
+
+class ASetMarker: public BT::SyncActionNode
+{
+  public:
+    ASetMarker(const std::string& name, const BT::NodeConfiguration& config, int marker)
+    : BT::SyncActionNode(name, config),  _marker(marker)
+    {
+    }
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts() 
+    { 
+      return
+      { 
+        BT::InputPort<int>("markerin"),
+        BT::OutputPort<int>("markerout")
+
+      };
+    } 
+
+  private:
+    int _marker;
+
+};
+
+class AReadParam: public BT::SyncActionNode
+{
+  public:
+    AReadParam(const std::string& name, const BT::NodeConfiguration& config)
+    : BT::SyncActionNode(name, config)
+    {
+    }
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts() 
+    { 
+      return
+      { 
+        BT::InputPort<ParamType>("paramin")
+      };
+    } 
+
+  private:
+    ParamType _param;
+
 };
 
 inline void RegisterNodes(BT::BehaviorTreeFactory& factory)

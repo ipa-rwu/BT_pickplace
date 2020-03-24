@@ -5,6 +5,8 @@
 #include "behaviortree_cpp_v3/bt_factory.h"
 
 #include "robot_function/robot_others.h"
+#include "robot_function/btnodes_arm.h"
+
 
 
 bool compare_pose(geometry_msgs::Pose A, geometry_msgs::Pose B, geometry_msgs::Pose C);
@@ -36,8 +38,10 @@ class AFindObjContainers: public BT::CoroActionNode
     { 
       return{ 
             BT::InputPort<int>("blockmarker"),
-            BT::InputPort<int>("containermarkerA"),
-            BT::InputPort<int>("containermarkerB"),
+            // BT::InputPort<geometry_msgs::Pose>("containerposeA"),
+            // BT::InputPort<geometry_msgs::Pose>("containerposeB"),
+            BT::InputPort<TargetType>("containerposeA"),
+            BT::InputPort<TargetType>("containerposeB"),
             BT::OutputPort<geometry_msgs::Pose>("containerpose"),
             BT::OutputPort<geometry_msgs::Pose>("blockpose")
         };
@@ -45,8 +49,10 @@ class AFindObjContainers: public BT::CoroActionNode
 
   private:
     geometry_msgs::Pose _block_pose;
-    geometry_msgs::Pose _container_pose_A;
-    geometry_msgs::Pose _container_pose_B;
+    // geometry_msgs::Pose _container_pose_A;
+    // geometry_msgs::Pose _container_pose_B;
+    TargetType _container_pose_A;
+    TargetType _container_pose_B;
     bool _aborted;
     ros::NodeHandle _nh;
     int _container_marker_A;

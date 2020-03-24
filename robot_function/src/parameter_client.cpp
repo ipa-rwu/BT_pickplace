@@ -82,7 +82,7 @@ bool ParamClient::get_param_gripper(ros::NodeHandle nh, std::string param_temp[]
     for (int i = 0; i<size; i++)
     {
         _param_topic_gripper = "/" + _server_gripper + "/" + _param_name_gripper[i];
-        if (nh.getParam(_param_topic_arm, _param_gripper[i]))
+        if (nh.getParam(_param_topic_gripper, _param_gripper[i]))
         {
             // ROS_INFO("double: %f",  param_arm[i]);
             param_temp[i] =  _param_gripper[i];

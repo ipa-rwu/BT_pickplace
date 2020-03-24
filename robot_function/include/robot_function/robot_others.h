@@ -13,15 +13,15 @@ class OtherFunction
 {
 private:
     /* data */
-    ros::ServiceClient _armarker_client;
+    
     std::string _armarker_srv_name = "/getMarkerPose";
-    ar_marker_detector::getMarkerPose _armarker_srv;
+    
 
 
 
 public:
 
-    bool GetMarkerPose(ros::NodeHandle nh, int marker, geometry_msgs::Pose pose_temp);
+    bool GetMarkerPose(ros::NodeHandle nh, int marker, geometry_msgs::Pose &pose_temp);
 };
 
 

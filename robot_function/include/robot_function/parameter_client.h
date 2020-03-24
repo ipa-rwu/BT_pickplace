@@ -18,17 +18,17 @@ class ParamClient
     private:
     /* data */
 
-        const std::string _server_arm = "arm_param";
+        const std::string _server_arm = "arm_param_server";
         std::string _param_name_arm[6] = {"T2S1arm", "T2S2arm", "T2S3arm", "T3S1arm", "T3S2arm", "T3S3arm"};
         std::string _param_topic_arm;
         double* _param_arm; 
 
-        const std::string _server_flag = "flag_param";
-        std::string _param_name_flag[4] = {"FHelp" ,"FFindObj", "FPicked", "FPlaced" };
+        const std::string _server_flag = "flag_param_server";
+        std::string _param_name_flag[4] = {"FHelp" ,"FFoundObj", "FPicked", "FPlaced" };
         std::string _param_topic_flag;
         bool* _param_flag; 
 
-        const std::string _server_gripper = "gripper_param";
+        const std::string _server_gripper = "gripper_param_server";
         std::string _param_name_gripper[6] = {"T2S1gripper", "T2S2gripper", "T2S3gripper", "T3S1gripper", "T3S2gripper", "T3S3gripper"};
         std::string _param_topic_gripper;
         std::string* _param_gripper; 

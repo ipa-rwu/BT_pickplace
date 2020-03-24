@@ -212,10 +212,23 @@ static const char* xml_text = R"(
     };
     factory.registerBuilder<AReloadParam>( "AReloadParam", builder_reloadparam);
 
+    NodeBuilder builder_setmarker = [](const std::string& name, const NodeConfiguration& config)
+    {
+        
+        return std::make_unique<ASetMarker>( name, config, 1);
+    };
+    factory.registerBuilder<ASetMarker>( "ASetMarker", builder_setmarker);
+
 
     factory.registerNodeType<ACheckConditionFlag>("ACheckConditionFlag");
 
     factory.registerNodeType<ASetFlag>("ASetFlag");
+
+    factory.registerNodeType<APrepareGripper>("APrepareGripper");
+
+    factory.registerNodeType<ACheckConditionLoad>("ACheckConditionLoad");
+
+    
 
     /*    
     NodeBuilder builder_isholdobj = [&nh](const std::string& name, const NodeConfiguration& config)

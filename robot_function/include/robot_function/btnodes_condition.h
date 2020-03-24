@@ -34,7 +34,7 @@ class ACheckConditionArm : public BT::CoroActionNode
     static BT::PortsList providedPorts()
     {
       return { 
-        BT::InputPort<geometry_msgs::Pose>("goal"),
+        BT::InputPort<geometry_msgs::Pose>("goalarm"),
         BT::InputPort<ParamType>("param"),
         BT::InputPort<int>("step")
         };

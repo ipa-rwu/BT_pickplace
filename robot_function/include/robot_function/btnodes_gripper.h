@@ -18,7 +18,33 @@ namespace BTNodesGripper
 {
 // AGripperMove
 // input: step command
-//  
+// 
+
+class APrepareGripper: public BT::SyncActionNode
+{
+  public:
+    APrepareGripper(const std::string& name, const BT::NodeConfiguration& config)
+    : BT::SyncActionNode(name,config)
+    {
+    }
+    BT::NodeStatus tick() override;
+
+    static BT::PortsList providedPorts() 
+    { 
+      return{ 
+        // BT::InputPort<std::string>("command")
+        BT::InputPort<ParamType>("param"),
+        BT::InputPort<int>("step"),
+        BT::OutputPort<std::string>("command")
+      };
+    } 
+
+    private:
+      std::string _command;
+      ParamType _param; 
+      int _step;
+};
+
 class AGripperMove: public BT::CoroActionNode
 {
   public:

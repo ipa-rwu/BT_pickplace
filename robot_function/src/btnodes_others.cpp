@@ -39,12 +39,16 @@ BT::NodeStatus AFindObjContainers::tick()
     throw BT::RuntimeError("AFindObjContainers missing required input [blockmarker]");
   }
 
-  if( !getInput<int>("containermarkerA", _container_marker_A))
+
+  // if( !getInput<geometry_msgs::Pose>("containerposeA", _container_pose_A))
+  if( !getInput<TargetType>("containerposeA", _container_pose_A))
+
   {
     throw BT::RuntimeError("AFindObjContainers missing required input [containermarkerA]");
   }
 
-    if( !getInput<int>("containermarkerB", _container_marker_B))
+    // if( !getInput<geometry_msgs::Pose>("containerposeB", _container_pose_B))
+  if( !getInput<TargetType>("containerposeB", _container_pose_B))
   {
     throw BT::RuntimeError("AFindObjContainers missing required input [containermarkerB]");
   }
@@ -52,31 +56,46 @@ BT::NodeStatus AFindObjContainers::tick()
 
   while(!_aborted)
   {
-    if ( other_obj.GetMarkerPose(_nh, _block_marker, _block_pose) && 
-        other_obj.GetMarkerPose(_nh, _container_marker_A, _container_pose_A) &&
-        other_obj.GetMarkerPose(_nh, _container_marker_B, _container_pose_B) )
+
+    if ( other_obj.GetMarkerPose(_nh, _block_marker, _block_pose) )
+    // && other_obj.GetMarkerPose(_nh, _container_marker_A, _container_pose_A) &&
+    //     other_obj.GetMarkerPose(_nh, _container_marker_B, _container_pose_B) 
         {
+          _block_pose.orientation.y = 0.7071;
+          _block_pose.orientation.w = 0.7071;
+          
+
             setOutput<geometry_msgs::Pose>("blockpose", _block_pose);
+            printf("AFindObjContainers got blockpose : x=%.4f y=%.4f z=%.4f ox=%.4f oy=%.4f oz=%.4f ow=%.4f\n",
+             _block_pose.position.x, _block_pose.position.y, _block_pose.position.z,
+             _block_pose.orientation.x, _block_pose.orientation.y, _block_pose.orientation.z, 
+             _block_pose.orientation.w);
+
             // A > B
-            if ( compare_pose (_block_pose, _container_pose_A, _container_pose_B))
+            if ( compare_pose (_block_pose, _container_pose_A.Pose, _container_pose_B.Pose))
             {
-                setOutput<geometry_msgs::Pose>("container", _container_pose_A);
+                printf("AFindObjContainers got containerpose A: x=%.4f y=%.4f z=%.4f ox=%.4f oy=%.4f oz=%.4f ow=%.4f\n",
+                _container_pose_A.Pose.position.x, _container_pose_A.Pose.position.y, _container_pose_A.Pose.position.z,
+                _container_pose_A.Pose.orientation.x, _container_pose_A.Pose.orientation.y, _container_pose_A.Pose.orientation.z, 
+                _container_pose_A.Pose.orientation.w);
+                setOutput<geometry_msgs::Pose>("containerpose", _container_pose_A.Pose);
                 return BT::NodeStatus::SUCCESS;
             }  
 
             else
             {
-                setOutput<geometry_msgs::Pose>("containerpose", _container_pose_B);
+              printf("AFindObjContainers got containerpose B: x=%.4f y=%.4f z=%.4f ox=%.4f oy=%.4f oz=%.4f ow=%.4f\n",
+              _container_pose_B.Pose.position.x, _container_pose_B.Pose.position.y, _container_pose_B.Pose.position.z,
+              _container_pose_B.Pose.orientation.x, _container_pose_B.Pose.orientation.y, _container_pose_B.Pose.orientation.z, 
+              _container_pose_B.Pose.orientation.w);
+                setOutput<geometry_msgs::Pose>("containerpose", _container_pose_B.Pose);
                 return BT::NodeStatus::SUCCESS;
              }
           
         }
   }
 
-  if ( _aborted)
-  {
-    return BT::NodeStatus::FAILURE;
-  }
+  return BT::NodeStatus::FAILURE;
 }
 
 }

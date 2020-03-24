@@ -178,6 +178,10 @@ class APreparePoseArm: public BT::CoroActionNode
       _targetout.tag_pose = false;
       _targetout.tag_waypoint = false;
       _targetout.Name = "none";   
+
+      // _param.arm.param[6] = {0.0000};
+      // _param.gripper.param[6] = {"none"};
+      // _param.flag.param[4] = {false};
     }
     
     BT::NodeStatus tick() override;
@@ -186,7 +190,7 @@ class APreparePoseArm: public BT::CoroActionNode
     {
       return 
       { 
-          BT::InputPort<geometry_msgs::Pose>("goal"), 
+          BT::InputPort<geometry_msgs::Pose>("goalarm"), 
           BT::InputPort<ParamType>("param"), 
           BT::InputPort<std::string>("targettype"), 
           BT::InputPort<int>("step"),

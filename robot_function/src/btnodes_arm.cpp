@@ -107,15 +107,19 @@ BT::NodeStatus APreparePoseArm::tick()
   
   while (!_aborted)
   {
-        if( !getInput<geometry_msgs::Pose>("goal", _goal) || !getInput<ParamType>("param", _param) || 
+        if( !getInput<geometry_msgs::Pose>("goalarm", _goal) || !getInput<ParamType>("param", _param) || 
             !getInput<std::string>("targettype", _targettype) || !getInput<int>("step", _step))
         {
-         throw BT::RuntimeError("BTCloseToTarget missing required input [targetin]");
+         throw BT::RuntimeError("APreparePoseArm missing required input");
         }
         _step = _step - 1;
         _subtarget = robot_obj.KeepDistanceToTarget(_goal, _param.arm.param[_step]);
+        
+        printf("APreparePoseArm: step = %d\n",_step);
+        
+        std::cout << "APreparePoseArm height: "<< _param.arm.param[_step] << std::endl;
 
-        std::cout << "APreparePoseArm pose height: "<< _param.arm.param[_step] << std::endl;
+        std::cout << "APreparePoseArm gripper: "<< _param.gripper.param[_step] << std::endl;
        
         if(_subtarget.success)
         {
@@ -138,7 +142,7 @@ BT::NodeStatus APreparePoseArm::tick()
                 _targetout.Waypoint = _subtarget.target_pose;
                 _targetout.tag_waypoint = true;
                 
-                printf("BTCloseToTarget: pose: x=%.4f y=%.4f z=%.4f ox=%.4f oy=%.4f oz=%.4f ow=%.4f\n",
+                printf("APreparePoseArm: waypoint: x=%.4f y=%.4f z=%.4f ox=%.4f oy=%.4f oz=%.4f ow=%.4f\n",
                 _targetout.Waypoint.position.x, _targetout.Waypoint.position.y, 
                 _targetout.Waypoint.position.z, _targetout.Waypoint.orientation.x,
                 _targetout.Waypoint.orientation.y,_targetout.Waypoint.orientation.z,

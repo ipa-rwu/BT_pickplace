@@ -1,5 +1,0 @@
-[9.687s] /usr/bin/ld: cannot find -lbt_sample_nodes
-[9.687s] collect2: error: ld returned 1 exit status
-[9.688s] gmake[2]: *** [devel/lib/libbt_nodes.so] Error 1
-[9.689s] gmake[1]: *** [CMakeFiles/bt_nodes.dir/all] Error 2
-[9.689s] gmake: *** [all] Error 2

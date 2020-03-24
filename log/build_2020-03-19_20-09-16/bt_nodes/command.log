@@ -1,4 +1,0 @@
-[0.041s] Invoking command in '/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/build/bt_nodes': /usr/bin/cmake /home/rachel/kogrob/kogrob_ws/src/BT_pickplace/bt_nodes -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/install/bt_nodes
-[3.543s] Invoked command in '/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/build/bt_nodes' returned '0': /usr/bin/cmake /home/rachel/kogrob/kogrob_ws/src/BT_pickplace/bt_nodes -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/install/bt_nodes
-[3.546s] Invoking command in '/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/build/bt_nodes': /usr/bin/cmake --build /home/rachel/kogrob/kogrob_ws/src/BT_pickplace/build/bt_nodes -- -j4 -l4
-[9.692s] Invoked command in '/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/build/bt_nodes' returned '2': /usr/bin/cmake --build /home/rachel/kogrob/kogrob_ws/src/BT_pickplace/build/bt_nodes -- -j4 -l4

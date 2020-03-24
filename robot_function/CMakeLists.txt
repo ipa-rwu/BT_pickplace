@@ -36,7 +36,6 @@ find_package(catkin REQUIRED
     std_msgs
     roscpp
     behaviortree_cpp_v3
-    bt_nodes
     dynamic_reconfigure
     dynamic_parameter
     ar_marker_detector
@@ -179,9 +178,7 @@ add_library(robot_function
    src/robot_function.cpp
  )
 
-add_library(bt
-  src/bt.cpp
-)
+
 
 add_library(btnodes_arm
   src/btnodes_arm.cpp
@@ -226,7 +223,6 @@ target_link_libraries(
    ${GSTREAMER_LIBRARIES}
  )
 
-target_link_libraries(bt robot_function robot_gripper)
 
 target_link_libraries(btnodes_gripper robot_gripper)
 
@@ -234,19 +230,18 @@ target_link_libraries(btnodes_others robot_others)
 
 
 target_link_libraries(main robot_function robot_gripper
- bt environment paramclient btnodes_param 
+  environment paramclient btnodes_param 
  btnodes_arm btnodes_gripper btnodes_condition
  robot_others btnodes_others)
-#
 
 ## error can't find behaviortree_cpp_v3
 target_link_libraries(main
    ${BEHAVIOR_TREE_LIBRARY}   bt_sample_nodes 
  )
 
-target_link_libraries(main
-   ${bt_nodes_LIBRARIES} bt_nodes
- )
+#target_link_libraries(main
+#   ${bt_nodes_LIBRARIES} bt_nodes
+# )
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

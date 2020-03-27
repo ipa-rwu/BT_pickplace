@@ -61,8 +61,8 @@ BT::NodeStatus AFindObjContainers::tick()
     // && other_obj.GetMarkerPose(_nh, _container_marker_A, _container_pose_A) &&
     //     other_obj.GetMarkerPose(_nh, _container_marker_B, _container_pose_B) 
         {
-          _block_pose.orientation.y = 0.7071;
-          _block_pose.orientation.w = 0.7071;
+          _block_pose.orientation.z = 0.703;
+          _block_pose.orientation.w = 0.711;
           
 
             setOutput<geometry_msgs::Pose>("blockpose", _block_pose);

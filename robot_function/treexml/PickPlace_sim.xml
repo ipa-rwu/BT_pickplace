@@ -90,8 +90,8 @@
     <BehaviorTree ID="T1FindObjs">
         <Sequence name="Searching">
             <Action ID="ASetMarker" markerin="{blockmarker}" markerout="{blockmarker}"/>
-            <SetBlackboard output_key="containerposeA" value="pose;-0.4;0.55;0.84;0;0.7071;0;0.7071"/>
-            <SetBlackboard output_key="containerposeB" value="pose;0.4;0.55;0.84;0;0.7071;0;0.7071"/>
+            <SetBlackboard output_key="containerposeA" value="pose;-0.4;0.55;0.84;0;0;0.703;0.711"/>
+            <SetBlackboard output_key="containerposeB" value="pose;0.4;0.55;0.84;0;0;0.703;0.711"/>
             <Action ID="AFindObjContainers" blockmarker="{blockmarker}" blockpose="{blockpose}" containerpose="{containerpose}" containerposeA="{containerposeA}" containerposeB="{containerposeB}"/>
             <Action ID="ASetFlag" flagupdate="{paramupdate}" name="ASetFlagTask1" param="{param}" task="1" value="true"/>
         </Sequence>

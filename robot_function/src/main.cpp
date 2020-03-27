@@ -93,6 +93,9 @@ static const char* xml_text = R"(
     moveit::planning_interface::MoveGroupInterface::Plan my_plan;
     move_group->plan(my_plan);
     move_group->move();
+    geometry_msgs::Pose pose1 = move_group->getCurrentPose().pose;
+    std::cout<< "home orientation: "<< pose1.orientation.x << pose1.orientation.y<<
+                                             pose1.orientation.z<< pose1.orientation.w  << std::endl;
     //Get moveit group name
     // robot_obj.InitialiseMoveit(nh);
     // robot_obj.GetBasicInfo();
@@ -284,7 +287,7 @@ static const char* xml_text = R"(
     // FileLogger logger_file(tree, "bt_trace.fbl");
 
     // This logger stores the execution time of each node
-    // MinitraceLogger logger_minitrace(tree, "bt_trace.json");
+    MinitraceLogger logger_minitrace(tree, "bt_minitrace.json");
     JsonDynamicLogger logger_json_file(tree, "bt_trace.json");
 #ifdef ZMQ_FOUND
     PublisherZMQ publisher_zmq(tree);

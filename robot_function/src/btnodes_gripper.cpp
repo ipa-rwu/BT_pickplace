@@ -40,7 +40,8 @@ BT::NodeStatus AGripperMove::tick()
 
     if(_command == "open")
     {
-        _gripper_obj.MoveGripper(_gripper_group, _command);              
+        _gripper_obj.MoveGripper(_gripper_group, _command);    
+        SleepMS(500);         
         return BT::NodeStatus::SUCCESS;
 
     }
@@ -48,6 +49,7 @@ BT::NodeStatus AGripperMove::tick()
     if(_command == "close")
     {
         _gripper_obj.MoveGripper(_gripper_group, _command);
+        SleepMS(500);
         return BT::NodeStatus::SUCCESS;
     }
 

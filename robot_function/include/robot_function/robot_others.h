@@ -22,6 +22,7 @@ private:
 public:
 
     bool GetMarkerPose(ros::NodeHandle nh, int marker, geometry_msgs::Pose &pose_temp);
+    // bool GetTouchSensorTable(ros::NodeHandle nh);
 };
 
 

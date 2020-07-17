@@ -1,0 +1,261 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence name="Job">
+            <Fallback name="Help">
+                <Action ID="ACheckConditionFlag" name="ACheckHelp" param="{Param}" task="0"/>
+                <Sequence name="HelpSteps">
+                    <Action ID="AReloadParam" initialin="{Initial1}" initialout="{Initial1}" paramin="{Param}" paramout="{Param}" type="gripper"/>
+                    <Action ID="AReloadParam" initialin="{Initial3}" initialout="{Initial3}" paramin="{Param}" paramout="{Param}" type="flag"/>
+                    <Action ID="AReloadParam" initialin="{Initial2}" initialout="{Initial2}" paramin="{Param}" paramout="{Param}" type="arm"/>
+                    <SetBlackboard output_key="OneParam" value="true"/>
+                    <Action ID="ASetFlag" flagupdate="{Param}" name="FinishHelp" param="{Param}" task="0" value="1"/>
+                </Sequence>
+            </Fallback>
+            <Fallback name="Task1">
+                <Action ID="ACheckConditionFlag" name="ACheckTask1" param="{Param}" task="1"/>
+                <SubTree ID="T1StepsFind" blockmarker="BlockMarker" blockpose="BlockPose" containermarkerA="ContainerMarkerA" containermarkerB="ContainerMarkerB" containerpose="ContainerPose" param="Param" paramupdate="Param"/>
+                <Inverter>
+                    <Sequence name="NeedHelp">
+                        <SetBlackboard name="setTaskNum" output_key="task" value="1"/>
+                        <SubTree ID="SetFlags" param=" Param" paramupdate=" Param" task="task"/>
+                    </Sequence>
+                </Inverter>
+            </Fallback>
+            <Fallback name="Task2">
+                <Action ID="ACheckConditionFlag" name="ACheckTask2" param="{Param}" task="2"/>
+                <SubTree ID="T2StepsPick" commarm="CommArm" commgripper="CommGripper" goalarm="BlockPose" param="Param" paramupdate="Param"/>
+                <Inverter>
+                    <Sequence name="NeedHelp">
+                        <SetBlackboard name="SetTaskNum" output_key="task" value="2"/>
+                        <SubTree ID="SetFlags" param=" Param" paramupdate=" Param" task="task"/>
+                    </Sequence>
+                </Inverter>
+            </Fallback>
+            <Fallback name="Task3">
+                <Action ID="ACheckConditionFlag" name="ACheckTask3" param="{Param}" task="3"/>
+                <SubTree ID="T3StepsPlace" commarm="CommArm" commgripper="CommGripper" goalarm="ContainerPose" param="Param" paramupdate="Param"/>
+                <Inverter>
+                    <Sequence name="NeedHelp">
+                        <SetBlackboard name="SetTaskNum" output_key="task" value="3"/>
+                        <SubTree ID="SetFlags" param=" Param" paramupdate=" Param" task="task"/>
+                    </Sequence>
+                </Inverter>
+            </Fallback>
+            <Sequence name="Finish">
+                <Action ID="ASetFlag" flagupdate="{Param}" name="ASetFlagTask1" param="{Param}" task="1" value="false"/>
+                <Action ID="ASetFlag" flagupdate="{Param}" name="ASetFlagTask2" param="{Param}" task="2" value="false"/>
+                <Action ID="ASetFlag" flagupdate="{Param}" name="ASetFlagTask3" param="{Param}" task="3" value="false"/>
+            </Sequence>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Execution">
+        <SequenceStar>
+            <Sequence name="MoveRobot">
+                <Action ID="APathPlanning" goal="{commarm}" plan="{_plan}"/>
+                <Action ID="AFollowPath" plan="{_plan}"/>
+            </Sequence>
+            <Sequence name="MoveGripper">
+                <Action ID="AGripperMove" command="{commgripper}"/>
+            </Sequence>
+        </SequenceStar>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="SetFlags">
+        <Sequence name="SetFlagHelpTask">
+            <Action ID="ASetFlag" flagupdate="{paramupdate}" name="ASetHelp" param="{param}" task="0" value="1"/>
+            <Action ID="ASetFlag" flagupdate="{paramupdate}" name="ASetTaskFailed" param="{param}" task="{task}" value="0"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="SubCheckPreCondition">
+        <Sequence name="RunCheckPreCondition">
+            <Action ID="ACheckConditionArm" goalarm="{goalarm_}" param="{param_}" step="{step}"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="SubGenerateCommand">
+        <Sequence name="GenerateCom">
+            <Action ID="APreparePoseArm" goalarm="{goalarm_}" name="AGeneComArm" param="{param_}" step="{step}" targetout="{commarm}" targettype="{targettype}"/>
+            <Action ID="APrepareGripper" command="{commgripper}" name="AGeneComGripper" param="{param_}" step="{step}"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="T1StepsFind">
+        <Sequence name="Searching">
+            <Action ID="ASetMarker" markerin="{blockmarker}" markerout="{blockmarker}"/>
+            <SetBlackboard name="SetContainerPoseA" output_key="containerposeA" value="pose;-0.35;0.55;0.78;0;0.707;0;0.707"/>
+            <SetBlackboard name="SetContainerPoseB" output_key="containerposeB" value="pose;0.35;0.55;0.78;0;0.707;0;0.707"/>
+            <Action ID="AFindObjContainers" blockmarker="{blockmarker}" blockpose="{blockpose}" containerpose="{containerpose}" containerposeA="{containerposeA}" containerposeB="{containerposeB}"/>
+            <Action ID="ASetFlag" flagupdate="{paramupdate}" name="AFinishTask1" param="{param}" task="1" value="true"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="T2StepsPick">
+        <Sequence name="T2Steps">
+            <Sequence name="T2Step1">
+                <Sequence name="SetValue">
+                    <SetBlackboard name="setcurrentstep" output_key="currentstep" value="1"/>
+                    <SetBlackboard name="setplanner" output_key="targettype" value="pose"/>
+                </Sequence>
+                <SubTree ID="SubGenerateCommand" commarm="commarm" commgripper="commgripper" goalarm_="goalarm" param_="param" step="currentstep" targettype="targettype"/>
+                <SubTree ID="Execution" commarm="commarm" commgripper="commgripper" param="param" paramupdate="param"/>
+            </Sequence>
+            <Sequence name="T2Step2">
+                <SequenceStar name="SetValue">
+                    <SetBlackboard name="setcurrentstep" output_key="currentstep" value="2"/>
+                    <SetBlackboard name="setplanner" output_key="targettype" value="waypoint"/>
+                </SequenceStar>
+                <SubTree ID="SubGenerateCommand" commarm="commarm" commgripper="commgripper" goalarm_="goalarm" param_="param" step="currentstep" targettype="targettype"/>
+                <SubTree ID="Execution" commarm="commarm" commgripper="commgripper" param="param" paramupdate="param"/>
+            </Sequence>
+            <Sequence name="T2Step3">
+                <Sequence name="SetValue">
+                    <SetBlackboard name="setcurrentstep" output_key="currentstep" value="3"/>
+                    <SetBlackboard name="setplanner" output_key="targettype" value="waypoint"/>
+                </Sequence>
+                <SubTree ID="SubGenerateCommand" commarm="commarm" commgripper="commgripper" goalarm_="goalarm" param_="param" step="currentstep" targettype="targettype"/>
+                <SubTree ID="Execution" commarm="commarm" commgripper="commgripper" param="param" paramupdate="param"/>
+            </Sequence>
+            <Sequence name="T2Finish">
+                <Action ID="ASetFlag" flagupdate="{paramupdate}" name="AFinishTask2" param="{param}" task="2" value="true"/>
+            </Sequence>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="T3StepsPlace">
+        <Sequence name="T3Steps">
+            <Sequence name="T3Step1">
+                <Sequence name="SetValue">
+                    <SetBlackboard name="setcurrentstep" output_key="currentstep" value="4"/>
+                    <SetBlackboard name="setplanner" output_key="targettype" value="waypoint"/>
+                </Sequence>
+                <SubTree ID="SubGenerateCommand" commarm="commarm" commgripper="commgripper" goalarm_="goalarm" param_="param" step="currentstep" targettype="targettype"/>
+                <SubTree ID="Execution" commarm="commarm" commgripper="commgripper" param="param" paramupdate="param"/>
+            </Sequence>
+            <Sequence name="T3Step2">
+                <Sequence name="SetValue">
+                    <SetBlackboard name="setplanner" output_key="targettype" value="waypoint"/>
+                    <SetBlackboard name="setcurrentstep" output_key="currentstep" value="5"/>
+                </Sequence>
+                <SubTree ID="SubGenerateCommand" commarm="commarm" commgripper="commgripper" goalarm_="goalarm" param_="param" step="currentstep" targettype="targettype"/>
+            </Sequence>
+            <SubTree ID="Execution" commarm="commarm" commgripper="commgripper" param="param" paramupdate="param"/>
+            <Sequence name="T3Step3">
+                <Sequence name="SetValue">
+                    <SetBlackboard name="setplanner" output_key="targettype" value="waypoint"/>
+                    <SetBlackboard name="setcurrentstep" output_key="currentstep" value="6"/>
+                </Sequence>
+                <SubTree ID="SubGenerateCommand" commarm="commarm" commgripper="commgripper" goalarm_="goalarm" param_="param" step="currentstep" targettype="targettype"/>
+                <SubTree ID="Execution" commarm="commarm" commgripper="commgripper" param="param" paramupdate="param"/>
+            </Sequence>
+            <Sequence name="T3Step*">
+                <Action ID="ASetFlag" flagupdate="{paramupdate}" name="ASetFlagTask3" param="{param}" task="3" value="true"/>
+            </Sequence>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="ACheckConditionArm">
+            <input_port name="goalarm"/>
+            <input_port name="param"/>
+            <input_port name="step"/>
+        </Action>
+        <Action ID="ACheckConditionFlag">
+            <input_port name="param"/>
+            <input_port name="task"/>
+        </Action>
+        <Action ID="AFindObjContainers">
+            <input_port name="blockmarker"/>
+            <input_port name="blockpose"/>
+            <input_port name="containerpose"/>
+            <input_port name="containerposeA"/>
+            <input_port name="containerposeB"/>
+        </Action>
+        <Action ID="AFollowPath">
+            <input_port name="plan"/>
+        </Action>
+        <Action ID="AGripperMove">
+            <input_port name="command"/>
+        </Action>
+        <Action ID="APathPlanning">
+            <input_port name="goal"/>
+            <input_port name="plan"/>
+        </Action>
+        <Action ID="APrepareGripper">
+            <input_port name="command"/>
+            <input_port name="param"/>
+            <input_port name="step"/>
+        </Action>
+        <Action ID="APreparePoseArm">
+            <input_port name="goalarm"/>
+            <input_port name="param"/>
+            <input_port name="step"/>
+            <input_port name="targetout"/>
+            <input_port name="targettype"/>
+        </Action>
+        <Action ID="AReloadParam">
+            <input_port name="initialin"/>
+            <input_port name="initialout"/>
+            <input_port name="paramin"/>
+            <input_port name="paramout"/>
+            <input_port name="type"/>
+        </Action>
+        <Action ID="ASetFlag">
+            <input_port name="flagupdate"/>
+            <input_port name="param"/>
+            <input_port name="task"/>
+            <input_port name="value"/>
+        </Action>
+        <Action ID="ASetMarker">
+            <input_port name="markerin"/>
+            <input_port name="markerout"/>
+        </Action>
+        <SubTree ID="Execution">
+            <input_port name="commarm"/>
+            <input_port name="commgripper"/>
+            <input_port name="param"/>
+            <input_port name="paramupdate"/>
+        </SubTree>
+        <SubTree ID="SetFlags">
+            <input_port name="param"/>
+            <input_port name="paramupdate"/>
+            <input_port name="task"/>
+        </SubTree>
+        <SubTree ID="SubGenerateCommand">
+            <input_port name="commarm"/>
+            <input_port name="commgripper"/>
+            <input_port name="goalarm_"/>
+            <input_port name="param_"/>
+            <input_port name="step"/>
+            <input_port name="targettype"/>
+        </SubTree>
+        <SubTree ID="T1StepsFind">
+            <input_port name="blockmarker"/>
+            <input_port name="blockpose"/>
+            <input_port name="containermarkerA"/>
+            <input_port name="containermarkerB"/>
+            <input_port name="containerpose"/>
+            <input_port name="param"/>
+            <input_port name="paramupdate"/>
+        </SubTree>
+        <SubTree ID="T2StepsPick">
+            <input_port name="commarm"/>
+            <input_port name="commgripper"/>
+            <input_port name="goalarm"/>
+            <input_port name="param"/>
+            <input_port name="paramupdate"/>
+        </SubTree>
+        <SubTree ID="T3StepsPlace">
+            <input_port name="commarm"/>
+            <input_port name="commgripper"/>
+            <input_port name="goalarm"/>
+            <input_port name="param"/>
+            <input_port name="paramupdate"/>
+        </SubTree>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+

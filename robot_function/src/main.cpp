@@ -65,7 +65,7 @@ static const char* xml_text = R"(
     spinner.start();
     
     std::string xml_filename;
-    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/robot_function/treexml/PickPlace_sim.xml");
+    nh.param<std::string>("file", xml_filename, "/home/rachel/kogrob/kogrob_ws/src/BT_pickplace/robot_function/treexml/pickplace_seq.xml");
     ROS_INFO("Loading XML : %s", xml_filename.c_str());
     
 
@@ -293,11 +293,11 @@ static const char* xml_text = R"(
     PublisherZMQ publisher_zmq(tree);
 #endif
 
-    printTreeRecursively(tree.root_node);
+    printTreeRecursively(tree.rootNode());
     NodeStatus status = NodeStatus::RUNNING;
 
     while (ros::ok()) {
-     status = tree.root_node->executeTick();
+     status = tree.tickRoot();
         // Sleep 100 milliseconds
         // std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }

@@ -28,7 +28,7 @@ BT::NodeStatus AReloadParam::tick()
     std::cout << "AReloadParamArm first: "<< _first << std::endl;
     while(!_aborted)
     {
-      if (!_first)
+      if (_first == 0)
       {
         // system("/home/rachel/kogrob/kogrob_ws/src/dynamic_parameter/src/nodes/test.sh");
       } 
@@ -108,11 +108,22 @@ BT::NodeStatus ADistributeFlag::tick()
 
 BT::NodeStatus ASetFlag::tick()
 {
-  if( !getInput<ParamType>("param", _param) || !getInput<int>("task", _task)
-  || !getInput<bool>("value", _value))
+
+  if( !getInput<int>("task", _task))
   {
-    throw BT::RuntimeError("ASetFlag missing required input [param] or [task]"); 
+    throw BT::RuntimeError("ASetFlag missing required input[task]"); 
   }
+
+    if(!getInput<bool>("value", _value))
+  {
+    throw BT::RuntimeError("ASetFlag missing required input [value]"); 
+  }
+
+    if( !getInput<ParamType>("param", _param) )
+  {
+    throw BT::RuntimeError("ASetFlag missing required input [param] "); 
+  }
+
 
   _param.flag.param[_task] = _value;
   // find a better way to set flag

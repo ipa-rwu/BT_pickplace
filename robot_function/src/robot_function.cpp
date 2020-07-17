@@ -279,8 +279,7 @@ gettarget RobotFunction::KeepDistanceToTarget(geometry_msgs::Pose target_pose, d
   return newtarget;
 }
 
-
-
+// follow path
 bool RobotFunction::MoveGroupExecutePlan(moveit::planning_interface::MoveGroupInterface *move_group, moveit::planning_interface::MoveGroupInterface::Plan my_plan)
 {
   move_group->setStartStateToCurrentState();
